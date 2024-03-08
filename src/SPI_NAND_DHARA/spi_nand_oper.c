@@ -1,15 +1,47 @@
-/*
- * SPDX-FileCopyrightText: 2022 mikkeldamsgaard project
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * SPDX-FileContributor: 2015-2023 Espressif Systems (Shanghai) CO LTD
- */
 
 #include "spi_nand_oper.h"
+
+
+#include <zephyr/drivers/spi.h>
+#include <zephyr/device.h>
+#include <zephyr/fs/fs.h>
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/drivers/gpio.h>  
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+
+
+LOG_MODULE_REGISTER(spi_nand, LOG_LEVEL_DBG);//TODO maybe adjust
+
+
+//Manually create generic SPI struct
+#define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
+#define SPI_CS_FLAGS GPIO_ACTIVE_LOW
+
+static const struct spi_cs_control spi_cs = {
+    .gpio_pin = SPI_CS_PIN,
+    .gpio_dt_flags = SPI_CS_FLAGS,
+    .delay = 3,//typical value from ds, max 4
+};
+
+static const struct spi_config spi_nand_cfg = {
+    .frequency = 6000000, // TODO adjust the frequency as necessary
+    .operation = SPI_WORD_SET(8) | SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_MODE_0,//test, but should be correct
+    .slave = 0, // SPI slave index
+    .cs = &spi_cs,
+};
+
+
+
+
 #include "driver/spi_master.h"
 
 esp_err_t spi_nand_execute_transaction(spi_device_handle_t device, spi_nand_transaction_t *transaction)
+int spi_nand_execute_transaction(const struct device *dev, struct spi_config *config, spi_nand_transaction_t *transaction)
 {
     spi_transaction_ext_t e = {
         .base = {
