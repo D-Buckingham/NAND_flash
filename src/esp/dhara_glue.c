@@ -1,10 +1,4 @@
-/*
- * SPDX-FileCopyrightText: 2022 mikkeldamsgaard project
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * SPDX-FileContributor: 2015-2023 Espressif Systems (Shanghai) CO LTD
- */
+//This file has to be renamed and go into the dhara folder
 
 #include "dhara/nand.h"
 #include "esp_check.h"
