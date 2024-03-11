@@ -58,24 +58,24 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 	};
 
 	tx_bufs[0].buf = transaction->command;
-	tx_bufs[0].len = 8;
+	tx_bufs[0].len = 1;
     //add address
     for(int cnt = 1;cnt <= transaction -> address_bytes; cnt++){
         int byteIndex = transaction->address_bytes - cnt - 1;
         // Extract the specific byte from the address
         uint8_t addressByte = (transaction->address >> (8 * byteIndex)) & 0xFF;
         tx_bufs[cnt].buf = addressByte;
-	    tx_bufs[cnt].len = 8;
+	    tx_bufs[cnt].len = 1;
     }
     //add data
     if(transaction -> mosi_len > 0){//read register uses an additional byte
         tx_bufs[transaction -> address_bytes + 1].buf = transaction ->mosi_data;
-        tx_bufs[transaction -> address_bytes + 1].len = 8;
+        tx_bufs[transaction -> address_bytes + 1].len = 1;
     }
     //add dummy byte
     if(transaction -> dummy_bytes > 0){
-        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].buf = 0x00;//dummy byte
-        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].len = 8;
+        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].buf = NULL;//dummy byte
+        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].len = 1;
     }
 
 
@@ -90,7 +90,7 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 
     for(cnt = 0; cnt < transaction->miso_len; cnt++){
         rx_bufs[0].buf = buffer_rx[cnt];
-	    rx_bufs[cnt].len = 8;
+	    rx_bufs[cnt].len = 1;
     }
 	
     ret = spi_transceive_dt(dev, &tx, &rx);
@@ -98,7 +98,7 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
     return ret;
 }
 
-int spi_nand_read_register(spi_device_handle_t device, uint8_t reg, uint8_t *val)
+int spi_nand_read_register(struct spi_dt_spec *dev, uint8_t reg, uint8_t *val)
 {
     spi_nand_transaction_t t = {
         .command = CMD_READ_REGISTER,
@@ -108,10 +108,10 @@ int spi_nand_read_register(spi_device_handle_t device, uint8_t reg, uint8_t *val
         .miso_data = val
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_write_register(spi_device_handle_t device, uint8_t reg, uint8_t val)
+int spi_nand_write_register(struct spi_dt_spec *dev, uint8_t reg, uint8_t val)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_SET_REGISTER,
@@ -121,19 +121,19 @@ esp_err_t spi_nand_write_register(spi_device_handle_t device, uint8_t reg, uint8
         .mosi_data = &val
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_write_enable(spi_device_handle_t device)
+int spi_nand_write_enable(struct spi_dt_spec *dev)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_WRITE_ENABLE
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_read_page(spi_device_handle_t device, uint32_t page)
+int spi_nand_read_page(struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
@@ -141,10 +141,10 @@ esp_err_t spi_nand_read_page(spi_device_handle_t device, uint32_t page)
         .address = page
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_read(spi_device_handle_t device, uint8_t *data, uint16_t column, uint16_t length)
+int spi_nand_read(struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_READ_FAST,
@@ -155,10 +155,10 @@ esp_err_t spi_nand_read(spi_device_handle_t device, uint8_t *data, uint16_t colu
         .dummy_bytes = 8
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_program_execute(spi_device_handle_t device, uint32_t page)
+int spi_nand_program_execute(struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_EXECUTE,
@@ -166,10 +166,10 @@ esp_err_t spi_nand_program_execute(spi_device_handle_t device, uint32_t page)
         .address = page
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_program_load(spi_device_handle_t device, const uint8_t *data, uint16_t column, uint16_t length)
+int spi_nand_program_load(struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
@@ -179,10 +179,10 @@ esp_err_t spi_nand_program_load(spi_device_handle_t device, const uint8_t *data,
         .mosi_data = data
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
-esp_err_t spi_nand_erase_block(spi_device_handle_t device, uint32_t page)
+int spi_nand_erase_block(struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_ERASE_BLOCK,
@@ -190,5 +190,5 @@ esp_err_t spi_nand_erase_block(spi_device_handle_t device, uint32_t page)
         .address = page
     };
 
-    return spi_nand_execute_transaction(device, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
