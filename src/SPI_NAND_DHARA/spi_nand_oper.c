@@ -38,18 +38,6 @@ static const struct spi_config spi_nand_cfg = {
 };
 
 
-//might reinitialize them every time as well to keep closer and shorten delays
-static struct spi_buf tx_bufs[2];
-static const struct spi_buf_set tx = {
-    .buffers = tx_bufs,
-    .count = ARRAY_SIZE(tx_bufs)
-};
-
-static struct spi_buf rx_bufs[2];
-static const struct spi_buf_set rx = {
-    .buffers = rx_bufs,
-    .count = ARRAY_SIZE(rx_bufs)
-};
 
 
 
@@ -57,23 +45,8 @@ static const struct spi_buf_set rx = {
  * Executes operation set in struct
  * TODO create struct and figure out how to encode operations
 */
-int spi_nand_execute_transaction(const struct device *dev, struct spi_config *config, spi_nand_transaction_t *transaction)
+int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t *transaction)
 {
-    spi_transaction_ext_t e = {
-        .base = {
-            .flags = SPI_TRANS_VARIABLE_ADDR |  SPI_TRANS_VARIABLE_CMD |  SPI_TRANS_VARIABLE_DUMMY,//prob not needed
-            .rxlength = transaction->miso_len,// * 8
-            .rx_buffer = transaction->miso_data,
-            .length = transaction->mosi_len,// * 8
-            .tx_buffer = transaction->mosi_data,
-            .addr = transaction->address,
-            .cmd = transaction->command
-        },
-        .address_bits = transaction->address_bytes //* 8,
-        .command_bits = 8,
-        .dummy_bits = transaction->dummy_bits
-    };
-
     //TODO write functionalities that write and read
     int ret;
 
@@ -108,46 +81,21 @@ int spi_nand_execute_transaction(const struct device *dev, struct spi_config *co
 
 
     //receiver preparation
-
-    //load the address, consider cases with different structures
-
-
-	struct spi_buf rx_bufs[2];
+    uint8_t buffer_rx[transaction->miso_len] = {};
+	struct spi_buf rx_bufs[transaction->miso_len];//from cache only two bytes are read out?
 	const struct spi_buf_set rx = {
 		.buffers = rx_bufs,
 		.count = ARRAY_SIZE(rx_bufs)
 	};
 
-	rx_bufs[0].buf = buffer_rx;
-	rx_bufs[0].len = BUF_SIZE;
+    for(cnt = 0; cnt < transaction->miso_len; cnt++){
+        rx_bufs[0].buf = buffer_rx[cnt];
+	    rx_bufs[cnt].len = 8;
+    }
+	
+    ret = spi_transceive_dt(dev, &tx, &rx);
 
-	rx_bufs[1].buf = buffer2_rx;
-	rx_bufs[1].len = BUF2_SIZE;
-
-	int ret;
-
-	LOG_INF("Start complete multiple");
-
-
-    //initalize tx buffer
-    uint8_t tx_buffer = ;
-    static struct spi_buf tx_bufs[1];
-    tx_bufs[0].buf = tx_buffer;
-    tx_bufs[0].len = 1;
-    static const struct spi_buf_set tx = {
-        .buffers = tx_bufs,
-        .count = ARRAY_SIZE(tx_bufs)
-    };
-
-    static struct spi_buf rx_bufs[2];
-    static const struct spi_buf_set rx = {
-        .buffers = rx_bufs,
-        .count = ARRAY_SIZE(rx_bufs)
-    };
-
-
-
-    return spi_device_transmit(device, (spi_transaction_t *) &e);
+    return ret;
 }
 
 int spi_nand_read_register(spi_device_handle_t device, uint8_t reg, uint8_t *val)
