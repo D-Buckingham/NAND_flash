@@ -7,7 +7,9 @@
 #include <zephyr/fs/fs.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/drivers/gpio.h>  
+#include <zephyr/drivers/gpio.h>                                                                                                                                                     
+#include <zephyr/drivers/spi.h>
+
 
 #include <string.h>
 #include <stdlib.h>
@@ -36,32 +38,111 @@ static const struct spi_config spi_nand_cfg = {
 };
 
 
+//might reinitialize them every time as well to keep closer and shorten delays
+static struct spi_buf tx_bufs[2];
+static const struct spi_buf_set tx = {
+    .buffers = tx_bufs,
+    .count = ARRAY_SIZE(tx_bufs)
+};
+
+static struct spi_buf rx_bufs[2];
+static const struct spi_buf_set rx = {
+    .buffers = rx_bufs,
+    .count = ARRAY_SIZE(rx_bufs)
+};
 
 
-#include "driver/spi_master.h"
 
-esp_err_t spi_nand_execute_transaction(spi_device_handle_t device, spi_nand_transaction_t *transaction)
+/**
+ * Executes operation set in struct
+ * TODO create struct and figure out how to encode operations
+*/
 int spi_nand_execute_transaction(const struct device *dev, struct spi_config *config, spi_nand_transaction_t *transaction)
 {
     spi_transaction_ext_t e = {
         .base = {
-            .flags = SPI_TRANS_VARIABLE_ADDR |  SPI_TRANS_VARIABLE_CMD |  SPI_TRANS_VARIABLE_DUMMY,
-            .rxlength = transaction->miso_len * 8,
+            .flags = SPI_TRANS_VARIABLE_ADDR |  SPI_TRANS_VARIABLE_CMD |  SPI_TRANS_VARIABLE_DUMMY,//prob not needed
+            .rxlength = transaction->miso_len,// * 8
             .rx_buffer = transaction->miso_data,
-            .length = transaction->mosi_len * 8,
+            .length = transaction->mosi_len,// * 8
             .tx_buffer = transaction->mosi_data,
             .addr = transaction->address,
             .cmd = transaction->command
         },
-        .address_bits = transaction->address_bytes * 8,
+        .address_bits = transaction->address_bytes //* 8,
         .command_bits = 8,
         .dummy_bits = transaction->dummy_bits
     };
 
+    //TODO write functionalities that write and read
+    
+
+    int ret;
+
+    struct spi_buf tx_bufs[(transaction->address_bytes) + (transaction->mosi_len) + 1];//address bytes + data bytes + the command byte 
+	const struct spi_buf_set tx = {
+		.buffers = tx_bufs,
+		.count = ARRAY_SIZE(tx_bufs)
+	};
+
+	tx_bufs[0].buf = transaction->command;
+	tx_bufs[0].len = 8;
+
+    for(int cnt = 1;cnt <= transaction -> address_bytes; cnt++){
+        int byteIndex = transaction->address_bytes - cnt - 1;
+        // Extract the specific byte from the address
+        uint8_t addressByte = (transaction->address >> (8 * byteIndex)) & 0xFF;
+        tx_bufs[cnt].buf = addressByte;
+	    tx_bufs[cnt].len = 8;
+    }
+    if(transaction -> mosi_len > 0){//read register uses an additional byte
+        tx_bufs[transaction -> address_bytes + 1].buf = transaction ->mosi_data;
+        tx_bufs[transaction -> address_bytes + 1].len = 8;
+    }
+
+
+    //load the address, consider cases with different structures
+
+
+	struct spi_buf rx_bufs[2];
+	const struct spi_buf_set rx = {
+		.buffers = rx_bufs,
+		.count = ARRAY_SIZE(rx_bufs)
+	};
+
+	rx_bufs[0].buf = buffer_rx;
+	rx_bufs[0].len = BUF_SIZE;
+
+	rx_bufs[1].buf = buffer2_rx;
+	rx_bufs[1].len = BUF2_SIZE;
+
+	int ret;
+
+	LOG_INF("Start complete multiple");
+
+
+    //initalize tx buffer
+    uint8_t tx_buffer = ;
+    static struct spi_buf tx_bufs[1];
+    tx_bufs[0].buf = tx_buffer;
+    tx_bufs[0].len = 1;
+    static const struct spi_buf_set tx = {
+        .buffers = tx_bufs,
+        .count = ARRAY_SIZE(tx_bufs)
+    };
+
+    static struct spi_buf rx_bufs[2];
+    static const struct spi_buf_set rx = {
+        .buffers = rx_bufs,
+        .count = ARRAY_SIZE(rx_bufs)
+    };
+
+
+
     return spi_device_transmit(device, (spi_transaction_t *) &e);
 }
 
-esp_err_t spi_nand_read_register(spi_device_handle_t device, uint8_t reg, uint8_t *val)
+int spi_nand_read_register(spi_device_handle_t device, uint8_t reg, uint8_t *val)
 {
     spi_nand_transaction_t t = {
         .command = CMD_READ_REGISTER,
@@ -113,7 +194,7 @@ esp_err_t spi_nand_read(spi_device_handle_t device, uint8_t *data, uint16_t colu
         .command = CMD_READ_FAST,
         .address_bytes = 2,
         .address = column,
-        .miso_len = length,
+        .miso_len = length,//usually 2 bytes
         .miso_data = data,
         .dummy_bits = 8
     };
@@ -138,7 +219,7 @@ esp_err_t spi_nand_program_load(spi_device_handle_t device, const uint8_t *data,
         .command = CMD_PROGRAM_LOAD,
         .address_bytes = 2,
         .address = column,
-        .mosi_len = length,
+        .mosi_len = length,//(N+1)*8+24
         .mosi_data = data
     };
 
