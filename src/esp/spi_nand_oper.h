@@ -24,7 +24,7 @@ struct spi_nand_transaction_t {
     const uint8_t *mosi_data;
     uint32_t miso_len;
     uint8_t *miso_data;
-    uint32_t dummy_bits;
+    uint32_t dummy_bytes;
 };
 
 typedef struct spi_nand_transaction_t spi_nand_transaction_t;

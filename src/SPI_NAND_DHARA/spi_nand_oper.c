@@ -75,10 +75,9 @@ int spi_nand_execute_transaction(const struct device *dev, struct spi_config *co
     };
 
     //TODO write functionalities that write and read
-    
-
     int ret;
 
+    //transmitter preparation before sending
     struct spi_buf tx_bufs[(transaction->address_bytes) + (transaction->mosi_len) + 1];//address bytes + data bytes + the command byte 
 	const struct spi_buf_set tx = {
 		.buffers = tx_bufs,
@@ -87,7 +86,7 @@ int spi_nand_execute_transaction(const struct device *dev, struct spi_config *co
 
 	tx_bufs[0].buf = transaction->command;
 	tx_bufs[0].len = 8;
-
+    //add address
     for(int cnt = 1;cnt <= transaction -> address_bytes; cnt++){
         int byteIndex = transaction->address_bytes - cnt - 1;
         // Extract the specific byte from the address
@@ -95,11 +94,20 @@ int spi_nand_execute_transaction(const struct device *dev, struct spi_config *co
         tx_bufs[cnt].buf = addressByte;
 	    tx_bufs[cnt].len = 8;
     }
+    //add data
     if(transaction -> mosi_len > 0){//read register uses an additional byte
         tx_bufs[transaction -> address_bytes + 1].buf = transaction ->mosi_data;
         tx_bufs[transaction -> address_bytes + 1].len = 8;
     }
+    //add dummy byte
+    if(transaction -> dummy_bytes > 0){
+        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].buf = 0x00;//dummy byte
+        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].len = 8;
+    }
 
+
+
+    //receiver preparation
 
     //load the address, consider cases with different structures
 
@@ -196,7 +204,7 @@ esp_err_t spi_nand_read(spi_device_handle_t device, uint8_t *data, uint16_t colu
         .address = column,
         .miso_len = length,//usually 2 bytes
         .miso_data = data,
-        .dummy_bits = 8
+        .dummy_bytes = 8
     };
 
     return spi_nand_execute_transaction(device, &t);
