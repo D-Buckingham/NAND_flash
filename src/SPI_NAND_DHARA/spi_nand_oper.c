@@ -24,6 +24,7 @@ LOG_MODULE_REGISTER(spi_nand_oper, LOG_LEVEL_DBG);//TODO maybe adjust
 #define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
 #define SPI_CS_FLAGS GPIO_ACTIVE_LOW
 
+#define SPI4_NODE           DT_NODELABEL(arduino_spi)
 /*
 const static struct gpio_dt_spec cs_gpio = {
     .pin = SPI_CS_PIN,
@@ -36,14 +37,29 @@ static const struct spi_cs_control spi_cs = {
 };*/
 
 
+
+const struct device *const spi4_dev = DEVICE_DT_GET(SPI4_NODE);
+
+static const struct spi_config spi_nand_cfg = {
+    .frequency = 6000000, // TODO adjust the frequency as necessary
+    .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, but should be correct, CPOL = 0, CPHA = 0
+    .slave = 0, // SPI slave index
+    .cs = {
+        .gpio = GPIO_DT_SPEC_GET(SPI4_NODE, cs_gpios),
+    },// spi_cs,
+};
+
+
 void spi_nand_init(void){
-    int ret = 0;
-    static const struct spi_config spi_nand_cfg = {
-        .frequency = 6000000, // TODO adjust the frequency as necessary
-        .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, but should be correct, CPOL = 0, CPHA = 0
-        .slave = 0, // SPI slave index
-        .cs = DEVICE_DT_GET(DT_NODELABEL(arduino_spi))// spi_cs,
-    };
+
+    const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
+
+    if (!device_is_ready(dev)) {
+        LOG_ERR("Device not ready");
+        //return -ENODEV;
+    }
+
+    
     //ret = device_get_binding((DT_NODELABEL(arduino_spi));
     
 }
@@ -68,7 +84,7 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 	tx_bufs[0].buf = &transaction->command;
 	tx_bufs[0].len = 1;
     //add address
-    uint8_t addressByte[(transaction -> address_bytes)] = {};
+    uint8_t addressByte[transaction -> address_bytes];
     for(int cnt = 1;cnt <= transaction -> address_bytes; cnt++){
         int byteIndex = transaction->address_bytes - cnt - 1;
         // Extract the specific byte from the address
@@ -90,7 +106,7 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 
 
     //receiver preparation
-    uint8_t buffer_rx[transaction->miso_len] = {};
+    uint8_t buffer_rx[transaction->miso_len];
 	struct spi_buf rx_bufs[transaction->miso_len];//from cache only two bytes are read out?
 	const struct spi_buf_set rx = {
 		.buffers = rx_bufs,
@@ -98,11 +114,11 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 	};
 
     for(int cnt = 0; cnt < transaction->miso_len; cnt++){
-        rx_bufs[0].buf = buffer_rx[cnt];
+        rx_bufs[0].buf = &buffer_rx[cnt];
 	    rx_bufs[cnt].len = 1;
     }
 	
-    ret = spi_transceive_dt(dev, &tx, &rx);
+    ret = spi_transceive(&dev, &spi_nand_cfg, &tx, &rx); //synchroneous
 
 
 
@@ -204,7 +220,7 @@ int spi_nand_erase_block(struct spi_dt_spec *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_device_id(struct spi_dt_spec dev, uint8_t *device_id){
+int spi_nand_device_id(struct spi_dt_spec *dev, uint8_t *device_id){
     //ask for device ID
 
 
@@ -220,7 +236,7 @@ int spi_nand_device_id(struct spi_dt_spec dev, uint8_t *device_id){
 
 }
 
-int spi_nand_test(struct spi_dt_spec dev){
+int spi_nand_test(struct spi_dt_spec *dev){
 
     LOG_INF("Starting SPI test");
     int ret = spi_nand_device_id(&spi_nand_spec, device_id);

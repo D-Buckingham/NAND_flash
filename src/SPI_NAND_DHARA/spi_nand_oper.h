@@ -67,7 +67,7 @@ typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 
 // Commands, registers, and status flags definitions
 
-void spi_init(void);
+void spi_nand_init(void);
 
 /**
  * @brief Execute a transaction over SPI to a NAND device.
