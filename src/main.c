@@ -19,6 +19,7 @@
 #if defined(CONFIG_FAT_FILESYSTEM_ELM)
 
 #include <ff.h>
+#include "SPI_NAND_DHARA/spi_nand_oper.h"
 
 /*
  *  Note the fatfs library is able to mount only strings inside _VOLUME_STRS
@@ -103,9 +104,10 @@ static const char *disk_mount_pt = DISK_MOUNT_PT;
 int main(void)
 {
 
-
-
-
+	//Test the SPI communication
+	const struct device *dev;
+	dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
+	spi_nand_test(dev);
 
 
 
