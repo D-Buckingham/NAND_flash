@@ -246,4 +246,5 @@ int spi_nand_test(struct spi_dt_spec *dev){
     } else {
         LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);
     }
+    return ret;
 }
