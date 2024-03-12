@@ -118,7 +118,7 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 	    rx_bufs[cnt].len = 1;
     }
 	
-    ret = spi_transceive(&dev, &spi_nand_cfg, &tx, &rx); //synchroneous
+    ret = spi_transceive(dev->bus, &spi_nand_cfg, &tx, &rx); //synchroneous
 
 
 
@@ -239,7 +239,8 @@ int spi_nand_device_id(struct spi_dt_spec *dev, uint8_t *device_id){
 int spi_nand_test(struct spi_dt_spec *dev){
 
     LOG_INF("Starting SPI test");
-    int ret = spi_nand_device_id(&spi_nand_spec, device_id);
+    uint8_t device_id[2];
+    int ret = spi_nand_device_id(dev, device_id);
     if (ret < 0) {
         LOG_ERR("Failed to read device ID");
     } else {
