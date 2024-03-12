@@ -42,6 +42,9 @@ typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 #define CMD_READ_X4         0x6B
 #define CMD_ERASE_BLOCK     0xD8
 
+#define DEVICE_ADDR_READ    0x01
+
+
 #define REG_PROTECT         0xA0
 #define REG_CONFIG          0xB0
 #define REG_STATUS          0xC0
@@ -152,6 +155,24 @@ int spi_nand_program_load(struct spi_dt_spec *dev, const uint8_t *data, uint16_t
  * @return 0 on success, negative error code otherwise.
  */
 int spi_nand_erase_block(struct spi_dt_spec *dev, uint32_t page);
+
+
+/**
+ * @brief Read out device ID
+ * 
+ * @param dev Device SPI configuration data obtained from devicetree.
+ * @param device_id Device ID
+*/
+int spi_nand_device_id(struct spi_dt_spec *dev, uint8_t *device_id);
+
+
+/**
+ * @brief Test function to validate the SPI communication. Reads out the device ID
+ * 
+ * @param dev Device SPI configuration data obtained from devicetree. 
+*/
+int spi_nand_test(struct spi_dt_spec *dev);
+
 
 #ifdef __cplusplus
 }

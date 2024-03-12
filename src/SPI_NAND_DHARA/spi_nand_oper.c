@@ -1,4 +1,3 @@
-
 #include "spi_nand_oper.h"
 
 
@@ -11,34 +10,43 @@
 #include <zephyr/drivers/spi.h>
 
 
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 
 
-LOG_MODULE_REGISTER(spi_nand, LOG_LEVEL_DBG);//TODO maybe adjust
+LOG_MODULE_REGISTER(spi_nand_oper, LOG_LEVEL_DBG);//TODO maybe adjust
 
 
 //Manually create generic SPI struct
 #define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
 #define SPI_CS_FLAGS GPIO_ACTIVE_LOW
 
+/*
+const static struct gpio_dt_spec cs_gpio = {
+    .pin = SPI_CS_PIN,
+    .dt_flags = SPI_CS_FLAGS
+};
+
 static const struct spi_cs_control spi_cs = {
-    .gpio_pin = SPI_CS_PIN,
-    .gpio_dt_flags = SPI_CS_FLAGS,
+    .gpio = DEVICE_DT_GET(DT_NODELABEL(arduino_spi)),
     .delay = 3,//typical value from ds, max 4
-};
-
-static const struct spi_config spi_nand_cfg = {
-    .frequency = 6000000, // TODO adjust the frequency as necessary
-    .operation = SPI_WORD_SET(8) | SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_MODE_0,//test, but should be correct
-    .slave = 0, // SPI slave index
-    .cs = &spi_cs,
-};
+};*/
 
 
-
+void spi_nand_init(void){
+    int ret = 0;
+    static const struct spi_config spi_nand_cfg = {
+        .frequency = 6000000, // TODO adjust the frequency as necessary
+        .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, but should be correct, CPOL = 0, CPHA = 0
+        .slave = 0, // SPI slave index
+        .cs = DEVICE_DT_GET(DT_NODELABEL(arduino_spi))// spi_cs,
+    };
+    //ret = device_get_binding((DT_NODELABEL(arduino_spi));
+    
+}
 
 
 /**
@@ -57,19 +65,20 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 		.count = ARRAY_SIZE(tx_bufs)
 	};
 
-	tx_bufs[0].buf = transaction->command;
+	tx_bufs[0].buf = &transaction->command;
 	tx_bufs[0].len = 1;
     //add address
+    uint8_t addressByte[(transaction -> address_bytes)] = {};
     for(int cnt = 1;cnt <= transaction -> address_bytes; cnt++){
         int byteIndex = transaction->address_bytes - cnt - 1;
         // Extract the specific byte from the address
-        uint8_t addressByte = (transaction->address >> (8 * byteIndex)) & 0xFF;
-        tx_bufs[cnt].buf = addressByte;
+        addressByte[cnt] = (transaction->address >> (8 * byteIndex)) & 0xFF;
+        tx_bufs[cnt].buf = &addressByte[cnt];
 	    tx_bufs[cnt].len = 1;
     }
     //add data
     if(transaction -> mosi_len > 0){//read register uses an additional byte
-        tx_bufs[transaction -> address_bytes + 1].buf = transaction ->mosi_data;
+        tx_bufs[transaction -> address_bytes + 1].buf = &transaction ->mosi_data;
         tx_bufs[transaction -> address_bytes + 1].len = 1;
     }
     //add dummy byte
@@ -88,12 +97,14 @@ int spi_nand_execute_transaction(struct spi_dt_spec *dev, spi_nand_transaction_t
 		.count = ARRAY_SIZE(rx_bufs)
 	};
 
-    for(cnt = 0; cnt < transaction->miso_len; cnt++){
+    for(int cnt = 0; cnt < transaction->miso_len; cnt++){
         rx_bufs[0].buf = buffer_rx[cnt];
 	    rx_bufs[cnt].len = 1;
     }
 	
     ret = spi_transceive_dt(dev, &tx, &rx);
+
+
 
     return ret;
 }
@@ -191,4 +202,31 @@ int spi_nand_erase_block(struct spi_dt_spec *dev, uint32_t page)
     };
 
     return spi_nand_execute_transaction(dev, &t);
+}
+
+int spi_nand_device_id(struct spi_dt_spec dev, uint8_t *device_id){
+    //ask for device ID
+
+
+    spi_nand_transaction_t  t = {
+        .command = CMD_READ_ID,
+        .address_bytes = 1,
+        .address = DEVICE_ADDR_READ,
+        .miso_len = 2,//usually 2 bytes
+        .miso_data = device_id,
+    };
+
+    return spi_nand_execute_transaction(dev, &t);
+
+}
+
+int spi_nand_test(struct spi_dt_spec dev){
+
+    LOG_INF("Starting SPI test");
+    int ret = spi_nand_device_id(&spi_nand_spec, device_id);
+    if (ret < 0) {
+        LOG_ERR("Failed to read device ID");
+    } else {
+        LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);
+    }
 }

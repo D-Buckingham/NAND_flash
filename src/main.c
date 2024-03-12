@@ -14,6 +14,8 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/fs/fs.h>
 
+#include "SPI_NAND_DHARA/spi_nand_oper.h"
+
 #if defined(CONFIG_FAT_FILESYSTEM_ELM)
 
 #include <ff.h>
@@ -100,8 +102,18 @@ static const char *disk_mount_pt = DISK_MOUNT_PT;
 
 int main(void)
 {
+
+
+
+
+
+
+
+
+
+
 	/* raw disk i/o */
-	do {
+	/*do {
 		static const char *disk_pdrv = DISK_DRIVE_NAME;
 		uint64_t memory_size_mb;
 		uint32_t block_count;
@@ -157,7 +169,9 @@ int main(void)
 		k_sleep(K_MSEC(1000));
 	}
 	return 0;
+	*/
 }
+
 
 /* List dir entry by path
  *

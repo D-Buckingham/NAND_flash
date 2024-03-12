@@ -5,4 +5,5 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(mass)
 
 FILE(GLOB app_sources src/*.c)
+FILE(GLOB app_sources src/SPI_NAND_DHARA/spi_nand_oper.c)
 target_sources(app PRIVATE ${app_sources})
