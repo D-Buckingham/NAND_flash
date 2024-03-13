@@ -103,10 +103,9 @@ static const char *disk_mount_pt = DISK_MOUNT_PT;
 
 int main(void)
 {
-
+	LOG_INF("My first breath as an IoT device -.-")
 	//Test the SPI communication
-	const struct device *dev;
-	dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
+	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
 	spi_nand_test(dev);
 
 
