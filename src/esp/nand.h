@@ -10,8 +10,7 @@
 
 #include <stdint.h>
 #include "spi_nand_flash.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
+
 
 #ifdef __cplusplus
 extern "C" {

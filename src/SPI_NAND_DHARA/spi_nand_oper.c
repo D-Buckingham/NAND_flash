@@ -17,7 +17,7 @@
 #include <ctype.h>
 
 
-LOG_MODULE_REGISTER(spi_nand_oper, LOG_LEVEL_DBG);//TODO maybe adjust
+LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);//TODO maybe adjust
 
 
 //Manually create generic SPI struct
@@ -203,7 +203,6 @@ int spi_nand_erase_block(const struct device *dev, uint32_t page)
 int spi_nand_device_id(const struct device *dev, uint8_t *device_id){
     //ask for device ID
 
-
     spi_nand_transaction_t  t = {
         .command = CMD_READ_ID,
         .address_bytes = 1,
@@ -213,8 +212,8 @@ int spi_nand_device_id(const struct device *dev, uint8_t *device_id){
     };
 
     return spi_nand_execute_transaction(dev, &t);
-
 }
+
 
 int spi_nand_test(const struct device *dev){
 
