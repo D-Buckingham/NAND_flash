@@ -1,7 +1,7 @@
 
 #include <string.h>
 #include "freertos/semphr.h"
-#include "spi_nand_flash.h"
+
 #include "dhara/error.h"
 #include "spi_nand_oper.h"
 #include "nand.h"
@@ -78,6 +78,36 @@ static esp_err_t spi_nand_alliance_init(spi_nand_flash_device_t *dev)
         return ESP_ERR_INVALID_RESPONSE;
     }
     return ESP_OK;
+}
+
+int wait_for_ready(const struct device *device, uint32_t expected_operation_time_us, uint8_t *status_out)
+{
+    // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
+    if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
+        k_busy_wait(expected_operation_time_us); // busy wait for microseconds
+    }
+
+    while (true) {
+        uint8_t status;
+        int err = spi_nand_read_register(device, REG_STATUS, &status);
+        if (err != 0) {
+            LOG_ERR("Error reading NAND status register");
+            return -1; 
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            if (status_out) {
+                *status_out = status;
+            }
+            break;
+        }
+
+        if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
+            k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
+        }
+    }
+
+    return 0; // Success
 }
 
 static esp_err_t spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)

@@ -1,3 +1,13 @@
+/**
+ * @file nand_top_layer.h
+ * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
+ *
+ * This file establishes the SPI communication and stores the predefined commands to interfere 
+ * with the 913-S5F14G04SND10LIN NAND flash
+ * Author: [Denis Buckingham]
+ * Date: [10.03.2024]
+ */
+
 #ifndef NAND_TOP_LAYER_H
 #define NAND_TOP_LAYER_H
 
@@ -49,7 +59,20 @@ typedef struct spi_nand_flash_device_t{
 //typedef struct spi_nand_flash_config_t {} spi_nand_flash_config_t;
 //typedef struct spi_nand_flash_device_t {} spi_nand_flash_device_t;
 
-//defined in the glue between spi_nand_oper and dhara
+
+
+
+
+/** @brief waiting for finished transaction
+ *
+ * defined in the nand.c between spi_nand_oper and dhara
+ * used in the top layer and nand.c
+ *
+ * @param device Device SPI configuration data obtained from devicetree.
+ * @param expected_operation_time_us
+ * @param[out] status_out status register content of current transaction
+ * @return 0 on success, -1 if the read out of the register failed.
+ */
 int wait_for_ready(const struct device *device, uint32_t expected_operation_time_us, uint8_t *status_out);
 
 
@@ -62,7 +85,7 @@ int wait_for_ready(const struct device *device, uint32_t expected_operation_time
  *
  * @param config Pointer to SPI nand flash config structure.
  * @param[out] handle The handle to the SPI nand flash chip is returned in this variable.
- * @return ESP_OK on success, or a flash error code if the initialisation failed.
+ * @return  on success, or a flash error code if the initialisation failed.
  */
 int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle);
 
@@ -105,7 +128,7 @@ int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint16_t *numbe
  *
  * @param handle The handle to the SPI nand flash chip.
  * @param[out] number_of_sectors A pointer of where to put the return value
- * @return ESP_OK on success, or a flash error code if the operation failed.
+ * @return  on success, or a flash error code if the operation failed.
  */
 int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint16_t *sector_size);
 

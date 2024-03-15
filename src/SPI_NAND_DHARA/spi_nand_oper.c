@@ -1,23 +1,22 @@
+/**
+ * @file spi_nand_oper.h
+ * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
+ *
+ * This file establishes the SPI communication and stores the predefined commands to interfere 
+ * with the 913-S5F14G04SND10LIN NAND flash
+ * Author: [Denis Buckingham]
+ * Date: [10.03.2024]
+ */
+
 #include "spi_nand_oper.h"
 
-
-#include <zephyr/drivers/spi.h>
-#include <zephyr/device.h>
-#include <zephyr/fs/fs.h>
-#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>
 
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-
-
-LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);//TODO maybe adjust
+LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);//TODO maybe adjust level
 
 
 //Manually create generic SPI struct
@@ -47,7 +46,8 @@ void spi_nand_init(void){
 
 /**
  * Executes operation set in struct
- * TODO create struct and figure out how to encode operations
+ * 0 If successful in master mode.
+-errno Negative errno code on failure.
 */
 int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction)
 {
@@ -98,9 +98,8 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
 	    rx_bufs[cnt].len = 1;
     }
 	
-    ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx); //synchroneous
-
-
+    //synchronous
+    ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx);
 
     return ret;
 }

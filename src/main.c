@@ -22,5 +22,9 @@ int main(void)
 	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
 	spi_nand_test(dev);//returns manufacturere and device ID
 
+	//Test glue between NAND flash communicator and DHARA flash translation layer???
+
+	//test top layer ftl
+
 }
 

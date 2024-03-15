@@ -1,34 +1,48 @@
 //This file has to be renamed and go into the dhara folder
+//rename to nand.c
 
-//#include "dhara/nand.h"
+/**
+ * @file nand.c
+ * @brief Conection between the spi communication layer and the DHARA FTL
+ *
+ * This file provides the missing implementations that are zephyr framework specific to
+ * the dhara flash translation layer (FTL)
+ * Author: [Denis Buckingham]
+ * Date: [15.03.2024]
+ */
 
-
-
+#include "nand.h"
 #include "spi_nand_oper.h"
-#include "nand_top_layer.h"
+#include "nand_top_layer.h"//for the spi_nand_flash_device_t
+
 
 #include <zephyr/drivers/spi.h>
 #include <zephyr/device.h>
-#include <zephyr/fs/fs.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/drivers/gpio.h>                                                                                                                                                     
-#include <zephyr/drivers/spi.h>
 #include "map.h"
-
 
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
 
 LOG_MODULE_REGISTER(dhara_glue, CONFIG_LOG_DEFAULT_LEVEL);
 
 #define ROM_WAIT_THRESHOLD_US 1000
 
+//defined in 
 
-int wait_for_ready(const struct device *device, uint32_t expected_operation_time_us, uint8_t *status_out)
+/** @brief waiting for finished transaction
+ *
+ * defined in the nand.c between spi_nand_oper and dhara
+ * used in the top layer and nand.c
+ *
+ * @param device Device SPI configuration data obtained from devicetree.
+ * @param expected_operation_time_us
+ * @param[out] status_out status register content of current transaction
+ * @return 0 on success, -1 if the read out of the register failed.
+ */
+static int wait_for_ready_nand(const struct device *device, uint32_t expected_operation_time_us, uint8_t *status_out)
 {
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
     if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
@@ -38,9 +52,9 @@ int wait_for_ready(const struct device *device, uint32_t expected_operation_time
     while (true) {
         uint8_t status;
         int err = spi_nand_read_register(device, REG_STATUS, &status);
-        if (err) {
+        if (err != 0) {
             LOG_ERR("Error reading NAND status register");
-            return err; // Return error code directly
+            return -1; 
         }
 
         if ((status & STAT_BUSY) == 0) {
@@ -59,35 +73,73 @@ int wait_for_ready(const struct device *device, uint32_t expected_operation_time
 }
 
 
+/**
+ * @brief Read a NAND flash page and wait for the operation to complete.
+ * 
+ * This function initiates a read operation for a specified page in the NAND flash
+ * and waits until the device is ready or until an error occurs. It leverages the
+ * `spi_nand_read_page` function to perform the read operation and checks the device's
+ * status by calling `wait_for_ready_nand`.
+ * 
+ * @param device A pointer to the spi_nand_flash_device_t structure representing the NAND flash device.
+ * @param page The page number to read from the NAND flash.
+ * @param status_out Pointer to a variable where the status register's value will be stored upon successful read. 
+ *                   Can be NULL if the status is not needed.
+ * 
+ * @return 0 on success, -1 on failure.
+ */
 
 static int read_page_and_wait(struct spi_nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
 {
     int err;
     err = spi_nand_read_page(device -> config.spi_dev, page); 
-    if (err) {
-        LOG_ERR("Failed to read page %u", page);
-        return err;
+    if (err != 0) {
+        LOG_ERR("Failed to read page %u, error: %d", page, err);
+        return -1;
     }
 
-    return wait_for_ready(device -> config.spi_dev,device -> read_page_delay_us, status_out);
+    return wait_for_ready_nand(device -> config.spi_dev,device -> read_page_delay_us, status_out);
 }
+
+/**
+ * @brief Program a NAND flash page and wait for the operation to complete.
+ * 
+ * This function initiates a program operation for a specified page in the NAND flash
+ * and waits until the device is ready or until an error occurs. It leverages the
+ * `spi_nand_program_execute` function to perform the program operation and checks the device's
+ * status by calling `wait_for_ready_nand`.
+ * 
+ * The function ensures that the programming operation is executed correctly by monitoring
+ * the NAND flash device's status register after the operation. It makes use of the delay
+ * specified in `device->program_page_delay_us` to determine the wait period for the device
+ * to become ready.
+ * 
+ * @param device A pointer to the spi_nand_flash_device_t structure representing the NAND flash device.
+ * @param page The page number where the data will be programmed in the NAND flash.
+ * @param status_out Pointer to a variable where the status register's value will be stored upon successful programming. 
+ *                   Can be NULL if the status is not needed.
+ * 
+ * @return 0 on success, -1 on failure.
+ */
 
 static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
 {
     int err;
 
     err = spi_nand_program_execute(device -> config.spi_dev, page);
-    if (err) {
-        LOG_ERR("Failed to execute program on page %u", page);
-        return err;
+    if (err != 0) {
+        LOG_ERR("Failed to execute program on page %u, error: %d", page, err);
+        return -1;
     }
 
-    return wait_for_ready(device -> config.spi_dev, device -> program_page_delay_us, status_out);
+    return wait_for_ready_nand(device -> config.spi_dev, device -> program_page_delay_us, status_out);
 }
 
 
 
-
+/**
+ * @return 1 if block is bad, 0 (false) if the block is good (indicator equals 0xFFFF),
+*/
 int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 {
     //const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
@@ -166,7 +218,12 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
 }
 
 
-
+/* Erase the given block. This function should return 0 on success or -1
+ * on failure.
+ *
+ * The status reported by the chip should be checked. If an erase
+ * operation fails, return -1 and set err to E_BAD_BLOCK.
+ */
 int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t *err)
 {
     LOG_DBG("erase_block, block=%u", b);
@@ -188,7 +245,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    ret = wait_for_ready(dev->config.spi_dev, dev->erase_block_delay_us, &status);
+    ret = wait_for_ready_nand(dev->config.spi_dev, dev->erase_block_delay_us, &status);
     if (ret) {
         LOG_ERR("Failed to wait for ready, error: %d", ret);
         return -1;
@@ -203,10 +260,12 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
 }
 
 
-
-
-
-
+/* Program the given page. The data pointer is a pointer to an entire
+ * page ((1 << log2_page_size) bytes). The operation status should be
+ * checked. If the operation fails, return -1 and set err to
+ * E_BAD_BLOCK.
+ * 
+ */
 int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 {
     LOG_DBG("prog, page=%u", p);
@@ -266,13 +325,13 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
     ret = read_page_and_wait(dev, p, NULL);
     if (ret) {
         LOG_ERR("Failed to read page %u", p);
-        return 0; // Indicates error or not free
+        return -1; 
     }
 
     ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&used_marker, dev->page_size + 2, 2);
     if (ret) {
         LOG_ERR("Failed to read OOB area for page %u", p);
-        return 0; // Indicates error or not free
+        return -1; 
     }
 
     LOG_DBG("Is free, page=%u, used_marker=%04x", p, used_marker);
@@ -289,7 +348,10 @@ static int is_ecc_error(uint8_t status)
 }
 
 
-
+/* Read a portion of a page. ECC must be handled by the NAND
+ * implementation. Returns 0 on sucess or -1 if an error occurs. If an
+ * uncorrectable ECC error occurs, return -1 and set err to E_ECC.
+ */
 int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, size_t length,
                     uint8_t *data, dhara_error_t *err)
 {
@@ -303,14 +365,14 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
     ret = read_page_and_wait(dev, p, &status);
     if (is_ecc_error(status)) {
         LOG_ERR("Failed to read page %u", p);
-        dhara_set_error(err, DHARA_E_ECC); // Adjust error handling as necessary
+        dhara_set_error(err, DHARA_E_ECC);
         return -1;
     }
 
     ret = spi_nand_read(dev->config.spi_dev, data, offset, length);
     if (ret) {
         LOG_ERR("Failed to read data from page %u", p);
-        //*err = DHARA_E_IO; // Adjust error handling as necessary
+        dhara_set_error(err, DHARA_E_ECC);
         return -1;
     }
 
@@ -320,7 +382,10 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
 
 
 
-
+/* Read a page from one location and reprogram it in another location.
+ * This might be done using the chip's internal buffers, but it must use
+ * ECC.
+ */
 int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t dst, dhara_error_t *err)
 {
     LOG_DBG("Copy, src=%u, dst=%u", src, dst);

@@ -2,10 +2,15 @@
  * @file spi_nand_oper.h
  * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
  *
- * 
+ * This file establishes the SPI communication and stores the predefined commands to interfere 
+ * with the 913-S5F14G04SND10LIN NAND flash
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
  */
+
+
+#ifndef SPI_NAND_OPER_H
+#define SPI_NAND_OPER_H
 
 #pragma once
 
@@ -78,7 +83,7 @@ void spi_nand_init(void);
  *
  * @param dev Device SPI configuration data obtained from devicetree.
  * @param transaction Transaction parameters including command, address, and data.
- * @return 0 on success, negative error code otherwise.
+ * @return 0 on success, negative errno error code otherwise.
  */
 int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction);
 
@@ -193,3 +198,5 @@ int spi_nand_test(const struct device *dev);
 #ifdef __cplusplus
 }
 #endif
+
+#endif //SPI_NAND_OPER_H
