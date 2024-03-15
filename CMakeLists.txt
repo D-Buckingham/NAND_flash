@@ -6,10 +6,11 @@ list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(NAND_flash)
 
-set(APP_SOURCES
-            src/main.c
-            src/SPI_NAND_DHARA/spi_nand_oper.c
-            src/SPI_NAND_DHARA/dhara_glue.c
+file(GLOB APP_SOURCES
+            "src/main.c"
+            "src/SPI_NAND_DHARA/spi_nand_oper.c"
+            "dhara/dhara/*.c"
+            #src/SPI_NAND_DHARA/dhara_glue.c
 )
 #FILE(GLOB app_sources src/SPI_NAND_DHARA/spi_nand_oper.c)
 

@@ -1,5 +1,5 @@
 /**
- * @file dhara_fat_adapter.h
+ * @file ftl_to_fs_link.h
  * @brief Adapter to integrate the Dhara NAND Flash Translation Layer (FTL) with the FAT file system in Zephyr RTOS.
  *
  * 
