@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+/**
+ * TODO incorporate testing functions into the dhara glue
+*/
 #define LOG_LEVEL CONFIG_LOG_DEFAULT_LEVEL
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(spi_loopback);
@@ -13,7 +17,7 @@ LOG_MODULE_REGISTER(spi_loopback);
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <zephyr/ztest.h>
+//#include <zephyr/ztest.h>
 
 #include <zephyr/drivers/spi.h>
 

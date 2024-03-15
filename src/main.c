@@ -20,7 +20,7 @@ int main(void)
 	LOG_INF("My first breath as an IoT device");
 	//Test the SPI communication
 	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
-	spi_nand_test(dev);
+	spi_nand_test(dev);//returns manufacturere and device ID
 
 }
 
