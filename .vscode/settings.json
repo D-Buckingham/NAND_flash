@@ -4,6 +4,7 @@
         "spi.h": "c",
         "spi_nand_oper.h": "c",
         "log.h": "c",
-        "nand.h": "c"
+        "nand.h": "c",
+        "error.h": "c"
     }
 }

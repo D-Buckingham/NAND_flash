@@ -28,7 +28,7 @@
 
 LOG_MODULE_REGISTER(dhara_glue, CONFIG_LOG_DEFAULT_LEVEL);
 
-#define ROM_WAIT_THRESHOLD_US 1000
+
 
 //defined in 
 
