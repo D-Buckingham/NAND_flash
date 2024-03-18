@@ -27,6 +27,8 @@
 #include <Zephyr/drivers/spi.h>
 #include <Zephyr/sys/util.h>
 
+#include "spi_nand_oper.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

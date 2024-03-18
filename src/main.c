@@ -8,7 +8,7 @@
 
 
 #include "SPI_NAND_DHARA/spi_nand_oper.h"
-#include "spi_nand_oper_tests.h"
+#include "tests/spi_nand_oper_tests.h"
 
 LOG_MODULE_REGISTER(main);
 

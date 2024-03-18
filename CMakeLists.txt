@@ -11,7 +11,7 @@ file(GLOB APP_SOURCES
             "src/SPI_NAND_DHARA/spi_nand_oper.c"
             "dhara/dhara/*.c"
             "nand_top_layer.c"
-            "spi_nand_oper_tests.c"
+            "src/tests/spi_nand_oper_tests.c"
            
 )
 #FILE(GLOB app_sources src/SPI_NAND_DHARA/spi_nand_oper.c)
