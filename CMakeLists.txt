@@ -11,6 +11,7 @@ file(GLOB APP_SOURCES
             "src/SPI_NAND_DHARA/spi_nand_oper.c"
             "dhara/dhara/*.c"
             "nand_top_layer.c"
+            "spi_nand_oper_tests.c"
            
 )
 #FILE(GLOB app_sources src/SPI_NAND_DHARA/spi_nand_oper.c)
@@ -18,6 +19,7 @@ file(GLOB APP_SOURCES
 
 include_directories(${PROJECT_SOURCE_DIR}/dhara/dhara)
 include_directories(${PROJECT_SOURCE_DIR}/src/SPI_NAND_DHARA)
+include_directories(${PROJECT_SOURCE_DIR}/src/tests)
 
 #FILE(GLOB app_sources dhara/dhara/*.c)
 
