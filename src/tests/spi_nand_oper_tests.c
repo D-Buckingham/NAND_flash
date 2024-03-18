@@ -133,6 +133,7 @@ int test_erase_block_spi_nand(const struct device *dev){
     }
     */
     LOG_INF("Test 5 succesful");
+    return 0;
 }
 
 
@@ -156,6 +157,100 @@ int test_IDs_spi_nand(const struct device *dev){
     LOG_INF("Test 6 succesful");
     return ret;
 }
+
+
+
+//final test, write and read it
+int test_spi_nand_write_read_register(const struct device *dev) {
+    LOG_INF("Testing SPI NAND write and read register");
+    uint16_t data = 0xCC;
+    uint8_t status;
+    uint32_t page = 2;
+    uint16_t readings;
+    
+
+    if (!device_is_ready(dev)) {
+        LOG_ERR("Device not ready");
+        return -1;
+    }
+    //enable write
+    int ret = spi_nand_write_enable(dev);
+    if (ret) {
+        LOG_ERR("Failed to enable write, error: %d", ret);
+        return -1;
+    }
+    //program load into cache
+    ret = spi_nand_program_load(dev, &data, 0, 2);
+    if (ret) {
+        LOG_ERR("Failed to load program, error: %d", ret);
+        return -1;
+    }
+    //program execute into nand array
+    ret = spi_nand_program_execute(dev, page);
+    if (ret != 0) {
+        LOG_ERR("Failed to execute program on page, error: %d", err);
+        return -1;
+    }
+
+    //check and wait if successful
+    while (true) {
+        uint8_t status;
+        int err = spi_nand_read_register(dev, REG_STATUS, &status);
+        if (err != 0) {
+            LOG_ERR("Error reading NAND status register");
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
+        
+    }
+
+
+
+    // Read from the register
+    int err;
+    err = spi_nand_read_page(dev, page); 
+    if (err != 0) {
+        LOG_ERR("Failed to read page %u, error: %d", page, err);
+        return -1;
+    }
+
+
+    //wait again
+    while (true) {
+        uint8_t status;
+        int err = spi_nand_read_register(dev, REG_STATUS, &status);
+        if (err != 0) {
+            LOG_ERR("Error reading NAND status register");
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
+        
+    }
+
+    //read from cache
+    ret = spi_nand_read(dev, (uint8_t *)&readings, 0, 2);
+    if (ret != 0) {
+        LOG_ERR("Failed to read , err: %d", ret);
+        return -1; 
+    }
+
+    
+
+    // Verify that the value read matches the value written
+    if (data == readings) {
+        LOG_INF("Write and read register test PASSED");
+    } else {
+        LOG_ERR("Write and read register test FAILED: Written value 0x%X, read value 0x%X", write_value, read_value);
+    }
+    return 0;
+}
+
 
 
 
@@ -199,6 +294,8 @@ int test_SPI_NAND_Communicator_all_tests(const struct device *dev) {
         LOG_ERR("Device & Manufacturer ID test failed");
         return ret;
     }
+
+    test_spi_nand_write_read_register(dev);
 
     LOG_INF("All SPI NAND communicator tests passed successfully");
     return 0;

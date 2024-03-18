@@ -101,6 +101,17 @@ int test_erase_block_spi_nand(const struct device *dev);
 int test_IDs_spi_nand(const struct device *dev);
 
 /**
+ * @brief Tests the SPI NAND write and read operation.
+ *
+ * Performs a test write operation to a specific page and then reads back
+ * the written data to verify the operation. It tests the sequence of enabling
+ * write, programming a load, executing the program, and reading the page.
+ *
+ * @param dev Pointer to the SPI device structure.
+ */
+int test_spi_nand_write_read_register(const struct device *dev);
+
+/**
  * @brief Execute all SPI NAND communicator tests.
  *
  * This function runs a series of tests designed to verify the functionality
