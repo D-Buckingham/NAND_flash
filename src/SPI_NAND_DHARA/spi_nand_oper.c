@@ -23,6 +23,9 @@ LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);//TODO maybe adjust
 #define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
 #define SPI_CS_FLAGS GPIO_ACTIVE_LOW
 
+//unused
+#define SPI_TRANSACTION_MAX_PARTS 4//8* (2176+4) // currently maxumum, page size + 1 + 3 address bytes //Adjust based on analysis
+
 #define SPI4_NODE           DT_NODELABEL(arduino_spi)
 
 
@@ -49,6 +52,7 @@ void spi_nand_init(void){
  * 0 If successful in master mode.
 -errno Negative errno code on failure.
 */
+/*
 int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction)
 {
     //TODO write functionalities that write and read
@@ -104,6 +108,66 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
     return ret;
 }
 
+*/
+/**
+ * Executes operation set in struct
+ * 0 If successful in master mode.
+-errno Negative errno code on failure.
+*/
+int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction)
+{
+    //TODO write functionalities that write and read
+    int ret;
+
+    //transmitter preparation before sending
+    struct spi_buf tx_bufs[4];//address bytes + data bytes + the command byte + dummy byte
+	const struct spi_buf_set tx = {
+		.buffers = tx_bufs,
+		.count = ARRAY_SIZE(tx_bufs)
+	};
+
+	tx_bufs[0].buf = &transaction->command;
+	tx_bufs[0].len = 1;
+    
+    //add address
+    if(transaction -> address_bytes > 0){
+        tx_bufs[1].buf = &transaction->address;
+        tx_bufs[1].len = transaction -> address_bytes;
+    }
+
+    //add data
+    if(transaction -> miso_len > 0){
+        tx_bufs[2].buf = &transaction ->mosi_data;
+        tx_bufs[2].len = transaction -> mosi_len;
+    }
+
+    //add dummy byte
+    if(transaction -> dummy_bytes > 0){
+        tx_bufs[3].buf = NULL;//dummy byte
+        tx_bufs[3].len = transaction -> dummy_bytes;
+    }
+
+
+
+    //receiver preparation
+    uint8_t buffer_rx[2];
+	struct spi_buf rx_bufs[2];//from cache only two bytes are read out?
+	const struct spi_buf_set rx = {
+		.buffers = rx_bufs,
+		.count = ARRAY_SIZE(rx_bufs)
+	};
+
+    rx_bufs[0].buf = &buffer_rx;
+    rx_bufs[0].len = transaction->miso_len;
+    
+	
+    //synchronous
+    ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx);
+
+    return ret;
+}
+
+
 int spi_nand_read_register(const struct device *dev, uint8_t reg, uint8_t *val)
 {
     spi_nand_transaction_t t = {
@@ -158,7 +222,7 @@ int spi_nand_read(const struct device *dev, uint8_t *data, uint16_t column, uint
         .address = column,
         .miso_len = length,//usually 2 bytes
         .miso_data = data,
-        .dummy_bytes = 8
+        .dummy_bytes = 1
     };
 
     return spi_nand_execute_transaction(dev, &t);

@@ -63,12 +63,12 @@ typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 #define REG_CONFIG          0xB0 //otp
 
 
-#define STAT_BUSY           1 << 0
-#define STAT_WRITE_ENABLED  1 << 1
-#define STAT_ERASE_FAILED   1 << 2
-#define STAT_PROGRAM_FAILED 1 << 3
-#define STAT_ECC0           1 << 4
-#define STAT_ECC1           1 << 5
+#define STAT_BUSY           (1 << 0)
+#define STAT_WRITE_ENABLED  (1 << 1)
+#define STAT_ERASE_FAILED   (1 << 2)
+#define STAT_PROGRAM_FAILED (1 << 3)
+#define STAT_ECC0           (1 << 4)
+#define STAT_ECC1           (1 << 5)
 
 // Commands, registers, and status flags definitions
 
