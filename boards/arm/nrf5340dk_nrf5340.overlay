@@ -1,0 +1,43 @@
+/*&arduino_spi {
+    mcp3201: mcp3201@0 {
+        reg = <0>; 
+        spi-max-frequency = <1600000>;
+        label = "mcp3201";
+        cs-gpios = <&gpio16 X GPIO_ACTIVE_LOW>;
+    };
+};
+*/
+
+&spi4 {
+    status = "okay";
+    cs-gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
+    pinctrl-0 = <&spi4_default>;
+    pinctrl-1 = <&spi4_sleep>;
+    pinctrl-names = "default", "sleep";
+    my_flash: my_flash@0 { 
+        
+        reg = <0>; 
+        label = "my_flash";
+        spi-max-frequency = <1000000>; 
+        status = "okay";
+    };
+};
+
+&pinctrl {
+    spi4_default: spi4_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,
+                <NRF_PSEL(SPIM_MISO, 1, 14)>,
+                <NRF_PSEL(SPIM_MOSI, 1, 13)>;
+        };
+    };
+
+    spi4_sleep: spi4_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,
+                <NRF_PSEL(SPIM_MISO, 1, 14)>,
+                <NRF_PSEL(SPIM_MOSI, 1, 13)>;
+            low-power-enable;
+        };
+    };
+};

@@ -55,6 +55,7 @@ typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 #define CMD_Reset           0xFF
 
 #define DEVICE_ADDR_READ    0x01
+#define MANUFACTURER_ADDR_READ  0x00
 
 
 

@@ -1,6 +1,6 @@
 /**
  * @file spi_nand_oper.h
- * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
+ * @brief Configuring the AS5F14G04SND-10LIN NAND flash
  *
  * This file establishes the SPI communication and stores the predefined commands to interfere 
  * with the 913-S5F14G04SND10LIN NAND flash
@@ -14,17 +14,24 @@
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>
 
+/**
+ * S5F14G04SND-10LIN
+ * 0 ... 4095 blocks RA <17:6>
+ * 0 ... 63 pages
+ * 0 ... 2175 bytes
+ */
 
 
-LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);//TODO maybe adjust level
+
+LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
 
 //Manually create generic SPI struct
-#define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
-#define SPI_CS_FLAGS GPIO_ACTIVE_LOW
+//#define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
+//#define SPI_CS_FLAGS GPIO_ACTIVE_LOW
 
 //unused
-#define SPI_TRANSACTION_MAX_PARTS 4//8* (2176+4) // currently maxumum, page size + 1 + 3 address bytes //Adjust based on analysis
+//#define SPI_TRANSACTION_MAX_PARTS 4//8* (2176+4) // currently maxumum, page size + 1 + 3 address bytes //Adjust based on analysis
 
 #define SPI4_NODE           DT_NODELABEL(arduino_spi)
 
@@ -40,7 +47,7 @@ static const struct spi_config spi_nand_cfg = {
 
 
 void spi_nand_init(void){
-    const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
+    const struct device *dev = DEVICE_DT_GET(SPI4_NODE);
     if (!device_is_ready(dev)) {
         LOG_ERR("Device not ready");
     }
@@ -114,6 +121,7 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
  * 0 If successful in master mode.
 -errno Negative errno code on failure.
 */
+
 int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction)
 {
     //TODO write functionalities that write and read
@@ -270,7 +278,7 @@ int spi_nand_device_id(const struct device *dev, uint8_t *device_id){
         .command = CMD_READ_ID,
         .address_bytes = 1,
         .address = DEVICE_ADDR_READ,
-        .miso_len = 2,//usually 2 bytes
+        .miso_len = 1,//usually 2 bytes
         .miso_data = device_id,
     };
 

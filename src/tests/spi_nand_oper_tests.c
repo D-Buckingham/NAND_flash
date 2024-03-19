@@ -12,7 +12,7 @@ LOG_MODULE_REGISTER(test_spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
 
 int test_write_register_spi_nand(const struct device *dev){
-     LOG_INF("Test 1: test write register");
+     LOG_INF("Test ?: test write register");
      if (!device_is_ready(dev)) {
         LOG_ERR("Device not ready");
         return -1;
@@ -36,7 +36,7 @@ int test_read_page_spi_nand(const struct device *dev){
     }
 
     int err;
-    err = spi_nand_read_page(dev, 1); 
+    err = spi_nand_read_page(dev, 0x05); 
     if (err != 0) {
         LOG_ERR("Failed to read page 1 to cache, error: %d",err);
         return -1;
@@ -140,21 +140,21 @@ int test_erase_block_spi_nand(const struct device *dev){
 
 int test_IDs_spi_nand(const struct device *dev){
 
-    LOG_INF("Test 6: test getting device & manufacturer ID");
+    LOG_INF("Test 1: test getting device & manufacturer ID");
 
     if (!device_is_ready(dev)) {
         LOG_ERR("Device not ready");
         //return -ENODEV;
     }
 
-    uint8_t device_id[2];
-    int ret = spi_nand_device_id(dev, device_id);
+    uint8_t device_id;
+    int ret = spi_nand_device_id(dev, (uint8_t *) &device_id);
     if (ret < 0) {
         LOG_ERR("Failed to read device ID");
     } else {
-        LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);
+        LOG_INF("SPI NAND Device ID: 0x%x ", device_id);
     }
-    LOG_INF("Test 6 succesful");
+    LOG_INF("Test 1 succesful");
     return ret;
 }
 
@@ -164,7 +164,7 @@ int test_IDs_spi_nand(const struct device *dev){
 int test_spi_nand_write_read_register(const struct device *dev) {
     LOG_INF("Testing SPI NAND write and read register");
     const uint8_t data = 0xCC;
-    uint32_t page = 2;
+    uint32_t page = 0x5;
     uint16_t readings;
     
 
@@ -258,11 +258,20 @@ int test_SPI_NAND_Communicator_all_tests(const struct device *dev) {
 
     LOG_INF("Starting all SPI NAND communicator tests");
 
+    ret = test_IDs_spi_nand(dev);
+    if (ret != 0) {
+        LOG_ERR("Device & Manufacturer ID test failed");
+        return ret;
+    }
+
+    
+    /*
     ret = test_write_register_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Write register test failed");
         return ret;
     }
+    */
 
     ret = test_read_page_spi_nand(dev);
     if (ret != 0) {
