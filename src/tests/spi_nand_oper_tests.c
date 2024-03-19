@@ -163,8 +163,7 @@ int test_IDs_spi_nand(const struct device *dev){
 //final test, write and read it
 int test_spi_nand_write_read_register(const struct device *dev) {
     LOG_INF("Testing SPI NAND write and read register");
-    uint16_t data = 0xCC;
-    uint8_t status;
+    const uint8_t data = 0xCC;
     uint32_t page = 2;
     uint16_t readings;
     
@@ -188,7 +187,7 @@ int test_spi_nand_write_read_register(const struct device *dev) {
     //program execute into nand array
     ret = spi_nand_program_execute(dev, page);
     if (ret != 0) {
-        LOG_ERR("Failed to execute program on page, error: %d", err);
+        LOG_ERR("Failed to execute program on page, error: %d", ret);
         return -1;
     }
 
@@ -246,7 +245,7 @@ int test_spi_nand_write_read_register(const struct device *dev) {
     if (data == readings) {
         LOG_INF("Write and read register test PASSED");
     } else {
-        LOG_ERR("Write and read register test FAILED: Written value 0x%X, read value 0x%X", write_value, read_value);
+        LOG_ERR("Write and read register test FAILED: Written value 0x%X, read value 0x%X", data, readings);
     }
     return 0;
 }
