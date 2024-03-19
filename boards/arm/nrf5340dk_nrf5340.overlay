@@ -8,6 +8,15 @@
 };
 */
 
+
+
+&spi4 {
+	label = "spi4n";
+	spidev: spi-device@0 {
+		reg = <0>;
+	};
+};
+/*
 &spi4 {
     status = "okay";
     cs-gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
@@ -41,3 +50,5 @@
         };
     };
 };
+
+*/
