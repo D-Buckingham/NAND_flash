@@ -12,9 +12,9 @@
 
 LOG_MODULE_REGISTER(main);
 
-/*
-#define MY_SPI_MASTER DT_NODELABEL(spi4)
 
+#define MY_SPI_MASTER DT_NODELABEL(spi4)
+/*
 struct spi_cs_control spim_cs = {
 	.gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master)),
 	.delay = 0,
@@ -25,29 +25,36 @@ static const struct spi_config spi_cfg = {
 				 SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_LINES_SINGLE,
 	.frequency = 6000000,
 	.slave = 0,
-	.cs = (struct spi_cs_control *) &spim_cs,
+	.cs =  &spim_cs,
 };
 
 */
 #define BUFFER_SIZE 4
 
-#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+//#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
-#define SPI_DEV DT_NODELABEL(arduino_spi)
+#define SPIDEV DT_NODELABEL(spi4)
 
-/*
+
 static const struct spi_config spi_cfg = {
-    .frequency = 6000000, // TODO adjust the frequency as necessary
+    .frequency = 1000000, // TODO adjust the frequency as necessary
     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
     .slave = 0, // SPI slave index
     .cs = {
         .gpio = GPIO_DT_SPEC_GET(DT_NODELABEL(arduino_spi), cs_gpios),
     },
 };
-*/
+
+
+///////////////////////////////////////////////////////////////////////////////
+#define SPI_OP  SPI_OP_MODE_MASTER |SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+
+
+//////////////////////////////////////////////////////////////////////////////////
 
 int main(void)
 {
+	LOG_INF("My first breath as an IoT device");
 	/*
 	struct device *spi4nn = device_get_binding("spi4n");
     if (!spi4nn) {
@@ -61,10 +68,50 @@ int main(void)
     };
 	*/
 
-	const struct spi_dt_spec spi_dev =
+
+	///////////////////////////because nothing works, the default example //////////////
+	uint8_t my_buffer = 0xDD;
+	struct spi_buf my_spi_buffer[1];
+	my_spi_buffer[0].buf = &my_buffer;
+	my_spi_buffer[0].len = 1;
+	const struct spi_buf_set tx_buff = { my_spi_buffer, 1 };
+
+/*
+	const struct spi_dt_spec mcp3201_dev =
+                SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 0);
+
+
+	while(1){
+		int ret = spi_write_dt(&mcp3201_dev, &tx_buff);
+		if (ret) { LOG_INF("spi_write status: %d", ret); }
+		k_msleep(10);
+		
+	}
+
+	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
+    uint8_t rx_buffer[BUFFER_SIZE] = {0};
+    struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
+    struct spi_buf rx_buf = {.buf = rx_buffer, .len = BUFFER_SIZE};
+    struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
+    struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
+
+	int error;
+	while(true){
+    	//error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+		error = spi_transceive_dt(&mcp3201_dev, &tx_bufs, &rx_bufs);
+		if(error != 0){
+			LOG_ERR("SPI transceive error: %i", error);
+		}
+		
+	}
+	*/
+	//////////////////////////////////////////////////////////////////////////////////
+	
+
+	const struct spi_dt_spec spi_dev_dt =
                 SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 1);
 
-	//const struct device *spi_dev = DEVICE_DT_GET(MY_SPI_MASTER);
+	const struct device *spi_dev = DEVICE_DT_GET(MY_SPI_MASTER);
 
 	/*
 	if (!device_is_ready(&spi_dev)) {
@@ -90,11 +137,15 @@ int main(void)
     struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
     struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
 
-    
-	int error = spi_transceive_dt(&spi_dev, &tx_bufs, &rx_bufs);
+	int error;
+	
+	//error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+	error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
 	if(error != 0){
 		LOG_ERR("SPI transceive error: %i", error);
 	}
+	
+	
 
 	
 	
@@ -107,7 +158,7 @@ int main(void)
         }
     }
 
-	LOG_INF("My first breath as an IoT device");
+	
 	//Test the SPI communication
 	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
 	//spi_nand_test(dev);//returns manufacturere and device ID
