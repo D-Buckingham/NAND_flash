@@ -13,8 +13,8 @@
 LOG_MODULE_REGISTER(main);
 
 
-#define MY_SPI_MASTER DT_NODELABEL(spi4)
-/*
+#define MY_SPI_MASTER DT_NODELABEL(arduino_spi)
+
 struct spi_cs_control spim_cs = {
 	.gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master)),
 	.delay = 0,
@@ -23,19 +23,19 @@ struct spi_cs_control spim_cs = {
 static const struct spi_config spi_cfg = {
 	.operation = SPI_WORD_SET(8) | SPI_TRANSFER_MSB |
 				 SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_LINES_SINGLE,
-	.frequency = 6000000,
+	.frequency = 1000000,
 	.slave = 0,
-	.cs =  &spim_cs,
+	.cs =  NULL,
 };
 
-*/
+
 #define BUFFER_SIZE 4
 
-//#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
 #define SPIDEV DT_NODELABEL(spi4)
 
-
+/*
 static const struct spi_config spi_cfg = {
     .frequency = 1000000, // TODO adjust the frequency as necessary
     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
@@ -44,10 +44,10 @@ static const struct spi_config spi_cfg = {
         .gpio = GPIO_DT_SPEC_GET(DT_NODELABEL(arduino_spi), cs_gpios),
     },
 };
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
-#define SPI_OP  SPI_OP_MODE_MASTER |SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+//#define SPI_OP  SPI_OP_MODE_MASTER |SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -113,14 +113,14 @@ int main(void)
 
 	const struct device *spi_dev = DEVICE_DT_GET(MY_SPI_MASTER);
 
-	/*
+	
 	if (!device_is_ready(&spi_dev)) {
         LOG_ERR("Device SPI not ready, aborting test");
     }
 	
 	if(!device_is_ready(spim_cs.gpio.port)){
 		LOG_ERR("SPI master chip select device not ready!");
-	}*/
+	}
 
 	/*
 	const struct device *spi_dev = device_get_binding(SPI_DEV);
@@ -132,15 +132,15 @@ int main(void)
 
 	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
     uint8_t rx_buffer[BUFFER_SIZE] = {0};
-    struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
+    const struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
     struct spi_buf rx_buf = {.buf = rx_buffer, .len = BUFFER_SIZE};
-    struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
-    struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
+    const struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
+    const struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
 
 	int error;
 	
-	//error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
-	error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
+	error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+	//error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
 	if(error != 0){
 		LOG_ERR("SPI transceive error: %i", error);
 	}

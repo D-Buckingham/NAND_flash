@@ -32,7 +32,7 @@
 &spi4 {
 	compatible = "nordic,nrf-spim";
 	status = "okay";
-	cs-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>; /* D10 */
+	cs-gpios = <&gpio0 11 GPIO_ACTIVE_LOW>; /* D10 */
 	pinctrl-0 = <&spi4m_default>;
 	pinctrl-1 = <&spi4m_sleep>;
 	pinctrl-names = "default", "sleep";
