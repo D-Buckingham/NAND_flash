@@ -29,9 +29,9 @@ static const struct spi_config spi_cfg = {
 };
 
 */
-#define BUFFER_SIZE 4
+#define BUFFER_SIZE 2
 
-#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) 
 
 /*
 static const struct spi_config spi_cfg = {
@@ -43,6 +43,9 @@ static const struct spi_config spi_cfg = {
     },
 };
 */
+const struct spi_dt_spec spi_dev =
+                SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 1);
+
 int main(void)
 {
 	/*
@@ -58,19 +61,20 @@ int main(void)
     };
 	*/
 
-	const struct spi_dt_spec spi_dev =
-                SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 0);
+	//const struct spi_dt_spec spi_dev =
+    //            SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 0);
 
 	//const struct device *spi_dev = DEVICE_DT_GET(MY_SPI_MASTER);
 
+	/*
 	if (!device_is_ready(&spi_dev)) {
         LOG_ERR("Device SPI not ready, aborting test");
     }
-	/*
+	
 	if(!device_is_ready(spim_cs.gpio.port)){
 		LOG_ERR("SPI master chip select device not ready!");
 	}*/
-
+/*
 	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
     uint8_t rx_buffer[BUFFER_SIZE] = {0};
     struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
@@ -83,6 +87,46 @@ int main(void)
 	if(error != 0){
 		LOG_ERR("SPI transceive error: %i", error);
 	}
+
+
+*/
+	static uint8_t tx_buffer[3];
+	static uint8_t rx_buffer[3];
+
+	const struct spi_buf tx_buf = {
+		.buf = tx_buffer,
+		.len = sizeof(tx_buffer)
+	};
+	const struct spi_buf_set tx = {
+		.buffers = &tx_buf,
+		.count = 1
+	};
+
+	struct spi_buf rx_buf = {
+		.buf = rx_buffer,
+		.len = sizeof(rx_buffer),
+	};
+	const struct spi_buf_set rx = {
+		.buffers = &rx_buf,
+		.count = 1
+	};
+
+
+	/*
+	first 2 bytes of tx specify read/write action and on which register to perform
+	last byte of rx contains the respons from the accelerometer
+	*/
+	tx_buffer[0] = 0xCC;
+	tx_buffer[1] = 0xBB;
+
+	int error = spi_transceive_dt(&spi_dev, &tx, &rx);
+	if(error != 0){
+		LOG_ERR("SPI transceive error: %i\n", error);
+		return error;
+	}
+
+
+	
 
 	/*
 	const struct device *spi_dev = device_get_binding(SPI_DEV);

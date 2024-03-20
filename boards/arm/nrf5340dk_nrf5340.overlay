@@ -1,9 +1,12 @@
+
+
+
 &spi4 {
     reg_my_spi_master:reg_my_spi_master@0 {
         status = "okay";
         compatible = "vnd,spi-device";
         reg = <0>;
-        spi-max-frequency = <9000000>;
-        label = "reg_my_spi_master";
+        spi-max-frequency = <1000000>;
+       
     };
 };

@@ -35,16 +35,16 @@ LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
 #define SPI4_NODE           DT_NODELABEL(arduino_spi)
 
-
+/*
 static const struct spi_config spi_nand_cfg = {
-    .frequency = 6000000, // TODO adjust the frequency as necessary
+    .frequency = 600000, // TODO adjust the frequency as necessary
     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
     .slave = 0, // SPI slave index
     .cs = {
         .gpio = GPIO_DT_SPEC_GET(SPI4_NODE, cs_gpios),
     },// spi_cs,
 };
-
+*/
 
 void spi_nand_init(void){
     const struct device *dev = DEVICE_DT_GET(SPI4_NODE);
@@ -170,7 +170,7 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
     
 	
     //synchronous
-    ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx);
+    //ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx);
 
     return ret;
 }
