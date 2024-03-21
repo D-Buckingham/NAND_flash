@@ -15,6 +15,14 @@ LOG_MODULE_REGISTER(main);
 
 #define MY_SPI_MASTER DT_NODELABEL(arduino_spi)
 
+#define BUFFER_SIZE 4
+
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+
+#define SPIDEV DT_NODELABEL(spi4)
+
+/////////////////////		Try 1		/////////////////////////////////////////////////
+
 struct spi_cs_control spim_cs = {
 	.gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master)),
 	.delay = 0,
@@ -25,15 +33,14 @@ static const struct spi_config spi_cfg = {
 				 SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_LINES_SINGLE,
 	.frequency = 1000000,
 	.slave = 0,
-	.cs =  NULL,
+	.cs =  NULL,// &spim_cs
 };
 
 
-#define BUFFER_SIZE 4
+/////////////////////		Try 1 END		/////////////////////////////////////////////////
 
-#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
-#define SPIDEV DT_NODELABEL(spi4)
+/////////////////////		Try 2		/////////////////////////////////////////////////
 
 /*
 static const struct spi_config spi_cfg = {
@@ -46,14 +53,17 @@ static const struct spi_config spi_cfg = {
 };
 */
 
-///////////////////////////////////////////////////////////////////////////////
-//#define SPI_OP  SPI_OP_MODE_MASTER |SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
 
-//////////////////////////////////////////////////////////////////////////////////
+/////////////////////		Try 2 END		/////////////////////////////////////////////////
+
+
 
 int main(void)
 {
+
+	
+/////////////////////		Try 3		/////////////////////////////////////////////////
 	LOG_INF("My first breath as an IoT device");
 	/*
 	struct device *spi4nn = device_get_binding("spi4n");
@@ -69,6 +79,11 @@ int main(void)
 	*/
 
 
+/////////////////////		Try 4 END		/////////////////////////////////////////////////
+
+
+
+/////////////////////		Try 5		/////////////////////////////////////////////////
 	///////////////////////////because nothing works, the default example //////////////
 	uint8_t my_buffer = 0xDD;
 	struct spi_buf my_spi_buffer[1];
@@ -88,6 +103,13 @@ int main(void)
 		
 	}
 
+/////////////////////		Try 5 END		/////////////////////////////////////////////////
+
+
+/////////////////////		Try 6		/////////////////////////////////////////////////
+
+	const struct device *spi_dev = DEVICE_DT_GET(MY_SPI_MASTER);
+
 	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
     uint8_t rx_buffer[BUFFER_SIZE] = {0};
     struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
@@ -105,8 +127,13 @@ int main(void)
 		
 	}
 	*/
+
+
+/////////////////////		Try 6 END		/////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////
 	
+
+/////////////////////		Try 1 & 7		/////////////////////////////////////////////////
 
 	const struct spi_dt_spec spi_dev_dt =
                 SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 1);
@@ -141,15 +168,10 @@ int main(void)
 	
 	error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
 	//error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
-	if(error != 0){
-		LOG_ERR("SPI transceive error: %i", error);
-	}
 	
 	
-
 	
-	
-    if (error) {
+    if (error != 0) {
         LOG_INF("SPI transceive failed with error %d\n", error);
     } else {
         LOG_INF("Received: ");
@@ -158,11 +180,15 @@ int main(void)
         }
     }
 
-	
+/////////////////////		Try 7 END		/////////////////////////////////////////////////
+
+
+
+
 	//Test the SPI communication
 	const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
 	//spi_nand_test(dev);//returns manufacturere and device ID
-	test_SPI_NAND_Communicator_all_tests(dev);
+	//test_SPI_NAND_Communicator_all_tests(dev);
 	//Test glue between NAND flash communicator and DHARA flash translation layer???
 
 	//test top layer ftl
