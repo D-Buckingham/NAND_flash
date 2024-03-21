@@ -1,9 +1,10 @@
 
-#include <zephyr/dt-bindings/input/input-event-codes.h>
+// #include <zephyr/dt-bindings/input/input-event-codes.h>
 
-&qspi{//additionally disabled in proj.conf
-    status = "disabled";
-};
+
+// &qspi{//additionally disabled in proj.conf
+//     status = "disabled";
+// };
 
 &pinctrl {
     spi4m_default: spi4m_default {
@@ -36,7 +37,7 @@
 	pinctrl-0 = <&spi4m_default>;
 	pinctrl-1 = <&spi4m_sleep>;
 	pinctrl-names = "default", "sleep";
-    reg_my_spi_master:reg_my_spi_master@0 {
+    reg_my_spi_master: reg_my_spi_master@0 {
         status = "okay";
         compatible = "vnd,spi-device";
         reg = <0>;

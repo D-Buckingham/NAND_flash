@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.20.0)
-list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-#set(DTC_OVERLAY_FILE "boards/arm/nrf5340dk_nrf5340.overlay")
-set(DTC_OVERLAY_FILE "boards/arm/cpuapp.overlay")
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(NAND_flash)
 
@@ -15,8 +12,6 @@ file(GLOB APP_SOURCES
             "src/tests/spi_nand_oper_tests.c"
            
 )
-#FILE(GLOB app_sources src/SPI_NAND_DHARA/spi_nand_oper.c)
-
 
 include_directories(${PROJECT_SOURCE_DIR}/dhara/dhara)
 include_directories(${PROJECT_SOURCE_DIR}/src/SPI_NAND_DHARA)

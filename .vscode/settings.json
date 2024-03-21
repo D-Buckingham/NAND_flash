@@ -6,5 +6,8 @@
         "log.h": "c",
         "nand.h": "c",
         "error.h": "c"
+    },
+    "nrf-connect.debugging.bindings": {
+        "${workspaceFolder}/build": "Launch build"
     }
 }
