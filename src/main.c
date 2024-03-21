@@ -19,7 +19,8 @@ LOG_MODULE_REGISTER(main);
 
 #define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
-#define SPIDEV DT_NODELABEL(spi4)
+#define SPIDEV DT_NODELABEL(arduino_spi)
+#define SPI_DEVICE "reg_my_spi_master"
 
 /////////////////////		Try 1		/////////////////////////////////////////////////
 
@@ -43,13 +44,11 @@ LOG_MODULE_REGISTER(main);
 /////////////////////		Try 2		/////////////////////////////////////////////////
 
 
-static struct spi_config spi_cfg = {
+const static struct spi_config spi_cfg = {
     .frequency = 1000000, // TODO adjust the frequency as necessary
     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
     .slave = 0, // SPI slave index
-    .cs = {
-        .gpio = GPIO_DT_SPEC_GET(DT_NODELABEL(arduino_spi), cs_gpios),
-    },
+    .cs = NULL,//&spim_cs,
 };
 
 
@@ -136,8 +135,8 @@ int main(void)
 
 /////////////////////		Try 1 & 7		/////////////////////////////////////////////////
 
-	// const struct spi_dt_spec spi_dev_dt =
-    //             SPI_DT_SPEC_GET(DT_NODELABEL(arduino_spi), SPI_OP, 1);
+	//  const struct spi_dt_spec spi_dev_dt =
+    //              SPI_DT_SPEC_GET(DT_NODELABEL(spi4), SPI_OP, 1);
 
 	// const struct device *spi_dev = DEVICE_DT_GET(MY_SPI_MASTER);
 
@@ -159,19 +158,30 @@ int main(void)
 */
 
 	// const struct spi_dt_spec spi_dev_dt =
-    //             SPI_DT_SPEC_GET(DT_NODELABEL(arduino_spi), SPI_OP, 1);
+    //              SPI_DT_SPEC_GET(DT_NODELABEL(reg_my_spi_master), SPI_OP, 1);
 
-	struct device *spi_dev_test = DEVICE_DT_GET(DT_NODELABEL(reg_my_spi_master));//DEVICE_DT_GET crashes at built if not found
-    if (!spi_dev_test) {
-        LOG_INF("Failed to find SPI device %s\n", "arduino_spi");
+	// struct device *spi_dev_test = DEVICE_DT_GET(MY_SPI_MASTER);//DEVICE_DT_GET crashes at built if not found
+    // if (!spi_dev_test) {
+    //     LOG_INF("Failed to find SPI device %s\n", "arduino_spi");
         
+    // }
+	// if (!device_is_ready(spi_dev_test)) {
+    //     LOG_ERR("Device SPI not ready, aborting test");
+    // }else{
+	// 	LOG_INF("Device found");
+	// }
+
+	const char* const spiName = "SPI_4";
+	const struct device *spi_dev = device_get_binding(spiName);
+    if (!spi_dev) {
+        LOG_INF("Failed to find SPI device %s\n", spiName);
     }
-	if (!device_is_ready(spi_dev_test)) {
+
+	if (!device_is_ready(spi_dev)) {
         LOG_ERR("Device SPI not ready, aborting test");
     }else{
-		LOG_INF("Device found");
+		LOG_INF("Device found and ready");
 	}
-
 
 	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
     uint8_t rx_buffer[BUFFER_SIZE] = {0};
@@ -181,10 +191,10 @@ int main(void)
     struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
 
 	int error;
-	
-	error = spi_transceive(spi_dev_test, &spi_cfg, &tx_bufs, &rx_bufs);
-//	error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
-	
+	while(true){
+	error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+	//error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
+	}
 	
 	
     if (error != 0) {
