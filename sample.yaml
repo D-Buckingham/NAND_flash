@@ -17,6 +17,8 @@ tests:
       - arduino_spi
       - arduino_gpio
       - arduino_i2c
+      - gpio
+      - spi
     platform_exclude:
       - stm32f769i_disco
       - pan1781_evb

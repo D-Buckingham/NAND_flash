@@ -6,6 +6,8 @@
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>
 
+#include <zephyr/devicetree.h>
+
 
 #include "SPI_NAND_DHARA/spi_nand_oper.h"
 #include "tests/spi_nand_oper_tests.h"
@@ -34,7 +36,7 @@ LOG_MODULE_REGISTER(main);
 // 				 SPI_MODE_CPOL | SPI_MODE_CPHA | SPI_LINES_SINGLE,
 // 	.frequency = 1000000,
 // 	.slave = 0,
-// 	.cs =  NULL,// &spim_cs
+// 	.cs =  &spim_cs,
 // };
 
 
@@ -44,12 +46,12 @@ LOG_MODULE_REGISTER(main);
 /////////////////////		Try 2		/////////////////////////////////////////////////
 
 
-const static struct spi_config spi_cfg = {
-    .frequency = 1000000, // TODO adjust the frequency as necessary
-    .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
-    .slave = 0, // SPI slave index
-    .cs = NULL,//&spim_cs,
-};
+// static struct spi_config spi_cfg = {
+//     .frequency = 1000000, // TODO adjust the frequency as necessary
+//     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
+//     .slave = 0, // SPI slave index
+//     .cs = NULL,
+// };
 
 
 
@@ -171,18 +173,79 @@ int main(void)
 	// 	LOG_INF("Device found");
 	// }
 
-	const char* const spiName = "SPI_4";
-	const struct device *spi_dev = device_get_binding(spiName);
-    if (!spi_dev) {
-        LOG_INF("Failed to find SPI device %s\n", spiName);
-    }
 
-	if (!device_is_ready(spi_dev)) {
-        LOG_ERR("Device SPI not ready, aborting test");
-    }else{
-		LOG_INF("Device found and ready");
+	const struct spi_dt_spec spidev_dt =
+                SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+
+
+
+
+	
+
+	// const char* const spiName = "SPI_4";
+	// const struct device *spi_dev = device_get_binding(spiName);
+    // if (!spi_dev) {
+    //     LOG_INF("Failed to find SPI device %s\n", spiName);
+    // }
+
+	// if (!device_is_ready(spi_dev)) {
+    //     LOG_ERR("Device SPI not ready, aborting test");
+    // }else{
+	// 	LOG_INF("Device found and ready");
+	// }
+
+
+
+	//test 1
+	int error;
+	static uint8_t tx_buffer11[4] = {1,2,3,4};
+	static uint8_t tx_buffer21[3] = {2,3,4};
+	static uint8_t rx_buffer1[2];
+	static uint8_t rx_buffer21[4];
+
+	const struct spi_buf tx_buf1[2] = {{
+		.buf = tx_buffer11,
+		.len = sizeof(tx_buffer11)}, {
+		.buf = tx_buffer21, 
+		.len = sizeof(tx_buffer21)}
+	};
+	const struct spi_buf_set tx1 = {
+		.buffers = tx_buf1,
+		.count = 1
+	};
+
+	struct spi_buf rx_buf1[2] = {{
+		.buf = rx_buffer1,
+		.len = sizeof(rx_buffer1)},{
+		.buf = rx_buffer21,
+		.len = sizeof(rx_buffer21)}
+	};
+	const struct spi_buf_set rx1 = {
+		.buffers = rx_buf1,
+		.count = 2
+	};
+	while(true){
+	//error = spi_transceive(spi_dev, &spi_cfg, &tx1, &rx1);
+	error = spi_transceive_dt(&spidev_dt, &tx1, &rx1);
+	k_msleep(1);
 	}
+	
+	if (error != 0) {
+        LOG_INF("SPI transceive failed with error %d\n", error);
+    } else {
+		LOG_INF("Received in rx_buffer1: ");
+		for (size_t i = 0; i < sizeof(rx_buffer1); i++) {
+			LOG_INF("0x%X ", rx_buffer1[i]);
+		}
 
+		LOG_INF("\nReceived in rx_buffer21: ");
+		for (size_t i = 0; i < sizeof(rx_buffer21); i++) {
+			LOG_INF("0x%X ", rx_buffer21[i]);
+		}
+		LOG_INF("\n");
+	}
+    
+	//test 2
 	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
     uint8_t rx_buffer[BUFFER_SIZE] = {0};
     struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
@@ -190,11 +253,13 @@ int main(void)
     struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
     struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
 
-	int error;
-	while(true){
-	error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+	
+	
+	//error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+	error = spi_transceive_dt(&spidev_dt,  &tx_bufs, &rx_bufs);
 	//error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
-	}
+	
+
 	
 	
     if (error != 0) {
