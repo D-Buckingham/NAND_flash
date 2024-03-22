@@ -254,7 +254,7 @@ static int unprotect_chip(spi_nand_flash_device_t *dev)
 
 
 
-int wait_for_ready(const struct device *device, uint32_t expected_operation_time_us, uint8_t *status_out)
+int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation_time_us, uint8_t *status_out)
 {
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
     if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
@@ -411,7 +411,7 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
 
     if (dhara_map_read(&handle->dhara_map, sector_id, buffer, &err)) {
         // Map your error codes appropriately
-        ret = -1
+        ret = -1;
     } else if (err) {
         // This indicates a soft ECC error, we rewrite the sector to recover
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {

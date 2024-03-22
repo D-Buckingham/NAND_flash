@@ -17,6 +17,7 @@
 #include <zephyr/kernel.h>
 #include <Zephyr/device.h>
 #include <Zephyr/drivers/spi.h>
+#include <zephyr/devicetree.h>
 #include <Zephyr/sys/util.h>
 
 #ifdef __cplusplus
@@ -73,7 +74,19 @@ typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 
 // Commands, registers, and status flags definitions
 
-void spi_nand_init(void);
+/**
+ * @brief Initialize the SPI device for NAND operations.
+ *
+ * This function initializes an SPI device based on the device tree specification.
+ * It verifies if the SPI device is ready to be used for communication. In case
+ * the device is not ready, it logs an error message.
+ *
+ * @note Replace `spidev` with the actual node label of your SPI device in the
+ *       device tree.
+ *
+ * @return A spi_dt_spec structure representing the initialized SPI device.
+ */
+const struct spi_dt_spec spi_nand_init(void);
 
 /**
  * @brief Execute a transaction over SPI to a NAND device.
@@ -86,7 +99,7 @@ void spi_nand_init(void);
  * @param transaction Transaction parameters including command, address, and data.
  * @return 0 on success, negative errno error code otherwise.
  */
-int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction);
+int spi_nand_execute_transaction(const struct spi_dt_spec *dev, spi_nand_transaction_t *transaction);
 
 /**
  * @brief Read a register from the SPI NAND device.
@@ -96,7 +109,7 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
  * @param val Pointer to variable where read value will be stored.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read_register(const struct device *dev, uint8_t reg, uint8_t *val);
+int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *val);
 
 /**
  * @brief Write to a register on the SPI NAND device.
@@ -106,7 +119,7 @@ int spi_nand_read_register(const struct device *dev, uint8_t reg, uint8_t *val);
  * @param val Value to write to the register.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_write_register(const struct device *dev, uint8_t reg, uint8_t val);
+int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t val);
 
 /**
  * @brief Enable writing on the SPI NAND device.
@@ -116,7 +129,7 @@ int spi_nand_write_register(const struct device *dev, uint8_t reg, uint8_t val);
  * @param dev Device SPI configuration data obtained from devicetree.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_write_enable(const struct device *dev);
+int spi_nand_write_enable(const struct spi_dt_spec *dev);
 
 /**
  * @brief Initiate page read operation to cache.
@@ -127,7 +140,7 @@ int spi_nand_write_enable(const struct device *dev);
  * @param page Page number to read.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read_page(const struct device *dev, uint32_t page);
+int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page);
 
 /**
  * @brief Read data from the SPI NAND device's cache.
@@ -141,7 +154,7 @@ int spi_nand_read_page(const struct device *dev, uint32_t page);
  * @param length Number of bytes to read.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read(const struct device *dev, uint8_t *data, uint16_t column, uint16_t length);
+int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length);
 
 /**
  * @brief Execute a program operation.
@@ -152,7 +165,7 @@ int spi_nand_read(const struct device *dev, uint8_t *data, uint16_t column, uint
  * @param page Page number to program.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_execute(const struct device *dev, uint32_t page);
+int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page);
 
 /**
  * @brief Load data into the SPI NAND device's cache.
@@ -163,7 +176,7 @@ int spi_nand_program_execute(const struct device *dev, uint32_t page);
  * @param length Number of bytes to write.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_load(const struct device *dev, const uint8_t *data, uint16_t column, uint16_t length);
+int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length);
 
 /**
  * @brief Erase a block on the SPI NAND device.
@@ -172,7 +185,7 @@ int spi_nand_program_load(const struct device *dev, const uint8_t *data, uint16_
  * @param page Page number within the block to be erased.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_erase_block(const struct device *dev, uint32_t page);
+int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page);
 
 
 /**
@@ -181,7 +194,7 @@ int spi_nand_erase_block(const struct device *dev, uint32_t page);
  * @param dev Device SPI configuration data obtained from devicetree.
  * @param device_id Device ID
 */
-int spi_nand_device_id(const struct device *dev, uint8_t *device_id);
+int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id);
 
 
 /**
@@ -189,7 +202,7 @@ int spi_nand_device_id(const struct device *dev, uint8_t *device_id);
  * 
  * @param dev Device SPI configuration data obtained from devicetree. 
 */
-int spi_nand_test(const struct device *dev);
+int spi_nand_test(const struct spi_dt_spec *dev);
 
 
 #ifdef __cplusplus

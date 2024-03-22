@@ -62,11 +62,36 @@ LOG_MODULE_REGISTER(main);
 
 int main(void)
 {
-	
-
-	
-/////////////////////		Try 3		/////////////////////////////////////////////////
 	LOG_INF("My first breath as an IoT device");
+	
+	const struct spi_dt_spec spidev_dt = spi_nand_init();
+
+	//Test the SPI communication
+	//const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
+	spi_nand_test(&spidev_dt);//returns manufacturere and device ID
+	test_SPI_NAND_Communicator_all_tests(&spidev_dt);
+	//Test glue between NAND flash communicator and DHARA flash translation layer???
+
+	//test top layer ftl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/*
 	struct device *spi4nn = device_get_binding("spi4n");
     if (!spi4nn) {
@@ -173,9 +198,9 @@ int main(void)
 	// 	LOG_INF("Device found");
 	// }
 
-
-	const struct spi_dt_spec spidev_dt =
-                SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+//winner
+	// const struct spi_dt_spec spidev_dt =
+    //             SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
 
 
@@ -196,80 +221,80 @@ int main(void)
 
 
 
-	//test 1
-	int error;
-	static uint8_t tx_buffer11[4] = {1,2,3,4};
-	static uint8_t tx_buffer21[3] = {2,3,4};
-	static uint8_t rx_buffer1[2];
-	static uint8_t rx_buffer21[4];
+	// //test 1
+	// int error;
+	// static uint8_t tx_buffer11[4] = {1,2,3,4};
+	// static uint8_t tx_buffer21[3] = {2,3,4};
+	// static uint8_t rx_buffer1[2];
+	// static uint8_t rx_buffer21[4];
 
-	const struct spi_buf tx_buf1[2] = {{
-		.buf = tx_buffer11,
-		.len = sizeof(tx_buffer11)}, {
-		.buf = tx_buffer21, 
-		.len = sizeof(tx_buffer21)}
-	};
-	const struct spi_buf_set tx1 = {
-		.buffers = tx_buf1,
-		.count = 1
-	};
+	// const struct spi_buf tx_buf1[2] = {{
+	// 	.buf = tx_buffer11,
+	// 	.len = sizeof(tx_buffer11)}, {
+	// 	.buf = tx_buffer21, 
+	// 	.len = sizeof(tx_buffer21)}
+	// };
+	// const struct spi_buf_set tx1 = {
+	// 	.buffers = tx_buf1,
+	// 	.count = 1
+	// };
 
-	struct spi_buf rx_buf1[2] = {{
-		.buf = rx_buffer1,
-		.len = sizeof(rx_buffer1)},{
-		.buf = rx_buffer21,
-		.len = sizeof(rx_buffer21)}
-	};
-	const struct spi_buf_set rx1 = {
-		.buffers = rx_buf1,
-		.count = 2
-	};
-	while(true){
-	//error = spi_transceive(spi_dev, &spi_cfg, &tx1, &rx1);
-	error = spi_transceive_dt(&spidev_dt, &tx1, &rx1);
-	k_msleep(1);
-	}
+	// struct spi_buf rx_buf1[2] = {{
+	// 	.buf = rx_buffer1,
+	// 	.len = sizeof(rx_buffer1)},{
+	// 	.buf = rx_buffer21,
+	// 	.len = sizeof(rx_buffer21)}
+	// };
+	// const struct spi_buf_set rx1 = {
+	// 	.buffers = rx_buf1,
+	// 	.count = 2
+	// };
 	
-	if (error != 0) {
-        LOG_INF("SPI transceive failed with error %d\n", error);
-    } else {
-		LOG_INF("Received in rx_buffer1: ");
-		for (size_t i = 0; i < sizeof(rx_buffer1); i++) {
-			LOG_INF("0x%X ", rx_buffer1[i]);
-		}
+	// //error = spi_transceive(spi_dev, &spi_cfg, &tx1, &rx1);
+	// error = spi_transceive_dt(&spidev_dt, &tx1, &rx1);
+	
+	
+	
+	// if (error != 0) {
+    //     LOG_INF("SPI transceive failed with error %d\n", error);
+    // } else {
+	// 	LOG_INF("Received in rx_buffer1: ");
+	// 	for (size_t i = 0; i < sizeof(rx_buffer1); i++) {
+	// 		LOG_INF("0x%X ", rx_buffer1[i]);
+	// 	}
 
-		LOG_INF("\nReceived in rx_buffer21: ");
-		for (size_t i = 0; i < sizeof(rx_buffer21); i++) {
-			LOG_INF("0x%X ", rx_buffer21[i]);
-		}
-		LOG_INF("\n");
-	}
+	// 	LOG_INF("\nReceived in rx_buffer21: ");
+	// 	for (size_t i = 0; i < sizeof(rx_buffer21); i++) {
+	// 		LOG_INF("0x%X ", rx_buffer21[i]);
+	// 	}
+	// 	LOG_INF("\n");
+	// }
     
-	//test 2
-	uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
-    uint8_t rx_buffer[BUFFER_SIZE] = {0};
-    struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
-    struct spi_buf rx_buf = {.buf = rx_buffer, .len = BUFFER_SIZE};
-    struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
-    struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
+	// //test 2
+	// uint8_t tx_buffer[BUFFER_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD};
+    // uint8_t rx_buffer[BUFFER_SIZE] = {0};
+    // struct spi_buf tx_buf = {.buf = tx_buffer, .len = BUFFER_SIZE};
+    // struct spi_buf rx_buf = {.buf = rx_buffer, .len = BUFFER_SIZE};
+    // struct spi_buf_set tx_bufs = {.buffers = &tx_buf, .count = 1};
+    // struct spi_buf_set rx_bufs = {.buffers = &rx_buf, .count = 1};
 
 	
 	
-	//error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
-	error = spi_transceive_dt(&spidev_dt,  &tx_bufs, &rx_bufs);
-	//error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
+	// //error = spi_transceive(spi_dev, &spi_cfg, &tx_bufs, &rx_bufs);
+	// error = spi_transceive_dt(&spidev_dt,  &tx_bufs, &rx_bufs);
+	// //error = spi_transceive_dt(&spi_dev_dt, &tx_bufs, &rx_bufs);//, 
 	
 
 	
 	
-    if (error != 0) {
-        LOG_INF("SPI transceive failed with error %d\n", error);
-    } else {
-        LOG_INF("Received: ");
-        for (int i = 0; i < BUFFER_SIZE; i++) {
-            LOG_INF("0x%X ", rx_buffer[i]);
-        }
-    }
+    // if (error != 0) {
+    //     LOG_INF("SPI transceive failed with error %d\n", error);
+    // } else {
+    //     LOG_INF("Received: ");
+    //     for (int i = 0; i < BUFFER_SIZE; i++) {
+    //         LOG_INF("0x%X ", rx_buffer[i]);
+    //     }
+    // }
 
 /////////////////////		Try 7 END		/////////////////////////////////////////////////
 

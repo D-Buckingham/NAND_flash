@@ -26,6 +26,7 @@
 #include <Zephyr/device.h>
 #include <Zephyr/drivers/spi.h>
 #include <Zephyr/sys/util.h>
+#include <zephyr/devicetree.h>
 
 #include "spi_nand_oper.h"
 
@@ -43,7 +44,7 @@ extern "C" {
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success, or -1 if the device is not ready.
  */
-int test_write_register_spi_nand(const struct device *dev);
+int test_write_register_spi_nand(const struct spi_dt_spec *dev);
 
 /**
  * @brief Test reading a page from SPI NAND to the device's cache.
@@ -54,7 +55,7 @@ int test_write_register_spi_nand(const struct device *dev);
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success, or -1 if the device is not ready or if the read operation fails.
  */
-int test_read_page_spi_nand(const struct device *dev);
+int test_read_page_spi_nand(const struct spi_dt_spec *dev);
 
 /**
  * @brief Test reading from the device's cache.
@@ -65,7 +66,7 @@ int test_read_page_spi_nand(const struct device *dev);
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success, or -1 if the device is not ready or if the cache read fails.
  */
-int test_read_cache_spi_nand(const struct device *dev);
+int test_read_cache_spi_nand(const struct spi_dt_spec *dev);
 
 /**
  * @brief Test programming data to NAND and executing the program operation.
@@ -76,7 +77,7 @@ int test_read_cache_spi_nand(const struct device *dev);
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success, or -1 if the device is not ready or if the program operation fails.
  */
-int test_load_and_execute_program_spi_nand(const struct device *dev);
+int test_load_and_execute_program_spi_nand(const struct spi_dt_spec *dev);
 
 /**
  * @brief Test erasing a block in the SPI NAND device.
@@ -87,7 +88,7 @@ int test_load_and_execute_program_spi_nand(const struct device *dev);
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success, or -1 if the device is not ready or if the erase operation fails.
  */
-int test_erase_block_spi_nand(const struct device *dev);
+int test_erase_block_spi_nand(const struct spi_dt_spec *dev);
 
 /**
  * @brief Test retrieving device and manufacturer ID from the SPI NAND device.
@@ -98,7 +99,7 @@ int test_erase_block_spi_nand(const struct device *dev);
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success, or -1 if the device is not ready or if the ID read operation fails.
  */
-int test_IDs_spi_nand(const struct device *dev);
+int test_IDs_spi_nand(const struct spi_dt_spec *dev);
 
 /**
  * @brief Tests the SPI NAND write and read operation.
@@ -109,7 +110,7 @@ int test_IDs_spi_nand(const struct device *dev);
  *
  * @param dev Pointer to the SPI device structure.
  */
-int test_spi_nand_write_read_register(const struct device *dev);
+int test_spi_nand_write_read_register(const struct spi_dt_spec *dev);
 
 /**
  * @brief Execute all SPI NAND communicator tests.
@@ -122,6 +123,6 @@ int test_spi_nand_write_read_register(const struct device *dev);
  * @param dev Pointer to the SPI device structure.
  * @return Returns 0 on success of all tests, or the error code of the failed test.
  */
-int test_SPI_NAND_Communicator_all_tests(const struct device *dev);
+int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev);
 
 #endif //SPI_NAND_OPER_TESTS_H

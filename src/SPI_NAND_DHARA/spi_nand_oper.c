@@ -13,6 +13,9 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 
 /**
  * S5F14G04SND-10LIN
@@ -21,7 +24,7 @@
  * 0 ... 2175 bytes
  */
 
-
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
 LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
@@ -33,24 +36,28 @@ LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 //unused
 //#define SPI_TRANSACTION_MAX_PARTS 4//8* (2176+4) // currently maxumum, page size + 1 + 3 address bytes //Adjust based on analysis
 
-#define SPI4_NODE           DT_NODELABEL(arduino_spi)
 
 
-static const struct spi_config spi_nand_cfg = {
-    .frequency = 600000, // TODO adjust the frequency as necessary
-    .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
-    .slave = 0, // SPI slave index
-    .cs = {
-        .gpio = GPIO_DT_SPEC_GET(SPI4_NODE, cs_gpios),
-    },// spi_cs,
-};
+// static const struct spi_config spi_nand_cfg = {
+//     .frequency = 600000, // TODO adjust the frequency as necessary
+//     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
+//     .slave = 0, // SPI slave index
+//     .cs = {
+//         .gpio = GPIO_DT_SPEC_GET(SPI4_NODE, cs_gpios),
+//     },// spi_cs,
+// };
 
 
-void spi_nand_init(void){
-    const struct device *dev = DEVICE_DT_GET(SPI4_NODE);
-    if (!device_is_ready(dev)) {
-        LOG_ERR("Device not ready");
+const struct spi_dt_spec spi_nand_init(void) {
+    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+
+    if (!device_is_ready((&spidev_dt)->bus)) {
+        LOG_ERR("SPI device is not ready");
+    } else {
+        LOG_INF("SPI device is ready for use");
     }
+
+    return spidev_dt;
 }
 
 
@@ -122,7 +129,7 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
 -errno Negative errno code on failure.
 */
 
-int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction)
+int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
 {
     //TODO write functionalities that write and read
     int ret;
@@ -170,13 +177,13 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
     
 	
     //synchronous
-    ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx);
+    ret = spi_transceive_dt(spidev_dt, &tx, &rx);
 
     return ret;
 }
 
 
-int spi_nand_read_register(const struct device *dev, uint8_t reg, uint8_t *val)
+int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *val)
 {
     spi_nand_transaction_t t = {
         .command = CMD_READ_REGISTER,
@@ -189,7 +196,7 @@ int spi_nand_read_register(const struct device *dev, uint8_t reg, uint8_t *val)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_write_register(const struct device *dev, uint8_t reg, uint8_t val)
+int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t val)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_SET_REGISTER,
@@ -202,7 +209,7 @@ int spi_nand_write_register(const struct device *dev, uint8_t reg, uint8_t val)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_write_enable(const struct device *dev)
+int spi_nand_write_enable(const struct spi_dt_spec *dev)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_WRITE_ENABLE
@@ -211,7 +218,7 @@ int spi_nand_write_enable(const struct device *dev)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_read_page(const struct device *dev, uint32_t page)
+int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
@@ -222,7 +229,7 @@ int spi_nand_read_page(const struct device *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_read(const struct device *dev, uint8_t *data, uint16_t column, uint16_t length)
+int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_READ_FAST,
@@ -236,7 +243,7 @@ int spi_nand_read(const struct device *dev, uint8_t *data, uint16_t column, uint
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_program_execute(const struct device *dev, uint32_t page)
+int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_EXECUTE,
@@ -247,7 +254,7 @@ int spi_nand_program_execute(const struct device *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_program_load(const struct device *dev, const uint8_t *data, uint16_t column, uint16_t length)
+int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
@@ -260,7 +267,7 @@ int spi_nand_program_load(const struct device *dev, const uint8_t *data, uint16_
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_erase_block(const struct device *dev, uint32_t page)
+int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_ERASE_BLOCK,
@@ -271,7 +278,7 @@ int spi_nand_erase_block(const struct device *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_device_id(const struct device *dev, uint8_t *device_id){
+int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
     //ask for device ID
 
     spi_nand_transaction_t  t = {
@@ -286,18 +293,18 @@ int spi_nand_device_id(const struct device *dev, uint8_t *device_id){
 }
 
 
-int spi_nand_test(const struct device *dev){
+int spi_nand_test(const struct spi_dt_spec *dev){
 
     LOG_INF("Starting SPI test");
 
-    if (!device_is_ready(dev)) {
+    if (!device_is_ready(dev->bus)) {
         LOG_ERR("Device not ready");
         //return -ENODEV;
     }
 
     uint8_t device_id[2];
     int ret = spi_nand_device_id(dev, device_id);
-    if (ret < 0) {
+    if (ret == 0) {
         LOG_ERR("Failed to read device ID");
     } else {
         LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);

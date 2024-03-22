@@ -33,7 +33,7 @@ extern "C" {
  @note The spi_device_handle_t must be initialized with the flag SPI_DEVICE_HALFDUPLEX
 */
 typedef struct spi_nand_flash_config_t{
-    const struct device *spi_dev;      
+    const struct spi_dt_spec *spi_dev;      
     uint8_t gc_factor;              // The gc factor controls the number of blocks to spare block ratio.
                                     //Lower values will reduce the available space but increase performance
 }spi_nand_flash_config_t;
@@ -76,7 +76,7 @@ typedef struct spi_nand_flash_device_t{
  * @param[out] status_out status register content of current transaction
  * @return 0 on success, -1 if the read out of the register failed.
  */
-int wait_for_ready(const struct device *device, uint32_t expected_operation_time_us, uint8_t *status_out);
+int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation_time_us, uint8_t *status_out);
 
 /** @brief Initialise SPI nand flash chip interface.
  *
