@@ -128,18 +128,19 @@ int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_
  * 0 If successful in master mode.
 -errno Negative errno code on failure.
 */
+uint8_t dummy_byte_value = 0xFF;
 
 int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
 {
     //TODO write functionalities that write and read
     int ret;
+    int buf_index = 1;
 
+    struct spi_buf tx_bufs[4] ={0};
+    
     //transmitter preparation before sending
-    struct spi_buf tx_bufs[4];//address bytes + data bytes + the command byte + dummy byte
-	const struct spi_buf_set tx = {
-		.buffers = tx_bufs,
-		.count = ARRAY_SIZE(tx_bufs)
-	};
+    //address bytes + data bytes + the command byte + dummy byte
+	
 
 	tx_bufs[0].buf = &transaction->command;
 	tx_bufs[0].len = 1;
@@ -148,32 +149,47 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
     if(transaction -> address_bytes > 0){
         tx_bufs[1].buf = &transaction->address;
         tx_bufs[1].len = transaction -> address_bytes;
+        buf_index++;
     }
 
     //add data
-    if(transaction -> miso_len > 0){
+    if(transaction -> mosi_len > 0){
         tx_bufs[2].buf = &transaction ->mosi_data;
         tx_bufs[2].len = transaction -> mosi_len;
+        buf_index++;
     }
 
     //add dummy byte
     if(transaction -> dummy_bytes > 0){
-        tx_bufs[3].buf = NULL;//dummy byte
+        tx_bufs[3].buf = &dummy_byte_value;//dummy byte
         tx_bufs[3].len = transaction -> dummy_bytes;
+        buf_index++;
     }
+    const struct spi_buf_set tx = {
+		.buffers = tx_bufs,
+		.count = buf_index
+	};
+
+    tx_bufs[3].buf = NULL;
+    tx_bufs[3].len = 0;
+
 
 
 
     //receiver preparation
-    uint8_t buffer_rx[2];
-	struct spi_buf rx_bufs[2];//from cache only two bytes are read out?
+    uint8_t buffer_rx[2] = {0};
+	struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
 	const struct spi_buf_set rx = {
 		.buffers = rx_bufs,
-		.count = ARRAY_SIZE(rx_bufs)
+		.count = 1
 	};
 
     rx_bufs[0].buf = &buffer_rx;
     rx_bufs[0].len = transaction->miso_len;
+
+    //rx_bufs[1].buf = NULL;
+    //rx_bufs[1].len = 0;
+
     
 	
     //synchronous
@@ -285,8 +301,9 @@ int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
         .command = CMD_READ_ID,
         .address_bytes = 1,
         .address = DEVICE_ADDR_READ,
-        .miso_len = 1,//usually 2 bytes
+        .miso_len = 4,//usually 2 bytes
         .miso_data = device_id,
+        //.dummy_bytes = 1
     };
 
     return spi_nand_execute_transaction(dev, &t);
@@ -302,12 +319,17 @@ int spi_nand_test(const struct spi_dt_spec *dev){
         //return -ENODEV;
     }
 
-    uint8_t device_id[2];
-    int ret = spi_nand_device_id(dev, device_id);
-    if (ret == 0) {
-        LOG_ERR("Failed to read device ID");
-    } else {
-        LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);
-    }
+    
+    int ret;
+    while(true){
+        uint8_t device_id[4];
+        ret = spi_nand_device_id(dev, device_id);
+        if (ret != 0) {
+            LOG_ERR("Failed to read device ID");
+        } else {
+            LOG_INF("SPI NAND Device ID: 0x%x 0x%x 0x%x 0x%x", device_id[0], device_id[1],  device_id[2], device_id[3]);
+        }
+        k_msleep(50);
+        }
     return ret;
 }

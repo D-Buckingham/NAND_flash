@@ -37,6 +37,8 @@ struct spi_nand_transaction_t {
 
 typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 
+
+
 #define CMD_WIRTE_DISABLE   0x04
 #define CMD_WRITE_ENABLE    0x06
 #define CMD_ERASE_BLOCK     0xD8

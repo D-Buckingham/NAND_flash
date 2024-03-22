@@ -37,7 +37,7 @@ int test_read_page_spi_nand(const struct spi_dt_spec *dev){
     }
 
     int err;
-    err = spi_nand_read_page(dev, 0x00); 
+    err = spi_nand_read_page(dev, 0x5F); 
     if (err == 0) {
         LOG_ERR("Failed to read page 1 to cache, error: %d",err);
         return -1;
@@ -145,12 +145,10 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 
     if (!device_is_ready(dev->bus)) {
         LOG_ERR("Device not ready");
-        //return -ENODEV;
     }
 
     uint8_t device_id;
     int ret = spi_nand_device_id(dev, (uint8_t *) &device_id);
-    LOG_INF("ret: 0x%x ", ret);
     if (ret != 0) {
         LOG_ERR("Failed to read device ID");
     } else {
@@ -166,7 +164,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
     LOG_INF("Testing SPI NAND write and read register");
     const uint8_t data = 0xCC;
-    uint32_t page = 0x5;
+    uint32_t page = 0x5F;
     uint16_t readings;
     
 
