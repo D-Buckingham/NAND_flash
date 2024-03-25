@@ -170,21 +170,21 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 		.count = buf_index
 	};
 
-    tx_bufs[3].buf = NULL;
-    tx_bufs[3].len = 0;
+  
 
 
 
 
     //receiver preparation
-    uint8_t buffer_rx[2] = {0};
+    uint8_t buffer_rx[2] = {0}; ///???????
 	struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
+
 	const struct spi_buf_set rx = {
 		.buffers = rx_bufs,
 		.count = 1
 	};
 
-    rx_bufs[0].buf = &buffer_rx;
+    rx_bufs[0].buf = &transaction->miso_data;
     rx_bufs[0].len = transaction->miso_len;
 
     //rx_bufs[1].buf = NULL;
@@ -322,8 +322,8 @@ int spi_nand_test(const struct spi_dt_spec *dev){
     
     int ret;
     while(true){
-        uint8_t device_id[4];
-        ret = spi_nand_device_id(dev, device_id);
+        uint8_t device_id[4] = {0};
+        ret = spi_nand_device_id(dev, &device_id);
         if (ret != 0) {
             LOG_ERR("Failed to read device ID");
         } else {
