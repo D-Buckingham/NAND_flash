@@ -29,7 +29,7 @@ struct spi_nand_transaction_t {
     uint8_t address_bytes;
     uint32_t address;
     uint32_t mosi_len;
-    const uint8_t *mosi_data;
+    uint8_t *mosi_data;
     uint32_t miso_len;
     uint8_t *miso_data;
     uint32_t dummy_bytes;
@@ -151,7 +151,6 @@ int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page);
  * spi_nand_read_page().
  *
  * @param dev Device SPI configuration data obtained from devicetree.
- * @param data Pointer to buffer where read data will be stored.
  * @param column Start column (byte) in the page from where to start reading.
  * @param length Number of bytes to read.
  * @return 0 on success, negative error code otherwise.
@@ -178,7 +177,7 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page);
  * @param length Number of bytes to write.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length);
+int spi_nand_program_load(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length);
 
 /**
  * @brief Erase a block on the SPI NAND device.

@@ -29,25 +29,6 @@
 LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-//Manually create generic SPI struct
-//#define SPI_CS_PIN 16  // Assuming pin 16 is correct as per &arduino_header definition
-//#define SPI_CS_FLAGS GPIO_ACTIVE_LOW
-
-//unused
-//#define SPI_TRANSACTION_MAX_PARTS 4//8* (2176+4) // currently maxumum, page size + 1 + 3 address bytes //Adjust based on analysis
-
-
-
-// static const struct spi_config spi_nand_cfg = {
-//     .frequency = 600000, // TODO adjust the frequency as necessary
-//     .operation = SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE,//test, should be correct, CPOL = 0, CPHA = 0
-//     .slave = 0, // SPI slave index
-//     .cs = {
-//         .gpio = GPIO_DT_SPEC_GET(SPI4_NODE, cs_gpios),
-//     },// spi_cs,
-// };
-
-
 const struct spi_dt_spec spi_nand_init(void) {
     const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
@@ -93,7 +74,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
     //add data
     if(transaction -> mosi_len > 0){
-        tx_bufs[2].buf = &transaction -> mosi_data;//might expect it not as a pointer
+        tx_bufs[2].buf = transaction -> mosi_data;//might expect it not as a pointer
         tx_bufs[2].len = transaction -> mosi_len;
         buf_index++;
     }
@@ -206,7 +187,7 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
+int spi_nand_program_load(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
@@ -237,7 +218,7 @@ int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
         .command = CMD_READ_ID,
         .address_bytes = 1,
         .address = DEVICE_ADDR_READ,
-        .miso_len = 2,//usually 2 bytes
+        .miso_len = 4,//usually 2 bytes
         .miso_data = device_id,
         //.dummy_bytes = 1
     };
@@ -257,12 +238,12 @@ int spi_nand_test(const struct spi_dt_spec *dev){
 
     
     int ret;
-    uint8_t device_id[2] = {0};
-    ret = spi_nand_device_id(dev, device_id);
+    uint8_t device_id[4] = {0};
+    ret = spi_nand_device_id(dev, device_id); 
     if (ret != 0) {
         LOG_ERR("Failed to read device ID");
     } else {
-        LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);
+        LOG_INF("SPI NAND Device ID: 0x%x 0x%x 0x%x 0x%x", device_id[0], device_id[1], device_id[2], device_id[3]);
     }
     
     return ret;

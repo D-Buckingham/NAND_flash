@@ -163,7 +163,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 //final test, write and read it
 int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
     LOG_INF("Testing SPI NAND write and read register");
-    const uint8_t data = 0xCC;
+    uint8_t data = 0xCC;
     uint32_t page = 0x5F;
     uint16_t readings;
     
