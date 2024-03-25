@@ -61,68 +61,7 @@ const struct spi_dt_spec spi_nand_init(void) {
 }
 
 
-/**
- * Executes operation set in struct
- * 0 If successful in master mode.
--errno Negative errno code on failure.
-*/
-/*
-int spi_nand_execute_transaction(const struct device *dev, spi_nand_transaction_t *transaction)
-{
-    //TODO write functionalities that write and read
-    int ret;
 
-    //transmitter preparation before sending
-    struct spi_buf tx_bufs[(transaction->address_bytes) + (transaction->mosi_len) + 1];//address bytes + data bytes + the command byte 
-	const struct spi_buf_set tx = {
-		.buffers = tx_bufs,
-		.count = ARRAY_SIZE(tx_bufs)
-	};
-
-	tx_bufs[0].buf = &transaction->command;
-	tx_bufs[0].len = 1;
-    //add address
-    uint8_t addressByte[transaction -> address_bytes];
-    for(int cnt = 1;cnt <= transaction -> address_bytes; cnt++){
-        int byteIndex = transaction->address_bytes - cnt - 1;
-        // Extract the specific byte from the address
-        addressByte[cnt] = (transaction->address >> (8 * byteIndex)) & 0xFF;
-        tx_bufs[cnt].buf = &addressByte[cnt];
-	    tx_bufs[cnt].len = 1;
-    }
-    //add data
-    if(transaction -> mosi_len > 0){//read register uses an additional byte
-        tx_bufs[transaction -> address_bytes + 1].buf = &transaction ->mosi_data;
-        tx_bufs[transaction -> address_bytes + 1].len = 1;
-    }
-    //add dummy byte
-    if(transaction -> dummy_bytes > 0){
-        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].buf = NULL;//dummy byte
-        tx_bufs[transaction -> mosi_len + transaction -> address_bytes + 1].len = 1;
-    }
-
-
-
-    //receiver preparation
-    uint8_t buffer_rx[transaction->miso_len];
-	struct spi_buf rx_bufs[transaction->miso_len];//from cache only two bytes are read out?
-	const struct spi_buf_set rx = {
-		.buffers = rx_bufs,
-		.count = ARRAY_SIZE(rx_bufs)
-	};
-
-    for(int cnt = 0; cnt < transaction->miso_len; cnt++){
-        rx_bufs[0].buf = &buffer_rx[cnt];
-	    rx_bufs[cnt].len = 1;
-    }
-	
-    //synchronous
-    ret = spi_transceive(dev, &spi_nand_cfg, &tx, &rx);
-
-    return ret;
-}
-
-*/
 /**
  * Executes operation set in struct
  * 0 If successful in master mode.
@@ -154,7 +93,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
     //add data
     if(transaction -> mosi_len > 0){
-        tx_bufs[2].buf = &transaction ->mosi_data;
+        tx_bufs[2].buf = &transaction -> mosi_data;//might expect it not as a pointer
         tx_bufs[2].len = transaction -> mosi_len;
         buf_index++;
     }
@@ -176,21 +115,18 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
 
     //receiver preparation
-    uint8_t buffer_rx[2] = {0}; ///???????
 	struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
 
-	const struct spi_buf_set rx = {
-		.buffers = rx_bufs,
-		.count = 1
-	};
-
-    rx_bufs[0].buf = &transaction->miso_data;
+    rx_bufs[0].buf = transaction->miso_data;
     rx_bufs[0].len = transaction->miso_len;
 
     //rx_bufs[1].buf = NULL;
     //rx_bufs[1].len = 0;
 
-    
+    const struct spi_buf_set rx = {
+		.buffers = rx_bufs,
+		.count = 1
+	};
 	
     //synchronous
     ret = spi_transceive_dt(spidev_dt, &tx, &rx);
@@ -301,7 +237,7 @@ int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
         .command = CMD_READ_ID,
         .address_bytes = 1,
         .address = DEVICE_ADDR_READ,
-        .miso_len = 4,//usually 2 bytes
+        .miso_len = 2,//usually 2 bytes
         .miso_data = device_id,
         //.dummy_bytes = 1
     };
@@ -321,15 +257,13 @@ int spi_nand_test(const struct spi_dt_spec *dev){
 
     
     int ret;
-    while(true){
-        uint8_t device_id[4] = {0};
-        ret = spi_nand_device_id(dev, &device_id);
-        if (ret != 0) {
-            LOG_ERR("Failed to read device ID");
-        } else {
-            LOG_INF("SPI NAND Device ID: 0x%x 0x%x 0x%x 0x%x", device_id[0], device_id[1],  device_id[2], device_id[3]);
-        }
-        k_msleep(50);
-        }
+    uint8_t device_id[2] = {0};
+    ret = spi_nand_device_id(dev, device_id);
+    if (ret != 0) {
+        LOG_ERR("Failed to read device ID");
+    } else {
+        LOG_INF("SPI NAND Device ID: 0x%x 0x%x", device_id[0], device_id[1]);
+    }
+    
     return ret;
 }
