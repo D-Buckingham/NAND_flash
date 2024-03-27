@@ -6,21 +6,27 @@
 //     status = "disabled";
 // };
 
+
+//don't use  P0.08, P0.09, P0.23, P0.24
 &pinctrl {
     spi4m_default: spi4m_default {
         group1 {
-            psels = <NRF_PSEL(SPIM_SCK, 0, 8)>,
-                <NRF_PSEL(SPIM_MISO, 0, 12)>,
-                <NRF_PSEL(SPIM_MOSI, 0, 9)>;
+            psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,//0.8
+                <NRF_PSEL(SPIM_MISO, 1, 14)>,//0.12
+                <NRF_PSEL(SPIM_MOSI, 0, 9)>; //0.09
+            bias-pull-up;
+            nordic,drive-mode = <NRF_DRIVE_D0H1>;
         };
     };
 
     spi4m_sleep: spi4m_sleep {
         group1 {
-            psels = <NRF_PSEL(SPIM_SCK, 0, 8)>,
-                <NRF_PSEL(SPIM_MISO, 0, 12)>,
+            psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,
+                <NRF_PSEL(SPIM_MISO, 1, 14)>,
                 <NRF_PSEL(SPIM_MOSI, 0, 9)>;
             low-power-enable;
+            bias-pull-up;
+            nordic,drive-mode = <NRF_DRIVE_D0H1>;
         };
     };
 };
@@ -38,11 +44,13 @@
 	pinctrl-1 = <&spi4m_sleep>;
 	pinctrl-names = "default", "sleep";
     label = "SPI_4";
+    
+
     spidev: spi-device@0 {
         status = "okay";
         compatible = "vnd,spi-device";
         reg = <0>;
-        spi-max-frequency = <1000000>;
+        spi-max-frequency = <126000>;
         label = "spidev";
     };
 };
