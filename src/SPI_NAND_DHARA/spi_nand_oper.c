@@ -238,7 +238,7 @@ int spi_nand_test(const struct spi_dt_spec *dev){
 
     
     int ret;
-    while(true){
+    
     uint8_t device_id[4] = {0};
     ret = spi_nand_device_id(dev, device_id); 
     if (ret != 0) {
@@ -246,7 +246,6 @@ int spi_nand_test(const struct spi_dt_spec *dev){
     } else {
         LOG_INF("SPI NAND Device ID: 0x%x 0x%x 0x%x 0x%x", device_id[0], device_id[1], device_id[2], device_id[3]);
     }
-    k_msleep(1);
-    }
+    
     return ret;
 }

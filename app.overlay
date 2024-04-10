@@ -13,9 +13,9 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,//0.8
                 <NRF_PSEL(SPIM_MISO, 1, 14)>,//0.12
-                <NRF_PSEL(SPIM_MOSI, 0, 9)>; //0.09
-            bias-pull-up;
-            nordic,drive-mode = <NRF_DRIVE_S0H1>;
+                <NRF_PSEL(SPIM_MOSI, 1, 13)>; //0.09
+            //bias-pull-up;
+            //nordic,drive-mode = <NRF_DRIVE_S0S1>;
         };
     };
 
@@ -23,10 +23,10 @@
         group1 {
             psels = <NRF_PSEL(SPIM_SCK, 1, 15)>,
                 <NRF_PSEL(SPIM_MISO, 1, 14)>,
-                <NRF_PSEL(SPIM_MOSI, 0, 9)>;
+                <NRF_PSEL(SPIM_MOSI, 1, 13)>;
             low-power-enable;
-            bias-pull-up;
-            nordic,drive-mode = <NRF_DRIVE_S0H1>;
+            //bias-pull-up;
+            //nordic,drive-mode = <NRF_DRIVE_S0S1>;
         };
     };
 };
