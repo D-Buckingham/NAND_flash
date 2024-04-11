@@ -17,6 +17,9 @@
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 
+
+
+
 /**
  * S5F14G04SND-10LIN
  * 0 ... 4095 blocks RA <17:6>
@@ -29,17 +32,17 @@
 LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-const struct spi_dt_spec spi_nand_init(void) {
-    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+// const struct spi_dt_spec spi_nand_init(void) {
+//     const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
-    if (!device_is_ready((&spidev_dt)->bus)) {
-        LOG_ERR("SPI device is not ready");
-    } else {
-        LOG_INF("SPI device is ready for use");
-    }
+//     if (!device_is_ready((&spidev_dt)->bus)) {
+//         LOG_ERR("SPI device is not ready");
+//     } else {
+//         LOG_INF("SPI device is ready for use");
+//     }
 
-    return spidev_dt;
-}
+//     return spidev_dt;
+// }
 
 
 
@@ -231,10 +234,7 @@ int spi_nand_test(const struct spi_dt_spec *dev){
 
     LOG_INF("Starting SPI test");
 
-    if (!device_is_ready(dev->bus)) {
-        LOG_ERR("Device not ready");
-        //return -ENODEV;
-    }
+    
 
     
     int ret;

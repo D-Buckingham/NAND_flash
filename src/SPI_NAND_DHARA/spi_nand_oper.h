@@ -206,6 +206,8 @@ int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id);
 int spi_nand_test(const struct spi_dt_spec *dev);
 
 
+
+
 #ifdef __cplusplus
 }
 #endif

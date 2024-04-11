@@ -31,7 +31,7 @@ int test_write_register_spi_nand(const struct spi_dt_spec *dev){
 
 int test_read_page_spi_nand(const struct spi_dt_spec *dev){
     LOG_INF("Test 2: test read page 1 to cache");
-    if (!device_is_ready(dev->bus)) {
+    if (!device_is_ready(dev->bus)) {//error thrown
         LOG_ERR("Device not ready");
         return -1;
     }
