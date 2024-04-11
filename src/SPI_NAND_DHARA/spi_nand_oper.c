@@ -17,9 +17,6 @@
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 
-
-
-
 /**
  * S5F14G04SND-10LIN
  * 0 ... 4095 blocks RA <17:6>
@@ -32,17 +29,17 @@
 LOG_MODULE_REGISTER(spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-// const struct spi_dt_spec spi_nand_init(void) {
-//     const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+const struct spi_dt_spec spi_nand_init(void) {
+    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
-//     if (!device_is_ready((&spidev_dt)->bus)) {
-//         LOG_ERR("SPI device is not ready");
-//     } else {
-//         LOG_INF("SPI device is ready for use");
-//     }
+    if (!device_is_ready((&spidev_dt)->bus)) {
+        LOG_ERR("SPI device is not ready");
+    } else {
+        LOG_INF("SPI device is ready for use");
+    }
 
-//     return spidev_dt;
-// }
+    return spidev_dt;
+}
 
 
 
@@ -220,7 +217,7 @@ int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
     spi_nand_transaction_t  t = {
         .command = CMD_READ_ID,
         .address_bytes = 1,
-        .address = DEVICE_ADDR_READ,
+        .address = MANUFACTURER_ADDR_READ,
         .miso_len = 4,//usually 2 bytes
         .miso_data = device_id,
         //.dummy_bytes = 1
@@ -234,11 +231,14 @@ int spi_nand_test(const struct spi_dt_spec *dev){
 
     LOG_INF("Starting SPI test");
 
-    
+    if (!device_is_ready(dev->bus)) {
+        LOG_ERR("Device not ready");
+        //return -ENODEV;
+    }
 
     
     int ret;
-    
+    while(true){
     uint8_t device_id[4] = {0};
     ret = spi_nand_device_id(dev, device_id); 
     if (ret != 0) {
@@ -246,6 +246,7 @@ int spi_nand_test(const struct spi_dt_spec *dev){
     } else {
         LOG_INF("SPI NAND Device ID: 0x%x 0x%x 0x%x 0x%x", device_id[0], device_id[1], device_id[2], device_id[3]);
     }
-    
+    k_msleep(50);
+    }
     return ret;
 }

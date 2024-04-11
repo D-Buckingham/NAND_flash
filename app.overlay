@@ -45,15 +45,15 @@ my_spi_master:&spi4 {
     cs-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
     label = "SPI_4";
     
-    reg_my_spi_master:  spi-dev-a@0 {
-		reg = <0>;
-	};
+    // reg_my_spi_master:  spi-dev-a@0 {
+	// 	reg = <0>;
+	// };
 
-    // spidev: spi-device@0 {
-    //     status = "okay";
-    //     compatible = "vnd,spi-device";
-    //     reg = <0>;
-    //     spi-max-frequency = <126000>;
-    //     label = "spidev";
-    // };
+    spidev: spi-device@0 {
+        status = "okay";
+        compatible = "vnd,spi-device";
+        reg = <0>;
+        spi-max-frequency = <126000>;
+        label = "spidev";
+    };
 };
