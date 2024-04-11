@@ -37,12 +37,12 @@ int test_read_page_spi_nand(const struct spi_dt_spec *dev){
     }
 
     int err;
-    err = spi_nand_read_page(dev, 0x5F); 
+    err = spi_nand_read_page(dev, 0x00); 
     if (err == 0) {
         LOG_ERR("Failed to read page 1 to cache, error: %d",err);
         return -1;
     }
-    LOG_INF("Test 2: No error thrown");
+    LOG_INF("Test 2: No error thrown, read page 1 to cache");
     return 0;
 }
 
@@ -56,13 +56,13 @@ int test_read_cache_spi_nand(const struct spi_dt_spec *dev){
     }
 
     //assuming data alread read into cash
-    uint16_t test_buffer;
-    int ret = spi_nand_read(dev, (uint8_t *)&test_buffer, 0, 2);
-    if (ret == 0) {
+    uint8_t test_buffer[2] = {0};
+    int ret = spi_nand_read(dev, test_buffer, 0, 2);
+    if (ret != 0) {
         LOG_ERR("Failed to read into test buffer, err: %d", ret);
         return -1; // Assume page in cash
     }
-    LOG_INF("Test 3: No error thrown, data: %d", test_buffer);
+    LOG_INF("Test 3: No error thrown, data: 0x%x 0x%x", test_buffer[0], test_buffer[1]);
     return 0;
 }
 
@@ -80,13 +80,13 @@ int test_load_and_execute_program_spi_nand(const struct spi_dt_spec *dev){
     }
 
     int ret = spi_nand_write_enable(dev);
-    if (ret) {
+    if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
     ret = spi_nand_program_load(dev, &data, 0, 1);
-    if (ret) {
+    if (ret != 0) {
         LOG_ERR("Failed to load program, error: %d", ret);
         return -1;
     }
@@ -256,14 +256,16 @@ int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
 int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     int ret;
 
+    
     LOG_INF("Starting all SPI NAND communicator tests");
-    k_msleep(1);
+
+    //test 1
     ret = test_IDs_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Device & Manufacturer ID test failed");
         return ret;
     }
-    k_msleep(1);
+
     
     /*
     ret = test_write_register_spi_nand(dev);
@@ -273,18 +275,21 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     }
     */
 
+   //test 2
     ret = test_read_page_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Read page to cache test failed");
         return ret;
     }
 
+    //test 3
     ret = test_read_cache_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Read cache test failed");
         return ret;
     }
 
+    //test 4
     ret = test_load_and_execute_program_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Load and execute program test failed");

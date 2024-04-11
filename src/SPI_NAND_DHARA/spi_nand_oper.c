@@ -49,6 +49,8 @@ const struct spi_dt_spec spi_nand_init(void) {
 -errno Negative errno code on failure.
 */
 uint8_t dummy_byte_value = 0xFF;
+uint8_t var;
+
 
 int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
 {
@@ -94,11 +96,15 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
 
 
-
     //receiver preparation
 	struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
 
-    rx_bufs[0].buf = transaction->miso_data - (1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes);//shifting the pointer
+    
+    rx_bufs[0].buf = 
+                    ((1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) > 1) 
+                    ? transaction->miso_data - (1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) 
+                    : transaction->miso_data;//shifting the pointer
+    
     rx_bufs[0].len = transaction->miso_len + 1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes;//clocking the entire signal
 
     //rx_bufs[1].buf = NULL;
@@ -110,8 +116,9 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 	};
 	
     //synchronous
+    // if(transaction->miso_len == 0){spi_write_dt(spidev_dt, &tx);
+    // }else{ret = spi_transceive_dt(spidev_dt, &tx, &rx);}
     ret = spi_transceive_dt(spidev_dt, &tx, &rx);
-
     return ret;
 }
 
@@ -237,7 +244,7 @@ int spi_nand_test(const struct spi_dt_spec *dev){
 
     
     int ret;
-    while(1){
+    
     uint8_t device_id;
     ret = spi_nand_device_id(dev, &device_id); 
     if (ret != 0) {
@@ -245,7 +252,6 @@ int spi_nand_test(const struct spi_dt_spec *dev){
     } else {
         LOG_INF("SPI NAND Device ID: 0x%x ", device_id);
     }
-    k_msleep(100);
-    }
+    
     return ret;
 }

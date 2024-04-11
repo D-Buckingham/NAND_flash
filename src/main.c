@@ -34,8 +34,12 @@ int main(void)
 	const struct spi_dt_spec spidev_dt = spi_nand_init();
 
 	//Test the SPI communication
+	int ret;
 	spi_nand_test(&spidev_dt);//returns manufacturere and device ID
-	test_SPI_NAND_Communicator_all_tests(&spidev_dt);
+	ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
+	if (ret != 0) {
+        LOG_ERR("Communication tests failed, err: %d", ret);
+    }
 	//Test glue between NAND flash communicator and DHARA flash translation layer???
 
 	//test top layer ftl
