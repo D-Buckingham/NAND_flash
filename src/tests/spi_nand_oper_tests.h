@@ -110,7 +110,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev);
  *
  * @param dev Pointer to the SPI device structure.
  */
-int test_spi_nand_write_read_register(const struct spi_dt_spec *dev);
+int test_spi_nand_write_read(const struct spi_dt_spec *dev);
 
 /**
  * @brief Execute all SPI NAND communicator tests.

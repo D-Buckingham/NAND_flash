@@ -174,10 +174,10 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 
 
 //final test, write and read it
-int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
+int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Testing SPI NAND write and read register");
     uint8_t data = 0xCC;
-    uint32_t page = 0x5F;
+    uint32_t page = 0x0;
     uint8_t readings = 0xCC;
     
 
@@ -324,7 +324,7 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
 
 
-    test_spi_nand_write_read_register(dev);
+    test_spi_nand_write_read(dev);
 
     LOG_INF("All SPI NAND communicator tests passed successfully");
     return 0;
