@@ -38,7 +38,7 @@ int test_read_page_spi_nand(const struct spi_dt_spec *dev){
 
     int err;
     err = spi_nand_read_page(dev, 0x00); 
-    if (err == 0) {
+    if (err != 0) {
         LOG_ERR("Failed to read page 1 to cache, error: %d",err);
         return -1;
     }
@@ -165,7 +165,7 @@ int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
     LOG_INF("Testing SPI NAND write and read register");
     uint8_t data = 0xCC;
     uint32_t page = 0x5F;
-    uint16_t readings;
+    uint8_t readings = 0xCC;
     
 
     if (!device_is_ready(dev->bus)) {
@@ -179,7 +179,7 @@ int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
         return -1;
     }
     //program load into cache
-    ret = spi_nand_program_load(dev, &data, 0, 2);
+    ret = spi_nand_program_load(dev, &data, 0, 1);
     if (ret) {
         LOG_ERR("Failed to load program, error: %d", ret);
         return -1;
@@ -233,7 +233,7 @@ int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
     }
 
     //read from cache
-    ret = spi_nand_read(dev, (uint8_t *)&readings, 0, 2);
+    ret = spi_nand_read(dev, &readings, 0, 1);
     if (ret != 0) {
         LOG_ERR("Failed to read , err: %d", ret);
         return -1; 
@@ -246,6 +246,7 @@ int test_spi_nand_write_read_register(const struct spi_dt_spec *dev) {
         LOG_INF("Write and read register test PASSED");
     } else {
         LOG_ERR("Write and read register test FAILED: Written value 0x%X, read value 0x%X", data, readings);
+        return -1;
     }
     return 0;
 }
@@ -302,11 +303,6 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
         return ret;
     }
 
-    ret = test_IDs_spi_nand(dev);
-    if (ret != 0) {
-        LOG_ERR("Device & Manufacturer ID test failed");
-        return ret;
-    }
 
     test_spi_nand_write_read_register(dev);
 

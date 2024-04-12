@@ -92,33 +92,35 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 		.count = buf_index
 	};
 
-  
 
-
-
-    //receiver preparation
-	struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
 
     
-    rx_bufs[0].buf = 
-                    ((1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) > 1) 
-                    ? transaction->miso_data - (1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) 
-                    : transaction->miso_data;//shifting the pointer
-    
-    rx_bufs[0].len = transaction->miso_len + 1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes;//clocking the entire signal
-
-    //rx_bufs[1].buf = NULL;
-    //rx_bufs[1].len = 0;
-
-    const struct spi_buf_set rx = {
-		.buffers = rx_bufs,
-		.count = 1
-	};
 	
     //synchronous
-    // if(transaction->miso_len == 0){spi_write_dt(spidev_dt, &tx);
-    // }else{ret = spi_transceive_dt(spidev_dt, &tx, &rx);}
-    ret = spi_transceive_dt(spidev_dt, &tx, &rx);
+     if(transaction->miso_len == 0){
+        ret = spi_write_dt(spidev_dt, &tx);
+     }else{
+        //receiver preparation
+        struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
+
+        
+        rx_bufs[0].buf = 
+                        ((1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) > 1) 
+                        ? transaction->miso_data - (1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) 
+                        : transaction->miso_data;//shifting the pointer
+        
+        rx_bufs[0].len = transaction->miso_len + 1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes;//clocking the entire signal
+
+        //rx_bufs[1].buf = NULL;
+        //rx_bufs[1].len = 0;
+
+        const struct spi_buf_set rx = {
+            .buffers = rx_bufs,
+            .count = 1
+        };
+        
+        ret = spi_transceive_dt(spidev_dt, &tx, &rx);}
+    //ret = spi_transceive_dt(spidev_dt, &tx, &rx);
     return ret;
 }
 
