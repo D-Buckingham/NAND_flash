@@ -101,7 +101,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
         ret = spi_write_dt(spidev_dt, &tx);
      }else{
         //receiver preparation
-        struct spi_buf rx_bufs[1] = {0};//from cache only two bytes are read out?
+        struct spi_buf rx_bufs[1] = {0};
 
         
         rx_bufs[0].buf = 
