@@ -35,7 +35,7 @@ int main(void)
 
 	//Test the SPI communication
 	int ret;
-	spi_nand_test(&spidev_dt);//returns manufacturere and device ID
+	
 	ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
 	if (ret != 0) {
         LOG_ERR("Communication tests failed, err: %d", ret);

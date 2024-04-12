@@ -124,7 +124,7 @@ int test_erase_block_spi_nand(const struct spi_dt_spec *dev){
         LOG_ERR("Failed to erase block 0, error: %d", ret);
         return -1;
     }else{
-        LOG_INF("Found correct flag in register after successful erasure");
+        LOG_INF("Test 5: Found correct flag in register after successful erasure");
     }
     
     
@@ -166,7 +166,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
     if (ret != 0) {
         LOG_ERR("Failed to read device ID");
     } else {
-        LOG_INF("SPI NAND Device ID: 0x%x ", device_id);
+        LOG_INF("Test 1: SPI NAND Device ID: 0x%x ", device_id);
     }
     LOG_INF("Test 1 No error thrown");
     return ret;
@@ -259,13 +259,13 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
 
     // Verify that the value read matches the value written
     if (memcmp(data, readings, 4) == 0)  {
-        LOG_INF("Write and read register test PASSED");
+        LOG_INF("Test 6: Write and read register test PASSED");
         for (uint16_t i = 0; i < length; i++) {
-            LOG_INF("Write and read register at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
+            LOG_INF("Test 6: Write and read register at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
         }
     } else {
         for (uint16_t i = 0; i < length; i++) {
-            LOG_ERR("Write and read register test FAILED at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
+            LOG_ERR("Test 6: Write and read register test FAILED at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
         }
         return -1;
     }
