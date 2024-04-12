@@ -181,6 +181,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     uint8_t data[4] = {0xAA, 0xBB, 0xCC, 0x11};
     uint32_t page = 0x00;
     uint8_t readings[4] = {0};
+    uint8_t read_page[800] = {0};
 
     
 
@@ -232,6 +233,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
         return -1;
     }
 
+   
 
     //wait again
     while (true) {
@@ -253,6 +255,34 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     if (ret != 0) {
         LOG_ERR("Failed to read , err: %d", ret);
         return -1; 
+    }
+
+    ret = spi_nand_read(dev, read_page, 1, 800);
+    if (ret != 0) {
+        LOG_ERR("Failed to read , err: %d", ret);
+        return -1; 
+    }
+
+    char buffer[2500];
+    int pos = 0;
+    int line_byte_count = 0;
+
+    for (int i = 0; i < 800; i++) {
+        char separator = (line_byte_count == 39 || i == 799) ? '\n' : ' ';
+        pos += snprintf(&buffer[pos], sizeof(buffer) - pos, "%02X%c", read_page[i], separator);
+
+        if (++line_byte_count == 40) {
+            line_byte_count = 0; 
+        }
+        if (pos >= sizeof(buffer) - 10) {
+            LOG_INF("Partial read data:\n%s", buffer);
+            pos = 0; 
+        }
+    }
+
+    // Log any remaining data in the buffer
+    if (pos > 0) {
+        LOG_INF("Partial read data:\n%s", buffer);
     }
 
     

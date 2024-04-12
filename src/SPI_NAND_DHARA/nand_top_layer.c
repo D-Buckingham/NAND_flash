@@ -233,7 +233,7 @@ static int unprotect_chip(spi_nand_flash_device_t *dev)
     uint8_t status;
     int ret = spi_nand_read_register(dev->config.spi_dev, REG_PROTECT, &status);
     if (ret != 0) {
-        LOG_ERR("Failed to read register: %d", err);
+        LOG_ERR("Failed to read register: %d", ret);
         return ret;
     }
 
@@ -241,7 +241,7 @@ static int unprotect_chip(spi_nand_flash_device_t *dev)
         ret = spi_nand_write_register(dev->config.spi_dev, REG_PROTECT, 0);
     }
     if (ret != 0) {
-        LOG_ERR("Failed to remove protection bit with error code: %d", err);
+        LOG_ERR("Failed to remove protection bit with error code: %d", ret);
         return -1;
     }
 
