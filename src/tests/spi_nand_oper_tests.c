@@ -176,7 +176,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 
 //final test, write and read it
 int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
-    LOG_INF("Testing SPI NAND write and read register");
+    LOG_INF("Test 6: testing SPI NAND write and read register");
     uint16_t length = 4;
     uint8_t data[4] = {0xAA, 0xBB, 0xCC, 0x11};
     uint32_t page = 0x00;
@@ -261,7 +261,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     if (memcmp(data, readings, 4) == 0)  {
         LOG_INF("Write and read register test PASSED");
         for (uint16_t i = 0; i < length; i++) {
-            LOG_ERR("Write and read register at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
+            LOG_INF("Write and read register at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
         }
     } else {
         for (uint16_t i = 0; i < length; i++) {
@@ -277,28 +277,18 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
 
 int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     int ret;
-    uint8_t status; //TODO remove
     
     LOG_INF("Starting all SPI NAND communicator tests");
-    // spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
-    // spi_nand_read_register(dev, REG_PROTECT, &status);//for debugging TODO remove
-    // spi_nand_write_register(dev, REG_PROTECT, 0x0);
-    // spi_nand_read_register(dev, REG_PROTECT, &status);//for debugging TODO remove
+    
+    
     //test 1
     ret = test_IDs_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Device & Manufacturer ID test failed");
         return ret;
     }
-    // spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
-    // spi_nand_read_register(dev, REG_PROTECT, &status);//for debugging TODO remove
-    /*
-    ret = test_write_register_spi_nand(dev);
-    if (ret != 0) {
-        LOG_ERR("Write register test failed");
-        return ret;
-    }
-    */
+    
+    
 
    //test 2
     ret = test_read_page_spi_nand(dev);
@@ -306,33 +296,38 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
         LOG_ERR("Read page to cache test failed");
         return ret;
     }
-    spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
-    spi_nand_read_register(dev, REG_PROTECT, &status);//for debugging TODO remove
+    
+    
     //test 3
     ret = test_read_cache_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Read cache test failed");
         return ret;
     }
-    spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
-    spi_nand_read_register(dev, REG_PROTECT, &status);//for debugging TODO remove
+    
+    
     //test 4
     ret = test_load_and_execute_program_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Load and execute program test failed");
         return ret;
     }
-    spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
+   
 
+    //test 5
     ret = test_erase_block_spi_nand(dev);
     if (ret != 0) {
         LOG_ERR("Erase block test failed");
         return ret;
     }
-    spi_nand_read_register(dev, REG_STATUS, &status);//for debugging TODO remove
+    
 
-
-    test_spi_nand_write_read(dev);
+    //test 5
+    ret = test_spi_nand_write_read(dev);
+    if (ret != 0) {
+        LOG_ERR("write and read test failed");
+        return ret;
+    }
 
     LOG_INF("All SPI NAND communicator tests passed successfully");
     return 0;
