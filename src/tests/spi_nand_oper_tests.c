@@ -8,6 +8,7 @@
 #include "spi_nand_oper_tests.h"
 #include <zephyr/devicetree.h>
 
+#include <string.h> 
 
 LOG_MODULE_REGISTER(test_spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
@@ -176,9 +177,11 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 //final test, write and read it
 int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Testing SPI NAND write and read register");
-    uint8_t data = 0xCC;
-    uint32_t page = 0x01;
-    uint8_t readings = 0xCC;
+    uint16_t length = 4;
+    uint8_t data[4] = {0xAA, 0xBB, 0xCC, 0x11};
+    uint32_t page = 0x00;
+    uint8_t readings[4] = {0};
+
     
 
     if (!device_is_ready(dev->bus)) {
@@ -192,7 +195,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
         return -1;
     }
     //program load into cache
-    ret = spi_nand_program_load(dev, &data, 0, 1);
+    ret = spi_nand_program_load(dev, data, 1, length);
     if (ret) {
         LOG_ERR("Failed to load program, error: %d", ret);
         return -1;
@@ -246,7 +249,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     }
 
     //read from cache
-    ret = spi_nand_read(dev, &readings, 0, 1);
+    ret = spi_nand_read(dev, readings, 1, length);
     if (ret != 0) {
         LOG_ERR("Failed to read , err: %d", ret);
         return -1; 
@@ -255,10 +258,15 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     
 
     // Verify that the value read matches the value written
-    if (data == readings) {
+    if (memcmp(data, readings, 4) == 0)  {
         LOG_INF("Write and read register test PASSED");
+        for (uint16_t i = 0; i < length; i++) {
+            LOG_ERR("Write and read register at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
+        }
     } else {
-        LOG_ERR("Write and read register test FAILED: Written value 0x%X, read value 0x%X", data, readings);
+        for (uint16_t i = 0; i < length; i++) {
+            LOG_ERR("Write and read register test FAILED at index %d: Written value 0x%X, read value 0x%X", i, data[i], readings[i]);
+        }
         return -1;
     }
     return 0;
