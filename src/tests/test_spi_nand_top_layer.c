@@ -16,7 +16,7 @@
 #include    "test_spi_nand_top_layer.h"
 #include    "nand_top_layer.h"
 
-LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
+LOG_MODULE_REGISTER(test_spi_nand_top_layer);
 
 
 #define PATTERN_SEED    0x12345678
@@ -31,7 +31,9 @@ static void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct 
     spi_nand_flash_config_t nand_flash_config = {
         .spi_dev = spi_handle,
     };
-    spi_nand_flash_device_t *device_handle;
+
+    spi_nand_flash_device_t *device_handle = NULL;
+
     int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);//TODO correctly handled? &
     if(ret != 0){
         LOG_ERR("Initialization of device on top layer, error: %d", ret);
@@ -43,7 +45,7 @@ static void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct 
 
 int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 {
-    spi_nand_flash_device_t *nand_flash_device_handle;
+    spi_nand_flash_device_t *nand_flash_device_handle = NULL;
     setup_nand_flash(&nand_flash_device_handle, spi);
     int err;
     err = spi_nand_erase_chip(nand_flash_device_handle);
@@ -194,7 +196,7 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 }
 
 int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
-    
+    LOG_INF("Starting tests top layer");
     if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
         LOG_ERR("Failed first test top layer above DHARA");
         return -1;
@@ -204,6 +206,6 @@ int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
         LOG_ERR("Failed second test top layer above DHARA");
         return -1;
     }
-    LOG_INF("Successful tests DHARA top layer")
+    LOG_INF("Successful tests DHARA top layer");
     return 0;
 }

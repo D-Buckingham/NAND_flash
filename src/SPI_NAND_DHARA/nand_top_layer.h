@@ -3,7 +3,7 @@
  * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
  *
  * This file establishes the SPI communication and stores the predefined commands to interfere 
- * with the 913-S5F14G04SND10LIN NAND flash
+ * with the S5F14G04SND10LIN NAND flash
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
  */
@@ -77,6 +77,10 @@ typedef struct spi_nand_flash_device_t{
  * @return 0 on success, -1 if the read out of the register failed.
  */
 int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation_time_us, uint8_t *status_out);
+
+
+
+
 
 /** @brief Initialise SPI nand flash chip interface.
  *

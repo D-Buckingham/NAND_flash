@@ -288,10 +288,10 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
 int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle)
 {
     // Verify SPI device is ready
-    if (!device_is_ready(config->spi_dev)) {
-        LOG_ERR("SPI device is not ready");
-        return -1;
-    }
+    // if (!device_is_ready((config->spi_dev)->bus)) {
+    //     LOG_ERR("SPI device is not ready");
+    //     return -1;
+    // }
 
     // Apply default garbage collection factor if not set
     if (config->gc_factor == 0) {
