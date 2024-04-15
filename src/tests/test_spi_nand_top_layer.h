@@ -10,4 +10,8 @@
 #ifndef TEST_SPI_NAND_TOP_LAYER
 #define TEST_SPI_NAND_TOP_LAYER
 
+int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi);
+
+int test2_writing_tests_top_layer(const struct spi_dt_spec *spi);
+
 #endif  //TEST_SPI_NAND_TOP_LAYER

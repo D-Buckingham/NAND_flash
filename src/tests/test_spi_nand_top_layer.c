@@ -10,90 +10,54 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
-#include    test_spi_nand_top_layer.h
+#include <zephyr/drivers/spi.h>
+#include <zephyr/ztest.h>
 
-// Pin mapping
-// ESP32 (VSPI)
-#ifdef CONFIG_IDF_TARGET_ESP32
-#define HOST_ID     SPI3_HOST
-#define PIN_MOSI     SPI3_IOMUX_PIN_NUM_MOSI
-#define PIN_MISO     SPI3_IOMUX_PIN_NUM_MISO
-#define PIN_CLK      SPI3_IOMUX_PIN_NUM_CLK
-#define PIN_CS       SPI3_IOMUX_PIN_NUM_CS
-#define PIN_WP       SPI3_IOMUX_PIN_NUM_WP
-#define PIN_HD       SPI3_IOMUX_PIN_NUM_HD
-#define SPI_DMA_CHAN SPI_DMA_CH_AUTO
-#else // Other chips (SPI2/HSPI)
-#define HOST_ID      SPI2_HOST
-#define PIN_MOSI     SPI2_IOMUX_PIN_NUM_MOSI
-#define PIN_MISO     SPI2_IOMUX_PIN_NUM_MISO
-#define PIN_CLK      SPI2_IOMUX_PIN_NUM_CLK
-#define PIN_CS       SPI2_IOMUX_PIN_NUM_CS
-#define PIN_WP       SPI2_IOMUX_PIN_NUM_WP
-#define PIN_HD       SPI2_IOMUX_PIN_NUM_HD
-#define SPI_DMA_CHAN SPI_DMA_CH_AUTO
-#endif
+#include    "test_spi_nand_top_layer.h"
+#include    "nand_top_layer.h"
+
+LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
+
 
 #define PATTERN_SEED    0x12345678
 
-static void setup_bus(spi_host_device_t host_id)
+//Initialize the SPI device, TODO remove, since in the main we do this
+
+
+//put the spi_handle into the spi_nand_flash_device_t struct and initialize the device
+static void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle)
 {
-    spi_bus_config_t spi_bus_cfg = {
-        .mosi_io_num = PIN_MOSI,
-        .miso_io_num = PIN_MISO,
-        .sclk_io_num = PIN_CLK,
-        .quadhd_io_num = PIN_HD,
-        .quadwp_io_num = PIN_WP,
-        .max_transfer_sz = 64,
-    };
-    esp_err_t ret = spi_bus_initialize(host_id, &spi_bus_cfg, SPI_DMA_CHAN);
-    TEST_ESP_OK(ret);
-}
-
-static void setup_chip(spi_device_handle_t *spi)
-{
-    setup_bus(HOST_ID);
-
-    spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 40 * 1000 * 1000,
-        .mode = 0,
-        .spics_io_num = PIN_CS,
-        .queue_size = 10,
-        .flags = SPI_DEVICE_HALFDUPLEX,
-    };
-
-    spi_bus_add_device(HOST_ID, &devcfg, spi);
-}
-
-static void setup_nand_flash(spi_nand_flash_device_t **out_handle, spi_device_handle_t *spi_handle)
-{
-    spi_device_handle_t spi;
-    setup_chip(&spi);
 
     spi_nand_flash_config_t nand_flash_config = {
-        .device_handle = spi,
+        .spi_dev = spi_handle,
     };
     spi_nand_flash_device_t *device_handle;
-    ESP_ERROR_CHECK(spi_nand_flash_init_device(&nand_flash_config, &device_handle));
-
+    int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);//TODO correctly handled? &
+    if(ret != 0){
+        LOG_ERR("Initialization of device on top layer, error: %d", ret);
+    }
     *out_handle = device_handle;
-    *spi_handle = spi;
 }
 
-static void deinit_nand_flash(spi_nand_flash_device_t *flash, spi_device_handle_t spi)
-{
-    spi_nand_flash_deinit_device(flash);
-    spi_bus_remove_device(spi);
-    spi_bus_free(HOST_ID);
-}
 
-TEST_CASE("erase nand flash", "[spi_nand_flash]")
+
+int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 {
     spi_nand_flash_device_t *nand_flash_device_handle;
-    spi_device_handle_t spi;
-    setup_nand_flash(&nand_flash_device_handle, &spi);
-    TEST_ESP_OK(spi_nand_erase_chip(nand_flash_device_handle));
-    deinit_nand_flash(nand_flash_device_handle, spi);
+    setup_nand_flash(&nand_flash_device_handle, spi);
+    int err;
+    err = spi_nand_erase_chip(nand_flash_device_handle);
+    if(err != 0){
+        LOG_ERR("Erase chip of device on top layer, error: %d", err);
+        return -1;
+    }
+    err = spi_nand_flash_deinit_device(nand_flash_device_handle);
+    if(err != 0){
+        LOG_ERR("Deinitialize device on top layer, error: %d", err);
+        return -1;
+    }
+    return 0;
+    
 }
 
 static void check_buffer(uint32_t seed, const uint8_t *src, size_t count)
@@ -102,7 +66,16 @@ static void check_buffer(uint32_t seed, const uint8_t *src, size_t count)
     for (size_t i = 0; i < count; ++i) {
         uint32_t val;
         memcpy(&val, src + i * sizeof(uint32_t), sizeof(val));
-        TEST_ASSERT_EQUAL_HEX32(rand(), val);
+        //in case src buffer is not properly alligned, 
+        // if ((uintptr_t)(src + i * sizeof(uint32_t)) % sizeof(uint32_t) != 0) {
+        //     uint32_t temp;
+        //     memcpy(&temp, src + i * sizeof(uint32_t), sizeof(temp));
+        //     val = temp;
+        // } else {
+        //     val = *(uint32_t *)(src + i * sizeof(uint32_t));
+        // }
+        uint32_t expected = rand();  // Generate the next random number
+        zassert_equal(val, expected, "Expected 0x%08X, got 0x%08X at index %zu", expected, val, i);
     }
 }
 
@@ -111,54 +84,126 @@ static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
     srand(seed);
     for (size_t i = 0; i < count; ++i) {
         uint32_t val = rand();
-        memcpy(dst + i * sizeof(uint32_t), &val, sizeof(val));
+        memcpy(dst + i * sizeof(uint32_t), &val, sizeof(val));//be careful because of misalignment
     }
 }
 
-static void do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count)
+static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count)
 {
     uint8_t *temp_buf = NULL;
     uint8_t *pattern_buf = NULL;
     uint16_t sector_size, sector_num;
 
-    TEST_ESP_OK(spi_nand_flash_get_capacity(flash, &sector_num));
-    TEST_ESP_OK(spi_nand_flash_get_sector_size(flash, &sector_size));
+    int ret;
 
-    TEST_ESP_OK((start_sec + sec_count) > sector_num);
+    ret = spi_nand_flash_get_capacity(flash, &sector_num);
+    if(ret != 0){
+        LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
+        return -1;
+    }
 
-    pattern_buf = (uint8_t *)heap_caps_malloc(sector_size, MALLOC_CAP_DEFAULT);
-    TEST_ASSERT_NOT_NULL(pattern_buf);
-    temp_buf = (uint8_t *)heap_caps_malloc(sector_size, MALLOC_CAP_DEFAULT);
-    TEST_ASSERT_NOT_NULL(temp_buf);
+    ret = spi_nand_flash_get_sector_size(flash, &sector_size);
+    if(ret != 0){
+        LOG_ERR("Unable to get sector size, error: %d", ret);
+        return -1;
+    }
+
+    if ((start_sec + sec_count) > sector_num) {
+        LOG_ERR("Sector range exceeds flash size.");
+        return -1;
+    }
+
+    pattern_buf = k_malloc(sector_size);
+    if (!pattern_buf) {
+        LOG_ERR("Failed to allocate pattern buffer");
+        return -1;
+    }
+    temp_buf = k_malloc(sector_size);
+    if (!temp_buf) {
+        LOG_ERR("Failed to allocate temp buffer");
+        k_free(pattern_buf);
+        return -1;
+    }
 
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size / sizeof(uint32_t));
 
     for (int i = start_sec; i < sec_count; i++) {
-        TEST_ESP_OK(spi_nand_flash_write_sector(flash, pattern_buf, i));
+        if(spi_nand_flash_write_sector(flash, pattern_buf, i) != 0){
+            LOG_ERR("Failed to write sector at index %d", i);
+            return -1;
+        }
         memset((void *)temp_buf, 0x00, sector_size);
-        TEST_ESP_OK(spi_nand_flash_read_sector(flash, temp_buf, i));
+        if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
+            LOG_ERR("Failed to read sector at index %d", i);
+            return -1
+        }
         check_buffer(PATTERN_SEED, temp_buf, sector_size / sizeof(uint32_t));
     }
+    return 0;
 }
 
-TEST_CASE("write nand flash sectors", "[spi_nand_flash]")
+int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 {
     uint16_t sector_num, sector_size;
     spi_nand_flash_device_t *nand_flash_device_handle;
-    spi_device_handle_t spi;
-    setup_nand_flash(&nand_flash_device_handle, &spi);
+    setup_nand_flash(&nand_flash_device_handle, spi);
 
-    TEST_ESP_OK(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num));
-    TEST_ESP_OK(spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size));
+    if(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num) != 0){
+        LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
+        return -1;
+    }
+    if(spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size) != 0){
+        LOG_ERR("Unable to get sector size, error: %d", ret);
+        return -1;
+    }
     printf("Number of sectors: %d, Sector size: %d\n", sector_num, sector_size);
 
-    do_single_write_test(nand_flash_device_handle, 1, 16);
-    do_single_write_test(nand_flash_device_handle, 16, 32);
-    do_single_write_test(nand_flash_device_handle, 32, 64);
-    do_single_write_test(nand_flash_device_handle, 64, 128);
-    do_single_write_test(nand_flash_device_handle, sector_num / 2, 32);
-    do_single_write_test(nand_flash_device_handle, sector_num / 2, 256);
-    do_single_write_test(nand_flash_device_handle, sector_num - 20, 16);
+    if(do_single_write_test(nand_flash_device_handle, 1, 16)!= 0){
+        LOG_ERR("fails first single write test")
+    }
 
-    deinit_nand_flash(nand_flash_device_handle, spi);
+    if (do_single_write_test(spi_dev, 16, 32) != 0) {
+        LOG_ERR("Failed second single write test");
+    }
+
+    if (do_single_write_test(spi_dev, 32, 64) != 0) {
+        LOG_ERR("Failed third single write test");
+    }
+
+    if (do_single_write_test(spi_dev, 64, 128) != 0) {
+        LOG_ERR("Failed fourth single write test");
+    }
+
+    if (do_single_write_test(spi_dev, sector_num / 2, 32) != 0) {
+        LOG_ERR("Failed fifth single write test at middle of the flash");
+    }
+
+    if (do_single_write_test(spi_dev, sector_num / 2, 256) != 0) {
+        LOG_ERR("Failed sixth single write test at middle with larger span");
+    }
+
+    if (do_single_write_test(spi_dev, sector_num - 20, 16) != 0) {
+        LOG_ERR("Failed last single write test near the end of the flash");
+    }
+
+    if(spi_nand_flash_deinit_device(nand_flash_device_handle) != 0){
+        LOG_ERR("Deinitialize device on top layer, error: %d", err);
+        return -1;
+    }
+    return 0;
+}
+
+int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
+    
+    if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed first test top layer above DHARA");
+        return -1;
+    }
+
+    if(test2_writing_tests_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed second test top layer above DHARA");
+        return -1;
+    }
+    LOG_INF("Successful tests DHARA top layer")
+    return 0;
 }
