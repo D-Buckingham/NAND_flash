@@ -13,7 +13,7 @@
 #include "tests/spi_nand_oper_tests.h"
 #include "tests/test_spi_nand_top_layer.h"
 
-LOG_MODULE_REGISTER(main);
+LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 
 #define MY_SPI_MASTER DT_NODELABEL(arduino_spi)
@@ -55,7 +55,7 @@ int  main(void)
 	//Test glue between NAND flash communicator and DHARA flash translation layer???
 
 	//test top layer ftl
-	
+	return 0;
 
 }
 

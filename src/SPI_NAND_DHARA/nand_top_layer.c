@@ -338,7 +338,7 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     }
 
     // Initialize mutex for thread safety
-    k_mutex_init(&(*handle)->mutex);
+    k_sem_init(&(*handle)->mutex, 0, 1);
 
     dhara_map_init(&(*handle)->dhara_map, &(*handle)->dhara_nand, (*handle)->work_buffer, config->gc_factor);
     

@@ -16,7 +16,7 @@
 #include    "test_spi_nand_top_layer.h"
 #include    "nand_top_layer.h"
 
-LOG_MODULE_REGISTER(test_spi_nand_top_layer);
+LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
 #define PATTERN_SEED    0x12345678
@@ -137,7 +137,7 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         memset((void *)temp_buf, 0x00, sector_size);
         if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
             LOG_ERR("Failed to read sector at index %d", i);
-            return -1
+            return -1;
         }
         check_buffer(PATTERN_SEED, temp_buf, sector_size / sizeof(uint32_t));
     }
@@ -151,45 +151,45 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
     setup_nand_flash(&nand_flash_device_handle, spi);
 
     if(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num) != 0){
-        LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
+        LOG_ERR("Unable to retrieve flash capacity");
         return -1;
     }
     if(spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size) != 0){
-        LOG_ERR("Unable to get sector size, error: %d", ret);
+        LOG_ERR("Unable to get sector size");
         return -1;
     }
     printf("Number of sectors: %d, Sector size: %d\n", sector_num, sector_size);
 
     if(do_single_write_test(nand_flash_device_handle, 1, 16)!= 0){
-        LOG_ERR("fails first single write test")
+        LOG_ERR("fails first single write test");
     }
 
-    if (do_single_write_test(spi_dev, 16, 32) != 0) {
+    if (do_single_write_test(nand_flash_device_handle, 16, 32) != 0) {
         LOG_ERR("Failed second single write test");
     }
 
-    if (do_single_write_test(spi_dev, 32, 64) != 0) {
+    if (do_single_write_test(nand_flash_device_handle, 32, 64) != 0) {
         LOG_ERR("Failed third single write test");
     }
 
-    if (do_single_write_test(spi_dev, 64, 128) != 0) {
+    if (do_single_write_test(nand_flash_device_handle, 64, 128) != 0) {
         LOG_ERR("Failed fourth single write test");
     }
 
-    if (do_single_write_test(spi_dev, sector_num / 2, 32) != 0) {
+    if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 32) != 0) {
         LOG_ERR("Failed fifth single write test at middle of the flash");
     }
 
-    if (do_single_write_test(spi_dev, sector_num / 2, 256) != 0) {
+    if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 256) != 0) {
         LOG_ERR("Failed sixth single write test at middle with larger span");
     }
 
-    if (do_single_write_test(spi_dev, sector_num - 20, 16) != 0) {
+    if (do_single_write_test(nand_flash_device_handle, sector_num - 20, 16) != 0) {
         LOG_ERR("Failed last single write test near the end of the flash");
     }
 
     if(spi_nand_flash_deinit_device(nand_flash_device_handle) != 0){
-        LOG_ERR("Deinitialize device on top layer, error: %d", err);
+        LOG_ERR("Deinitialize device on top layer");
         return -1;
     }
     return 0;
