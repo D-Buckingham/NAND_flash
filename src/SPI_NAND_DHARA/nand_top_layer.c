@@ -84,7 +84,6 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
         .command = CMD_READ_ID,
         .address =  DEVICE_ADDR_READ,
         .address_bytes = 1,
-        //.dummy_bytes = 1,
         .miso_len = 1,
         .miso_data = &device_id
     };
@@ -93,6 +92,7 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
         LOG_ERR("Failed to read Alliance device ID, error: %d", err);
         return -1;
     }
+    //setting up the device
     dev->erase_block_delay_us = 3000;
     dev->program_page_delay_us = 630;
     switch (device_id) {
@@ -103,12 +103,12 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     case ALLIANCE_DI_2E: //AS5F32G04SND-08LIN
     case ALLIANCE_DI_8E: //AS5F12G04SND-10LIN
         dev->dhara_nand.num_blocks = 2048;
-        dev->read_page_delay_us = 70;
+        dev->read_page_delay_us = 60;
         break;
     case ALLIANCE_DI_2F: //AS5F34G04SND-08LIN
     case ALLIANCE_DI_8F: //AS5F14G04SND-10LIN ==> Current implementation
         dev->dhara_nand.num_blocks = 4096;
-        dev->read_page_delay_us = 60;
+        dev->read_page_delay_us = 70;
         break;
     case ALLIANCE_DI_2D: //AS5F38G04SND-08LIN
     case ALLIANCE_DI_8D: //AS5F18G04SND-10LIN
@@ -339,7 +339,7 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
 
     // Initialize mutex for thread safety
     // Initialize the semaphore with an initial count of 1 and a maximum count of 1
-    // This means the semaphore is immediately available for one `take` operation
+    // This means the semaphore is immediately available for one `take` operation (semaphore signals not locks)
     k_sem_init(&(*handle)->mutex, 1, 1);
 
     dhara_map_init(&(*handle)->dhara_map, &(*handle)->dhara_nand, (*handle)->work_buffer, config->gc_factor);
@@ -382,6 +382,7 @@ int spi_nand_erase_chip(spi_nand_flash_device_t *handle)
             goto end;
         }
 
+
         ret = wait_for_ready(handle->config.spi_dev, handle->erase_block_delay_us, NULL);
         if (ret != 0) {
             LOG_ERR("Failed to wait for readiness after erase");
@@ -393,7 +394,6 @@ int spi_nand_erase_chip(spi_nand_flash_device_t *handle)
     dhara_map_init(&handle->dhara_map, &handle->dhara_nand, handle->work_buffer, handle->config.gc_factor);
     dhara_map_clear(&handle->dhara_map);
 
-    // Operation succeeded, release the semaphore and return success
     k_sem_give(&handle->mutex);
     return 0;
 
@@ -412,17 +412,13 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
     k_sem_take(&handle->mutex, K_FOREVER);
 
     if (dhara_map_read(&handle->dhara_map, sector_id, buffer, &err)) {
-        // Map your error codes appropriately
         ret = -1;
     } else if (err) {
         // This indicates a soft ECC error, we rewrite the sector to recover
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
-            // Map your error codes appropriately
-            ret = -1; // Example error code, adjust based on your error handling
+            ret = -1; 
         }
     }
-
-    // Use Zephyr's semaphore give function
     k_sem_give(&handle->mutex);
     return ret;
 }
@@ -437,10 +433,9 @@ int spi_nand_flash_write_sector(spi_nand_flash_device_t *handle, const uint8_t *
 
     if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
         
-        ret = -1; // Example error code, adjust based on your error handling
+        ret = -1; 
     }
 
-    // Use Zephyr's semaphore give function
     k_sem_give(&handle->mutex);
     return ret;
 }

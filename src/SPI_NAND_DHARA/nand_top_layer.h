@@ -53,7 +53,6 @@ typedef struct spi_nand_flash_device_t{
     uint32_t read_page_delay_us;
     uint32_t erase_block_delay_us;
     uint32_t program_page_delay_us;
-    //SemaphoreHandle_t mutex;
     struct k_sem mutex;  // Zephyr semaphore
 }spi_nand_flash_device_t;
 
