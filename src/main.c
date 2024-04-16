@@ -8,6 +8,8 @@
 
 #include <zephyr/devicetree.h>
 
+#ifndef MAIN
+
 
 #include "SPI_NAND_DHARA/spi_nand_oper.h"
 #include "tests/spi_nand_oper_tests.h"
@@ -25,7 +27,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #define SPIDEV DT_NODELABEL(arduino_spi)
 #define SPI_DEVICE "reg_my_spi_master"
 
-#ifndef MAIN
+
 
 
 int  main(void)
