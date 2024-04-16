@@ -7,7 +7,9 @@
         "nand.h": "c",
         "error.h": "c",
         "device.h": "c",
-        "sim.h": "c"
+        "sim.h": "c",
+        "nand_top_layer.h": "c",
+        "test_spi_nand_top_layer.h": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"

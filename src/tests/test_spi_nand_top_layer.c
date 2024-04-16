@@ -11,7 +11,8 @@
 #include <zephyr/logging/log.h>
 
 #include <zephyr/drivers/spi.h>
-#include <zephyr/ztest.h>
+//#include <zephyr/ztest.h>
+#include <assert.h>
 
 #include    "test_spi_nand_top_layer.h"
 #include    "nand_top_layer.h"
@@ -77,7 +78,11 @@ static void check_buffer(uint32_t seed, const uint8_t *src, size_t count)
         //     val = *(uint32_t *)(src + i * sizeof(uint32_t));
         // }
         uint32_t expected = rand();  // Generate the next random number
-        zassert_equal(val, expected, "Expected 0x%08X, got 0x%08X at index %zu", expected, val, i);
+        assert(val == expected);
+        if (val != expected) {
+            printf("Assertion failed at index %zu: Expected 0x%08X, got 0x%08X\n", i, expected, val);
+            abort();  // Optionally abort to terminate the program
+        }
     }
 }
 
@@ -115,7 +120,7 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         return -1;
     }
 
-    pattern_buf = k_malloc(sector_size);
+    pattern_buf = k_malloc(sector_size);//consider k_calloc
     if (!pattern_buf) {
         LOG_ERR("Failed to allocate pattern buffer");
         return -1;

@@ -25,7 +25,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #define SPIDEV DT_NODELABEL(arduino_spi)
 #define SPI_DEVICE "reg_my_spi_master"
 
-
+#ifndef MAIN
 
 
 int  main(void)
@@ -59,3 +59,4 @@ int  main(void)
 
 }
 
+#endif // MAIN
