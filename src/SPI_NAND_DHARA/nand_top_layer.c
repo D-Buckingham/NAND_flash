@@ -103,7 +103,7 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     case ALLIANCE_DI_2E: //AS5F32G04SND-08LIN
     case ALLIANCE_DI_8E: //AS5F12G04SND-10LIN
         dev->dhara_nand.num_blocks = 2048;
-        dev->read_page_delay_us = 60;
+        dev->read_page_delay_us = 70;
         break;
     case ALLIANCE_DI_2F: //AS5F34G04SND-08LIN
     case ALLIANCE_DI_8F: //AS5F14G04SND-10LIN ==> Current implementation
