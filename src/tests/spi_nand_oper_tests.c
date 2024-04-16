@@ -311,8 +311,7 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     uint8_t status;
     
 
-
-    ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO for debugging
+    //ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO for debugging
     LOG_INF("Starting all SPI NAND communicator tests");
     
     LOG_INF("Unprotecting chip");

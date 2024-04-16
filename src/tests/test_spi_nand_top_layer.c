@@ -38,6 +38,8 @@ static void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct 
     int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);//TODO correctly handled? &
     if(ret != 0){
         LOG_ERR("Initialization of device on top layer, error: %d", ret);
+    }else{
+        LOG_INF("device on top layer initialized");
     }
     *out_handle = device_handle;
 }
@@ -120,12 +122,12 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         return -1;
     }
 
-    pattern_buf = k_malloc(sector_size);//consider k_calloc
+    pattern_buf = k_calloc(1, sector_size);//consider k_calloc
     if (!pattern_buf) {
         LOG_ERR("Failed to allocate pattern buffer");
         return -1;
     }
-    temp_buf = k_malloc(sector_size);
+    temp_buf = k_calloc(1, sector_size);
     if (!temp_buf) {
         LOG_ERR("Failed to allocate temp buffer");
         k_free(pattern_buf);
@@ -146,6 +148,8 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         }
         check_buffer(PATTERN_SEED, temp_buf, sector_size / sizeof(uint32_t));
     }
+    k_free(pattern_buf);
+    k_free(temp_buf);
     return 0;
 }
 

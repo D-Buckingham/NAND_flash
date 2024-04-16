@@ -82,9 +82,9 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     uint8_t device_id;
     spi_nand_transaction_t t = {
         .command = CMD_READ_ID,
-        .address = 1,
+        .address =  DEVICE_ADDR_READ,
         .address_bytes = 1,
-        .dummy_bytes = 1,
+        //.dummy_bytes = 1,
         .miso_len = 1,
         .miso_data = &device_id
     };
@@ -338,7 +338,9 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     }
 
     // Initialize mutex for thread safety
-    k_sem_init(&(*handle)->mutex, 0, 1);
+    // Initialize the semaphore with an initial count of 1 and a maximum count of 1
+    // This means the semaphore is immediately available for one `take` operation
+    k_sem_init(&(*handle)->mutex, 1, 1);
 
     dhara_map_init(&(*handle)->dhara_map, &(*handle)->dhara_nand, (*handle)->work_buffer, config->gc_factor);
     
