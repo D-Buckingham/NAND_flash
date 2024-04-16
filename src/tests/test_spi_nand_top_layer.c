@@ -83,7 +83,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 static void check_buffer(uint32_t seed, const uint8_t *src, size_t count)
 {
     srand(seed);
-    for (size_t i = 0; i < count/4; ++i) {
+    for (size_t i = 0; i < count; ++i) {
         uint32_t val;
         memcpy(&val, src + i * sizeof(uint32_t), sizeof(val));
         uint32_t expected = rand();  // Generate the next random number
@@ -109,9 +109,7 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
     uint8_t *pattern_buf = NULL;
     uint16_t sector_size, sector_num;
 
-    int ret;
-
-    ret = spi_nand_flash_get_capacity(flash, &sector_num);
+    int ret = spi_nand_flash_get_capacity(flash, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
@@ -123,24 +121,23 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         return -1;
     }
 
-    
-
     if ((start_sec + sec_count) > sector_num) {
         LOG_ERR("Sector range exceeds flash size.");
         return -1;
     }
-
-    pattern_buf = k_calloc(1, sector_size);//consider k_calloc
+    //used to allocate memory and automatically initialize all bytes to zero
+    pattern_buf = k_calloc(sector_size/sizeof(uint32_t), sizeof(uint32_t));//consider k_calloc
     if (!pattern_buf) {
         LOG_ERR("Failed to allocate pattern buffer");
         return -1;
     }
-    temp_buf = k_calloc(1, sector_size);
+    temp_buf = k_calloc(sector_size/sizeof(uint32_t), sizeof(uint32_t));
     if (!temp_buf) {
         LOG_ERR("Failed to allocate temp buffer");
         k_free(pattern_buf);
         return -1;
     }
+    //TODO check if k_calloc is now the game changer hehe
 
     //fill the buffer with random indices
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size / sizeof(uint32_t));//we store every 4 byte address 4 bytes
@@ -148,14 +145,14 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
     for (int i = start_sec; i < sec_count; i++) {
         uint8_t status;
         ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
-        ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, no error in registers found
+        ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased
         //write buffer into sector
         if(spi_nand_flash_write_sector(flash, pattern_buf, i) != 0){
             LOG_ERR("Failed to write sector at index %d", i);
             return -1;
         }
         ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
-        ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, no error in registers found
+        ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, ECC bit error was detected
         memset((void *)temp_buf, 0x00, sector_size);
         //read sector into buffer
         if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
