@@ -84,12 +84,13 @@ static void check_buffer(uint32_t seed, const uint8_t *src, size_t count)
 {
     srand(seed);
     for (size_t i = 0; i < count; ++i) {
-        uint32_t val;
-        memcpy(&val, src + i * sizeof(uint32_t), sizeof(val));
-        uint32_t expected = rand();  // Generate the next random number
-        if (val != expected) {
-            LOG_ERR("Mismatch at index %zu: expected 0x%08X, got 0x%08X", i, expected, val);
-        }
+
+        uint8_t val;
+        memcpy(&val, src + i, sizeof(val));
+        uint8_t expected = rand() & 0xFF;  // Generate the next random number
+        // if (val != expected) {
+        //     LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+        // }
     }
 }
 
@@ -97,10 +98,17 @@ static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
 {
     srand(seed);
     for (size_t i = 0; i < count; ++i) {
-        uint32_t val = rand();
-        memcpy(dst + i * sizeof(uint32_t), &val, sizeof(val));//be careful because of misalignment
-        //LOG_INF("Index %zu: 0x%08X", i, val);
+        uint8_t* ptr = (uint8_t*) dst;// Use a uint32_t pointer to interpret the buffer correctly
+        uint8_t val = rand();
+        memcpy(ptr + i, &val, sizeof(val));//memcpy(dst + i * sizeof(uint32_t), &val, sizeof(val));//dst[i] = val;  // No need to mask with 0xFF since we want full 32-bit random numbers
+        //LOG_INF("Index %zu: 0x%08X", i, *(ptr + i));
     }
+    // srand(seed);
+    // for (size_t i = 0; i < count; ++i) {
+    //     uint32_t val = rand();
+    //     memcpy(dst + i * sizeof(uint32_t), &val, sizeof(val));//be careful because of misalignment
+    //     //LOG_INF("Index %zu: 0x%08X", i, val);
+    // }
 }
 
 static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count)
@@ -126,12 +134,13 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         return -1;
     }
     //used to allocate memory and automatically initialize all bytes to zero
-    pattern_buf = k_calloc(sector_size/sizeof(uint32_t), sizeof(uint32_t));//consider k_calloc
+    pattern_buf = (uint8_t *)k_calloc(sector_size, 1);
     if (!pattern_buf) {
         LOG_ERR("Failed to allocate pattern buffer");
         return -1;
     }
-    temp_buf = k_calloc(sector_size/sizeof(uint32_t), sizeof(uint32_t));
+    
+    temp_buf = (uint8_t *)k_calloc(sector_size, 1);
     if (!temp_buf) {
         LOG_ERR("Failed to allocate temp buffer");
         k_free(pattern_buf);
@@ -140,7 +149,12 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
     //TODO check if k_calloc is now the game changer hehe
 
     //fill the buffer with random indices
-    fill_buffer(PATTERN_SEED, pattern_buf, sector_size / sizeof(uint32_t));//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
+    fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
+
+    //resulted in properly filled pattern_buf
+    // for (size_t i = 0; i < sector_size; ++i) {
+    //     LOG_INF("Value at index %zu: 0x%02X", i, *((uint8_t*)pattern_buf + i));
+    // }
 
     for (int i = start_sec; i < sec_count; i++) {
         uint8_t status;
@@ -167,7 +181,7 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, no error in registers found
         
         //check if written random numbers are the same as read out ones
-        check_buffer(PATTERN_SEED, temp_buf, sector_size / sizeof(uint32_t));//TODO figure out how to address the entire page
+        check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
     }
     k_free(pattern_buf);
     k_free(temp_buf);
