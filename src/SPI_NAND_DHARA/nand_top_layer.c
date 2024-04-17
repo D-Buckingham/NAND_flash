@@ -299,7 +299,7 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     }
 
     // Allocate memory for the NAND flash device structure
-    *handle = calloc(1, sizeof(spi_nand_flash_device_t));
+    *handle = calloc(sizeof(spi_nand_flash_device_t), 1);//TODO check on this
     if (*handle == NULL) {
         LOG_ERR("Failed to allocate memory for NAND flash device");
         return -1;
@@ -412,11 +412,11 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
     k_sem_take(&handle->mutex, K_FOREVER);
 
     if (dhara_map_read(&handle->dhara_map, sector_id, buffer, &err)) {
-        ret = -1;
+        ret = err;//TODO check on this ret
     } else if (err) {
         // This indicates a soft ECC error, we rewrite the sector to recover
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
-            ret = -1; 
+            ret = err; 
         }
     }
     k_sem_give(&handle->mutex);
@@ -433,7 +433,7 @@ int spi_nand_flash_write_sector(spi_nand_flash_device_t *handle, const uint8_t *
 
     if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
         
-        ret = -1; 
+        ret = err; 
     }
 
     k_sem_give(&handle->mutex);
@@ -449,7 +449,7 @@ int spi_nand_flash_sync(spi_nand_flash_device_t *handle)
     k_sem_take(&handle->mutex, K_FOREVER);
 
     if (dhara_map_sync(&handle->dhara_map, &err)) {
-        ret = -1; 
+        ret = err; 
     }
 
     k_sem_give(&handle->mutex);

@@ -140,7 +140,7 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
     //TODO check if k_calloc is now the game changer hehe
 
     //fill the buffer with random indices
-    fill_buffer(PATTERN_SEED, pattern_buf, sector_size / sizeof(uint32_t));//we store every 4 byte address 4 bytes
+    fill_buffer(PATTERN_SEED, pattern_buf, sector_size / sizeof(uint32_t));//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
 
     for (int i = start_sec; i < sec_count; i++) {
         uint8_t status;
@@ -149,6 +149,8 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         //write buffer into sector
         if(spi_nand_flash_write_sector(flash, pattern_buf, i) != 0){
             LOG_ERR("Failed to write sector at index %d", i);
+            k_free(pattern_buf);
+            k_free(temp_buf);
             return -1;
         }
         ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
@@ -157,6 +159,8 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         //read sector into buffer
         if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
             LOG_ERR("Failed to read sector at index %d", i);
+            k_free(pattern_buf);
+            k_free(temp_buf);
             return -1;
         }
         ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
