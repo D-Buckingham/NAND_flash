@@ -362,8 +362,6 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     if(spi_nand_program_load(dev, pattern_buf, column_address, sector_size) == 0){
         if(spi_nand_program_execute(dev, page) != 0){
             LOG_ERR("Test7: Failed to write sector at index %d", 1);
-            k_free(pattern_buf);
-            k_free(temp_buf);
             return -1;
         }
     }
@@ -416,8 +414,6 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     if (sector_size > 800) {
         LOG_INF("\n... (plus %d more bytes)", sector_size - 800);
     }
-
-
     return 0;
 }
 
