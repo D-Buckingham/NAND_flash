@@ -15,6 +15,24 @@
 
 LOG_MODULE_REGISTER(test_spi_nand_oper, CONFIG_LOG_DEFAULT_LEVEL);
 
+static int wait_and_chill(const struct spi_dt_spec *dev){
+    uint8_t status;
+    int ret = 0;
+    while (true) {
+        ret = spi_nand_read_register(dev, REG_STATUS, &status);
+        if (ret != 0) {
+            LOG_ERR("Error reading NAND status register while waiting");
+            ret = -1;
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay  
+    }
+    return ret;
+}
+
 
 int test_write_register_spi_nand(const struct spi_dt_spec *dev){
      LOG_INF("Test ?: test write register");
@@ -132,18 +150,9 @@ int test_erase_block_spi_nand(const struct spi_dt_spec *dev){
     }
     
     
-    // //check and wait if successful
-    while (true) {
-        
-        int err = spi_nand_read_register(dev, REG_STATUS, &status);
-        if (err != 0) {
-            LOG_ERR("Test 5: Error reading NAND status register");
-        }
-
-        if ((status & STAT_BUSY) == 0) {
-            break;
-        }     
-        k_msleep(1);   
+    wait_and_chill(dev);
+    if (ret != 0) {
+        return -1;
     }
 
     if ((status & STAT_ERASE_FAILED) != 0) {
@@ -177,23 +186,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 }
 
 
-static int wait_and_chill(const struct spi_dt_spec *dev){
-    uint8_t status;
-    int ret = 0;
-    while (true) {
-        ret = spi_nand_read_register(dev, REG_STATUS, &status);
-        if (ret != 0) {
-            LOG_ERR("Error reading NAND status register while waiting");
-            ret = -1;
-        }
 
-        if ((status & STAT_BUSY) == 0) {
-            break;
-        }
-        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay  
-    }
-    return ret;
-}
 
 //final test, write and read it
 int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
