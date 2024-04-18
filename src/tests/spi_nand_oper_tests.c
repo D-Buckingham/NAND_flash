@@ -177,6 +177,24 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 }
 
 
+static int wait_and_chill(const struct spi_dt_spec *dev){
+    uint8_t status;
+    int ret = 0;
+    while (true) {
+        ret = spi_nand_read_register(dev, REG_STATUS, &status);
+        if (ret != 0) {
+            LOG_ERR("Error reading NAND status register while waiting");
+            ret = -1;
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay  
+    }
+    return ret;
+}
+
 //final test, write and read it
 int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Test 6: testing SPI NAND write and read register");
@@ -191,6 +209,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
         LOG_ERR("Device not ready");
         return -1;
     }
+    //usually we would read into cache existing data before changing it.
     //enable write
     int ret = spi_nand_write_enable(dev);
     if (ret) {
@@ -211,20 +230,10 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     }
 
     //check and wait if successful
-    while (true) {
-        uint8_t status;
-        ret = spi_nand_read_register(dev, REG_STATUS, &status);
-        if (ret != 0) {
-            LOG_ERR("Test 6: Error reading NAND status register");
-        }
-
-        if ((status & STAT_BUSY) == 0) {
-            break;
-        }
-        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
-        
+    ret = wait_and_chill(dev);
+    if (ret != 0) {
+        return -1;
     }
-
     // Read from the register
     ret = spi_nand_read_page(dev, page); 
     if (ret != 0) {
@@ -234,18 +243,9 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
 
    
     //wait again
-    while (true) {
-        uint8_t status;
-        ret = spi_nand_read_register(dev, REG_STATUS, &status);
-        if (ret != 0) {
-            LOG_ERR("Test 6: Error reading NAND status register");
-        }
-
-        if ((status & STAT_BUSY) == 0) {
-            break;
-        }
-        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
-        
+    ret = wait_and_chill(dev);
+    if (ret != 0) {
+        return -1;
     }
 
     //read from cache
@@ -302,29 +302,30 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
 
 
 
-static void check_buffer(uint32_t seed, const uint8_t *src, size_t count)
+static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
 {
+    int ret = 0;
     srand(seed);
     for (size_t i = 0; i < count; ++i) {
-        uint8_t val;
-        memcpy(&val, src + i, sizeof(val));
-        uint8_t expected = rand() & 0xFF;  // Generate the next random number
+        uint8_t val = src[i];
+        uint8_t expected = rand() & 0xFF; 
         if (val != expected) {
             LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+            ret = -1;
         }
     }
+    return ret;
 }
 
 static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
 {
     srand(seed);
     for (size_t i = 0; i < count; ++i) {
-        uint8_t* ptr = (uint8_t*) dst;// Use a uint32_t pointer to interpret the buffer correctly
-        uint8_t val = rand();
-        memcpy(ptr + i, &val, sizeof(val));//memcpy(dst + i * sizeof(uint32_t), &val, sizeof(val));//dst[i] = val;  // No need to mask with 0xFF since we want full 32-bit random numbers
-        //LOG_INF("Index %zu: 0x%08X", i, *(ptr + i));
+        dst[i] = rand() & 0xFF;  
+        //LOG_INF("Index %zu: 0x%02X", i, dst[i]);
     }
 }
+
 
 //final test, write and read it
 int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
@@ -333,8 +334,10 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     //PREPARATION:
     uint8_t *temp_buf = NULL;
     uint8_t *pattern_buf = NULL;
+    //we assume a sector size of 2048 (smaller than page size of 2175)
     uint16_t sector_size = 2048;
     uint32_t page = 0x00;
+    uint16_t column_address = 0;//starting point to read from in page in cache
 
 
     pattern_buf = (uint8_t *)k_calloc(sector_size, 1);
@@ -365,40 +368,33 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     }
 
     int ret = spi_nand_write_enable(dev);
-    if (ret) {
+    if (ret != 0) {
         LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
         return -1;
     }
 
-
+    //TODO remove, write enable bit properly set
     uint8_t status;
-    ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO REMOVE for debugging
-    ret = spi_nand_read_register(dev, REG_STATUS, &status);//TODO for debugging, properly erased
+    // ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO REMOVE for debugging
+    // ret = spi_nand_read_register(dev, REG_STATUS, &status);//TODO for debugging, properly erased
     
-    //write buffer into sector
-    if(spi_nand_program_load(dev, pattern_buf, 1, sector_size) != 0){
+    //We just overwrite existing data in NAND array
+
+    //load data into cache
+    if(spi_nand_program_load(dev, pattern_buf, column_address, sector_size) == 0){
         if(spi_nand_program_execute(dev, page) != 0){
-            LOG_ERR("Failed to write sector at index %d", 1);
+            LOG_ERR("Test7: Failed to write sector at index %d", 1);
             k_free(pattern_buf);
             k_free(temp_buf);
             return -1;
         }
     }
+
     //check and wait if successful
-    while (true) {
-        uint8_t status;
-        ret = spi_nand_read_register(dev, REG_STATUS, &status);
-        if (ret != 0) {
-            LOG_ERR("Test 6: Error reading NAND status register");
-        }
-
-        if ((status & STAT_BUSY) == 0) {
-            break;
-        }
-        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
-        
+    ret = wait_and_chill(dev);
+    if (ret != 0) {
+        return -1;
     }
-
 
 
     ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO REMOVE for debugging
@@ -407,55 +403,42 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
 
 
-
-
-
     //read sector into buffer
 
-    // Read from the register
-    
+    // Read from the NAND array the block 0, page 0 everything 
     ret = spi_nand_read_page(dev, page); 
     if (ret != 0) {
-        LOG_ERR("Test 6: Failed to read page %u, error: %d", page, ret);
+        LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
         return -1;
     }
+    ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO REMOVE for debugging
+    ret = spi_nand_read_register(dev, REG_STATUS, &status);//TODO for debugging, properly erased, ECC bit error was detected
 
-   
-
-    //wait again
-    while (true) {
-        uint8_t status;
-        ret = spi_nand_read_register(dev, REG_STATUS, &status);
-        if (ret != 0) {
-            LOG_ERR("Test 6: Error reading NAND status register");
-        }
-
-        if ((status & STAT_BUSY) == 0) {
-            break;
-        }
-        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
-        
+ 
+    ret = wait_and_chill(dev);
+    if (ret != 0) {
+        return -1;
     }
+    ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO REMOVE for debugging
+    ret = spi_nand_read_register(dev, REG_STATUS, &status);//TODO for debugging, properly erased, ECC bit error was detected
 
     //read from cache
-    ret = spi_nand_read(dev, temp_buf, 1, sector_size);
+    ret = spi_nand_read(dev, temp_buf, 0, sector_size);
     if (ret != 0) {
-        LOG_ERR("Test 6: Failed to read , err: %d", ret);
+        LOG_ERR("Test 7: Failed to read , err: %d", ret);
         return -1; 
     }
 
 
-    // if(spi_nand_flash_read_sector(dev, temp_buf, 1) != 0){
-    //     LOG_ERR("Failed to read sector at index %d", 1);
-    //     k_free(pattern_buf);
-    //     k_free(temp_buf);
-    //     return -1;
-    // }
     ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO REMOVE for debugging
     ret = spi_nand_read_register(dev, REG_STATUS, &status);//TODO for debugging, properly erased, no error in registers found
     
     //check if written random numbers are the same as read out ones
-    check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
+    ret = check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
+
+    if(ret == 0){
+        LOG_INF("TEST 7: PASSED!!!");
+    }
 
     k_free(pattern_buf);
     k_free(temp_buf);

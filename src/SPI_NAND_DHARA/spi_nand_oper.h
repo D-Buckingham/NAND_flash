@@ -139,7 +139,7 @@ int spi_nand_write_enable(const struct spi_dt_spec *dev);
  * Reads the specified page from NAND to the device's internal cache.
  *
  * @param dev Device SPI configuration data obtained from devicetree.
- * @param page Page number to read.
+ * @param page Page number to read. 24-bit address consists of 7 dummy bits and 17 page/block address bits
  * @return 0 on success, negative error code otherwise.
  */
 int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page);
