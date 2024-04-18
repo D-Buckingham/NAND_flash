@@ -113,6 +113,17 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev);
 int test_spi_nand_write_read(const struct spi_dt_spec *dev);
 
 /**
+ * @brief Tests the SPI NAND write and read operation on an entire sector.
+ *
+ * Performs a test write operation to a sector and then reads back
+ * the written data to verify the operation. It uses random numbers for this 
+ * operations. It tests the sequence of enabling write, programming a load, 
+ * executing the program, and reading the page.
+ *
+ * @param dev Pointer to the SPI device structure.
+ */
+int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev);
+/**
  * @brief Execute all SPI NAND communicator tests.
  *
  * This function runs a series of tests designed to verify the functionality
