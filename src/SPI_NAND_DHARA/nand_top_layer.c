@@ -412,12 +412,13 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
     k_sem_take(&handle->mutex, K_FOREVER);
 
     if (dhara_map_read(&handle->dhara_map, sector_id, buffer, &err) == 0) {
-        ret = err;//TODO check on this ret
+        ret = err;
+        //TODO check on this ret
         // for (size_t i = 300; i < 600; ++i) {
         //     LOG_INF("Value read at index %zu: 0x%02X", i, *((uint8_t*)buffer + i));
         // }
         //we don't read everything
-    } else if (err) {
+    } else if (err == DHARA_E_ECC) {
         // This indicates a soft ECC error, we rewrite the sector to recover
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
             ret = err; 

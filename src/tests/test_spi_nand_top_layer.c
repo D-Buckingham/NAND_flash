@@ -111,6 +111,8 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
 {
     
     uint16_t sector_size, sector_num;
+    memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
+    memset((void *)temp_buf, 0x00, sizeof(temp_buf));
 
     int ret = spi_nand_flash_get_capacity(flash, &sector_num);
     if(ret != 0){
@@ -145,7 +147,7 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         }
         ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
         ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, ECC bit error was detected
-        memset((void *)temp_buf, 0x00, sector_size);
+        
         //read sector into buffer
         if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
             LOG_ERR("Failed to read sector at index %d", i);
