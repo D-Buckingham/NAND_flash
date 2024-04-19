@@ -76,7 +76,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
     //add data
     if(transaction -> mosi_len > 0){
-        tx_bufs[2].buf = transaction -> mosi_data;//might expect it not as a pointer
+        tx_bufs[2].buf = (uint8_t *)transaction -> mosi_data;
         tx_bufs[2].len = transaction -> mosi_len;
         buf_index++;
     }
@@ -196,7 +196,7 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_program_load(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
+int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
 {
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,

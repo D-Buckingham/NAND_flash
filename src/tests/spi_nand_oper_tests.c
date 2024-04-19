@@ -94,7 +94,7 @@ int test_read_cache_spi_nand(const struct spi_dt_spec *dev){
 
 int test_load_and_execute_program_spi_nand(const struct spi_dt_spec *dev){
     LOG_INF("Test 4: test loading to cache and committing data to nand array");
-    uint8_t data = 0xCC;
+    const uint8_t data = 0xCC;
     uint16_t used_marker = 0;
 
     if (!device_is_ready(dev->bus)) {
@@ -192,7 +192,7 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
 int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Test 6: testing SPI NAND write and read register");
     uint16_t length = 4;
-    uint8_t data[4] = {0xAA, 0xBB, 0xCC, 0x11};
+    const uint8_t data[4] = {0xAA, 0xBB, 0xCC, 0x11};
     uint32_t page = 0x00;
     uint8_t readings[4] = {0};
     uint8_t read_page[800] = {0};
@@ -357,7 +357,6 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     
     
     //We just overwrite existing data in NAND array
-
     //load data into cache
     if(spi_nand_program_load(dev, pattern_buf, column_address, sector_size) == 0){
         if(spi_nand_program_execute(dev, page) != 0){
@@ -374,7 +373,6 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
 
     //read sector into buffer
-
     // Read from the NAND array the block 0, page 0 everything 
     ret = spi_nand_read_page(dev, page); 
     if (ret != 0) {
@@ -406,7 +404,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Contents of temp_buf (800 bytes):");
     for (int i = 0; i < 800 && i < sector_size; i++) {
         if (i % 40 == 0 && i != 0) {
-            LOG_INF("");  // Insert a new line every 40 bytes, but not at the start
+            LOG_INF("");  
         }
         printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
     }
