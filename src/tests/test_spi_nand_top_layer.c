@@ -59,9 +59,9 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
     }
 
 
-    uint8_t status;
-    int ret = spi_nand_read_register(spi, REG_PROTECT, &status);//TODO REMOVE for debugging
-    ret = spi_nand_read_register(spi, REG_STATUS, &status);//TODO for debugging, properly erased, no error in registers found
+    //uint8_t status;
+    // int ret = spi_nand_read_register(spi, REG_PROTECT, &status);//TODO REMOVE for debugging
+    // ret = spi_nand_read_register(spi, REG_STATUS, &status);//TODO for debugging, properly erased, no error in registers found
 
 
     err = spi_nand_flash_deinit_device(nand_flash_device_handle);
@@ -89,7 +89,7 @@ static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
         uint8_t val = src[i];
         uint8_t expected = rand() & 0xFF; 
         if (val != expected) {
-            //LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+            LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
             ret = -1;
         }
     }
@@ -135,18 +135,26 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
     //fill the buffer with random indices
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
 
-
     for (int i = start_sec; i < sec_count; i++) {
         uint8_t status;
-        ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
-        ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased
+
+        // LOG_INF("Contents of pattern_buf:"); //==> showed that it is always properly filled, TODO remove
+        // for (int i = 0; i < sector_size; i++) {
+        //     if (i % 40 == 0 && i != 0) {
+        //         LOG_INF("");  // Print a new line every 40 bytes, but not before the first byte
+        //     }
+        //     printk("%02X ", pattern_buf[i]);
+        // }
+        //LOG_INF("");  // Ensure we end with a newline after the loop
+        // ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
+        // ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased
         //write buffer into sector
         if(spi_nand_flash_write_sector(flash, pattern_buf, i) != 0){
             LOG_ERR("Failed to write sector at index %d", i);
             return -1;
         }
-        ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
-        ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, ECC bit error was detected
+        // ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
+        // ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased, ECC bit error was detected
         
         //read sector into buffer
         if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
@@ -158,59 +166,72 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         
         //check if written random numbers are the same as read out ones
         check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
+
+
+        // LOG_INF("Contents of temp_buf after reading:");
+        // for (int i = 0; i < sector_size; i++) {
+        //     if (i % 40 == 0 && i != 0) {
+        //         LOG_INF("");  // Print a new line every 40 bytes, but not before the first byte
+        //     }
+        //     printk("%02X ", temp_buf[i]);
+        // }
     }
+    LOG_INF("\n\n\n");
     return 0;
 }
 
 int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 {
-    uint16_t sector_num, sector_size;
+    
+    // uint16_t sector_num, sector_size;
     spi_nand_flash_device_t *nand_flash_device_handle;
     setup_nand_flash(&nand_flash_device_handle, spi);
 
-    if(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num) != 0){
-        LOG_ERR("Unable to retrieve flash capacity");
-        return -1;
-    }
-    if(spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size) != 0){
-        LOG_ERR("Unable to get sector size");
-        return -1;
-    }
-    printf("Number of sectors: %d, Sector size: %d\n", sector_num, sector_size);
+    // if(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num) != 0){
+    //     LOG_ERR("Unable to retrieve flash capacity");
+    //     return -1;
+    // }
+    // if(spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size) != 0){
+    //     LOG_ERR("Unable to get sector size");
+    //     return -1;
+    // }
+    // printf("Number of sectors: %d, Sector size: %d\n", sector_num, sector_size);
 
+    LOG_INF("Test2, Setup complete");
+    
     if(do_single_write_test(nand_flash_device_handle, 1, 16)!= 0){
         LOG_ERR("fails first single write test");
     }else{
         LOG_INF("single write read test 1 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, 16, 32) != 0) {
-        LOG_ERR("Failed second single write test");
-    }else{
-        LOG_INF("single write read test 2 successful");
-    }
+    // if (do_single_write_test(nand_flash_device_handle, 16, 32) != 0) {
+    //     LOG_ERR("Failed second single write test");
+    // }else{
+    //     LOG_INF("single write read test 2 successful");
+    // }
 
-    if (do_single_write_test(nand_flash_device_handle, 32, 64) != 0) {
-        LOG_ERR("Failed third single write test");
-    }else{
-        LOG_INF("single write read test 3 successful");
-    }
+    // if (do_single_write_test(nand_flash_device_handle, 32, 64) != 0) {
+    //     LOG_ERR("Failed third single write test");
+    // }else{
+    //     LOG_INF("single write read test 3 successful");
+    // }
 
-    if (do_single_write_test(nand_flash_device_handle, 64, 128) != 0) {
-        LOG_ERR("Failed fourth single write test");
-    }
+    // if (do_single_write_test(nand_flash_device_handle, 64, 128) != 0) {
+    //     LOG_ERR("Failed fourth single write test");
+    // }
 
-    if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 32) != 0) {
-        LOG_ERR("Failed fifth single write test at middle of the flash");
-    }
+    // if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 32) != 0) {
+    //     LOG_ERR("Failed fifth single write test at middle of the flash");
+    // }
 
-    if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 256) != 0) {
-        LOG_ERR("Failed sixth single write test at middle with larger span");
-    }
+    // if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 256) != 0) {
+    //     LOG_ERR("Failed sixth single write test at middle with larger span");
+    // }
 
-    if (do_single_write_test(nand_flash_device_handle, sector_num - 20, 16) != 0) {
-        LOG_ERR("Failed last single write test near the end of the flash");
-    }
+    // if (do_single_write_test(nand_flash_device_handle, sector_num - 20, 16) != 0) {
+    //     LOG_ERR("Failed last single write test near the end of the flash");
+    // }
 
     if(spi_nand_flash_deinit_device(nand_flash_device_handle) != 0){
         LOG_ERR("Deinitialize device on top layer");
@@ -219,17 +240,177 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
     return 0;
 }
 
-int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
-    LOG_INF("Starting tests top layer");
-    if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
-        LOG_ERR("Failed first test top layer above DHARA");
+static int wait_and_chill(const struct spi_dt_spec *dev){
+    uint8_t status;
+    int ret = 0;
+    while (true) {
+        ret = spi_nand_read_register(dev, REG_STATUS, &status);
+        if (ret != 0) {
+            LOG_ERR("Error reading NAND status register while waiting");
+            ret = -1;
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay  
+    }
+    return ret;
+}
+
+
+int test_struct_handling(const struct spi_dt_spec *spi){
+    spi_nand_flash_device_t *flash;
+    setup_nand_flash(&flash, spi);
+
+    uint16_t sector_size, sector_num;
+    uint32_t page = 0x00;
+    memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
+    memset((void *)temp_buf, 0x00, sizeof(temp_buf));
+
+    int ret = spi_nand_flash_get_capacity(flash, &sector_num);
+    if(ret != 0){
+        LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
     }
 
-    if(test2_writing_tests_top_layer(spidev_dt) != 0){
-        LOG_ERR("Failed second test top layer above DHARA");
+    ret = spi_nand_flash_get_sector_size(flash, &sector_size);
+    if(ret != 0){
+        LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
     }
-    LOG_INF("Successful tests DHARA top layer");
+
+    
+
+    LOG_INF("Test 3: testing SPI NAND sector write and read register");
+    
+    //PREPARATION:
+
+    //we assume a sector size of 2048 (smaller than page size of 2175)
+    uint16_t column_address = 0;//starting point to read from in page in cache
+
+
+    fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
+
+
+    // if (!device_is_ready(flash -> config.spi_dev->bus)) {
+    //     LOG_ERR("Test 7: Device not ready");
+    //     return -1;
+    // }
+
+
+
+    //////////////////////////////////////          WRITING             //////////////////////////////////////////////
+
+    // ret = spi_nand_read_page(flash -> config.spi_dev, page); 
+    // if (ret != 0) {
+    //     LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
+    //     return -1;
+    // }
+
+    // ret = spi_nand_write_enable(flash -> config.spi_dev);
+    // if (ret != 0) {
+    //     LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
+    //     return -1;
+    // }
+
+    
+    
+    // //We just overwrite existing data in NAND array
+    // //load data into cache
+    // if(spi_nand_program_load(flash -> config.spi_dev, pattern_buf, column_address, sector_size) == 0){
+    //     if(spi_nand_program_execute(flash -> config.spi_dev, page) != 0){
+    //         LOG_ERR("Test7: Failed to write sector at index %d", 1);
+    //         return -1;
+    //     }
+    // }
+
+    //writing was checked and works
+    if(spi_nand_flash_write_sector(flash, pattern_buf, 1) != 0){
+        LOG_ERR("Failed to write sector at index %d", 1);
+        return -1;
+    }
+    
+
+////////////////////////////////////////        AFTER WRITING             ///////////////////////////////////////////////////////////////
+
+
+
+    if(spi_nand_flash_read_sector(flash, temp_buf, 0) != 0){
+            LOG_ERR("Failed to read sector at index %d", 1);
+            return -1;
+        }
+
+
+
+    // //check and wait if successful
+    // ret = wait_and_chill(flash -> config.spi_dev);
+    // if (ret != 0) {
+    //     return -1;
+    // }
+
+
+    // //read sector into buffer
+    // // Read from the NAND array the block 0, page 0 everything 
+    // ret = spi_nand_read_page(flash -> config.spi_dev, page); 
+    // if (ret != 0) {
+    //     LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
+    //     return -1;
+    // }
+ 
+    // ret = wait_and_chill(flash -> config.spi_dev);
+    // if (ret != 0) {
+    //     return -1;
+    // }
+    // //read from cache
+    // ret = spi_nand_read(flash -> config.spi_dev, temp_buf, 0, sector_size);
+    // if (ret != 0) {
+    //     LOG_ERR("Test 7: Failed to read , err: %d", ret);
+    //     return -1; 
+    // }
+
+
+    //check if written random numbers are the same as read out ones
+    ret = check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
+
+    if(ret == 0){
+        LOG_INF("TEST 3: PASSED!!!");
+    }
+
+
+    // Log the first 100 bytes of temp_buf as hexadecimal values
+    LOG_INF("Contents of temp_buf (800 bytes):");
+    for (int i = 0; i < 800 && i < sector_size; i++) {
+        if (i % 40 == 0 && i != 0) {
+            LOG_INF("");  
+        }
+        printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
+    }
+
+    if (sector_size > 800) {
+        LOG_INF("\n... (plus %d more bytes)", sector_size - 800);
+    }
+    return 0;
+
+}
+
+
+
+
+int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
+    LOG_INF("Starting tests top layer");
+    // if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
+    //     LOG_ERR("Failed first test top layer above DHARA");
+    //     return -1;
+    // }
+
+    test_struct_handling(spidev_dt);
+
+
+    // if(test2_writing_tests_top_layer(spidev_dt) != 0){
+    //     LOG_ERR("Failed second test top layer above DHARA");
+    //     return -1;
+    // }
+    //LOG_INF("Successful tests DHARA top layer");
     return 0;
 }

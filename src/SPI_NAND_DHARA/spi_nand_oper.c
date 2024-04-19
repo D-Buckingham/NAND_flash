@@ -119,7 +119,8 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
             .count = 1
         };
         
-        ret = spi_transceive_dt(spidev_dt, &tx, &rx);}
+        ret = spi_transceive_dt(spidev_dt, &tx, &rx);
+        }
     //ret = spi_transceive_dt(spidev_dt, &tx, &rx);
     return ret;
 }
@@ -182,7 +183,34 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
         .dummy_bytes = 1
     };
 
-    return spi_nand_execute_transaction(dev, &t);
+    int ret = spi_nand_execute_transaction(dev, &t);
+    // if (ret != 0) {
+    //     LOG_ERR("SPI NAND transaction failed with error code %d", ret);
+    //     return ret;
+    // }
+
+    // k_msleep(300);
+
+    // // Log the length of the data read
+    // LOG_INF("Length of data read: %u bytes", length);
+
+    // // Log the data read, formatted in rows of 40 bytes
+    // LOG_INF("Data read from SPI NAND oper:");
+    // char line_buf[128]; // Buffer to hold one line of output
+    // int line_idx = 0;   // Index in the current line
+
+    // for (size_t i = 0; i < length; i++) {
+    //     line_idx += snprintf(&line_buf[line_idx], sizeof(line_buf) - line_idx, "%02X ", t.miso_data[i]);
+        
+    //     if ((i + 1) % 40 == 0 || i == length - 1) {
+    //         LOG_INF("%s", line_buf);  // Print the accumulated line of data
+    //         line_idx = 0;            // Reset index for the next line
+    //     }
+    // }
+
+    return ret;
+
+    //return spi_nand_execute_transaction(dev, &t);
 }
 
 int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
@@ -192,6 +220,7 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
         .address_bytes = 3,
         .address = page
     };
+    LOG_INF("executing loaded page");
 
     return spi_nand_execute_transaction(dev, &t);
 }
@@ -205,6 +234,18 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
         .mosi_len = length,//(N+1)*8+24
         .mosi_data = data
     };
+    //TODO remove
+    // LOG_INF("Data write on oper lever");
+    // for (size_t i = 0; i < length; i++) {
+    //     if (i % 40 == 0 && i != 0) {
+    //         LOG_INF("");  // New line every 40 bytes, but not at the start
+    //     }
+    //     printk("%02X ", data[i]);  // Using printk for continuous output on the same line
+    // }
+    // if (length % 40 != 0) {
+    //     LOG_INF("");  // Ensure ending on a new line if not already done
+    // }
+    
 
     return spi_nand_execute_transaction(dev, &t);
 }
