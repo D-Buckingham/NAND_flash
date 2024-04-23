@@ -412,6 +412,17 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     if (sector_size > 800) {
         LOG_INF("\n... (plus %d more bytes)", sector_size - 800);
     }
+
+    memset(pattern_buf, 0xFF, sector_size);
+
+    // Write 0xFF to the entire page
+    if (spi_nand_program_load(dev, pattern_buf, column_address, 2175) == 0) {
+        if (spi_nand_program_execute(dev, page) != 0) {
+            LOG_ERR("Test7: Failed to reset sector to 0xFF at index %d", 1);
+            return -1;
+        }
+    }
+
     return 0;
 }
 

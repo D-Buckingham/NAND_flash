@@ -192,6 +192,8 @@ static void reset_journal(struct dhara_journal *j)
 	/* No recovery required */
 	clear_recovery(j);
 
+	int size = sizeof(j->page_buf);
+
 	/* Empty metadata buffer */
 	memset(j->page_buf, 0xff, 1 << j->nand->log2_page_size);
 }

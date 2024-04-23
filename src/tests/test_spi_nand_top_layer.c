@@ -87,8 +87,9 @@ static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
         uint8_t val = src[i];
         uint8_t expected = rand() & 0xFF; 
         if (val != expected) {
-            //LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
-            ret = -1;
+            if(i == 600){
+            LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+            }ret = -1;
         }
     }
     return ret;
@@ -423,10 +424,10 @@ int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     test_struct_handling(spidev_dt);
 
 
-    // if(test2_writing_tests_top_layer(spidev_dt) != 0){
-    //     LOG_ERR("Failed second test top layer above DHARA");
-    //     return -1;
-    // }
+    if(test2_writing_tests_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed second test top layer above DHARA");
+        return -1;
+    }
     //LOG_INF("Successful tests DHARA top layer");
     return 0;
 }
