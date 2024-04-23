@@ -10,8 +10,6 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
-#include <zephyr/drivers/spi.h>
-//#include <zephyr/ztest.h>
 #include <assert.h>
 
 #include    "test_spi_nand_top_layer.h"
@@ -89,7 +87,7 @@ static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
         uint8_t val = src[i];
         uint8_t expected = rand() & 0xFF; 
         if (val != expected) {
-            LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+            //LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
             ret = -1;
         }
     }
@@ -135,6 +133,20 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
     //fill the buffer with random indices
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     for (int i = start_sec; i < sec_count; i++) {
         uint8_t status;
 
@@ -146,6 +158,8 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         //     printk("%02X ", pattern_buf[i]);
         // }
         //LOG_INF("");  // Ensure we end with a newline after the loop
+
+
         // ret = spi_nand_read_register(flash->config.spi_dev, REG_PROTECT, &status);//TODO REMOVE for debugging
         // ret = spi_nand_read_register(flash->config.spi_dev, REG_STATUS, &status);//TODO for debugging, properly erased
         //write buffer into sector
@@ -260,6 +274,7 @@ static int wait_and_chill(const struct spi_dt_spec *dev){
 
 
 int test_struct_handling(const struct spi_dt_spec *spi){
+    
     spi_nand_flash_device_t *flash;
     setup_nand_flash(&flash, spi);
 
@@ -287,7 +302,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     //PREPARATION:
 
     //we assume a sector size of 2048 (smaller than page size of 2175)
-    uint16_t column_address = 0;//starting point to read from in page in cache
+    
 
 
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
@@ -302,6 +317,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
 
     //////////////////////////////////////          WRITING             //////////////////////////////////////////////
 
+    // uint16_t column_address = 0;//starting point to read from in page in cache
     // ret = spi_nand_read_page(flash -> config.spi_dev, page); 
     // if (ret != 0) {
     //     LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
@@ -326,7 +342,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     // }
 
     //writing was checked and works
-    if(spi_nand_flash_write_sector(flash, pattern_buf, 1) != 0){
+    if(spi_nand_flash_write_sector(flash, pattern_buf, 2) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
     }
@@ -334,20 +350,20 @@ int test_struct_handling(const struct spi_dt_spec *spi){
 
 ////////////////////////////////////////        AFTER WRITING             ///////////////////////////////////////////////////////////////
 
+    //check and wait if successful
+    ret = wait_and_chill(flash -> config.spi_dev);
+    if (ret != 0) {
+        return -1;
+    }
 
-
-    if(spi_nand_flash_read_sector(flash, temp_buf, 0) != 0){
+    if(spi_nand_flash_read_sector(flash, temp_buf, 2) != 0){
             LOG_ERR("Failed to read sector at index %d", 1);
             return -1;
         }
 
 
 
-    // //check and wait if successful
-    // ret = wait_and_chill(flash -> config.spi_dev);
-    // if (ret != 0) {
-    //     return -1;
-    // }
+    
 
 
     // //read sector into buffer
@@ -404,13 +420,13 @@ int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     //     return -1;
     // }
 
-    test_struct_handling(spidev_dt);
+    //test_struct_handling(spidev_dt);
 
 
-    // if(test2_writing_tests_top_layer(spidev_dt) != 0){
-    //     LOG_ERR("Failed second test top layer above DHARA");
-    //     return -1;
-    // }
+    if(test2_writing_tests_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed second test top layer above DHARA");
+        return -1;
+    }
     //LOG_INF("Successful tests DHARA top layer");
     return 0;
 }

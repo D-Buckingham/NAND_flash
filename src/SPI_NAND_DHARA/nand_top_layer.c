@@ -341,13 +341,17 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     // Initialize the semaphore with an initial count of 1 and a maximum count of 1
     // This means the semaphore is immediately available for one `take` operation (semaphore signals not locks)
     k_sem_init(&(*handle)->mutex, 1, 1);
+    
 
     dhara_map_init(&(*handle)->dhara_map, &(*handle)->dhara_nand, (*handle)->work_buffer, config->gc_factor);
     
 
     // Resume map to handle power failures
     dhara_error_t ignored;
-    dhara_map_resume(&(*handle)->dhara_map, &ignored);
+    ret = dhara_map_resume(&(*handle)->dhara_map, &ignored);
+    if (ret != 0) {
+        LOG_ERR("Failed to recover stored state in dhara map resume, empty map initialized");
+    }
 
     return 0;
 
@@ -355,6 +359,7 @@ fail:
     if ((*handle)->work_buffer != NULL) {
         free((*handle)->work_buffer);
     }
+    LOG_ERR("Failed to initalize mapping");
     free(*handle);
     return ret;
 }
@@ -421,7 +426,8 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
     } else if (err == DHARA_E_ECC) {
         // This indicates a soft ECC error, we rewrite the sector to recover
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
-            ret = err; 
+            ret = err;
+            LOG_ERR("error while writing to map"); 
         }
     }
     k_sem_give(&handle->mutex);
@@ -437,7 +443,7 @@ int spi_nand_flash_write_sector(spi_nand_flash_device_t *handle, const uint8_t *
     k_sem_take(&handle->mutex, K_FOREVER);
 
     if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
-        
+        LOG_ERR("error while writing to map"); 
         ret = err; 
     }
 
