@@ -182,13 +182,13 @@ static int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_s
         check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
 
 
-        // LOG_INF("Contents of temp_buf after reading:");
-        // for (int i = 0; i < sector_size; i++) {
-        //     if (i % 40 == 0 && i != 0) {
-        //         LOG_INF("");  // Print a new line every 40 bytes, but not before the first byte
-        //     }
-        //     printk("%02X ", temp_buf[i]);
-        // }
+        LOG_INF("Contents of temp_buf after reading:");
+        for (int i = 0; i < sector_size; i++) {
+            if (i % 40 == 0 && i != 0) {
+                LOG_INF("");  // Print a new line every 40 bytes, but not before the first byte
+            }
+            printk("%02X ", temp_buf[i]);
+        }
     }
     LOG_INF("\n\n\n");
     return 0;
@@ -420,7 +420,7 @@ int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     //     return -1;
     // }
 
-    //test_struct_handling(spidev_dt);
+    test_struct_handling(spidev_dt);
 
 
     if(test2_writing_tests_top_layer(spidev_dt) != 0){
