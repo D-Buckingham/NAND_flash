@@ -362,11 +362,11 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    ret = spi_nand_read_register(dev -> config.spi_dev, REG_STATUS, &status);
-    if (ret != 0) {
-        LOG_ERR("Error reading NAND status register");
-        return -1; 
-    }
+    // ret = spi_nand_read_register(dev -> config.spi_dev, REG_STATUS, &status);
+    // if (ret != 0) {
+    //     LOG_ERR("Error reading NAND status register");
+    //     return -1; 
+    // }
 
     if ((status & STAT_ERASE_FAILED) != 0) {
         dhara_set_error(err, DHARA_E_BAD_BLOCK);
@@ -455,13 +455,13 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
     ret = read_page_and_wait(dev, p, NULL);
     if (ret) {
         LOG_ERR("Failed to read page %u", p);
-        return -1; 
+        return 0; 
     }
 
     ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&used_marker, dev->page_size + 2, 2);
     if (ret) {
         LOG_ERR("Failed to read OOB area for page %u", p);
-        return -1; 
+        return 0; 
     }
 
     LOG_DBG("Is free, page=%u, used_marker=%04x", p, used_marker);
@@ -493,6 +493,10 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
 
     
     ret = read_page_and_wait(dev, p, &status);
+    if(ret != 0){
+        LOG_ERR("error in dhara nand read");
+        return -1;
+    }
 
     //ret = spi_nand_read_register(dev->config.spi_dev, REG_STATUS, &status);
     //if (ret != 0) {

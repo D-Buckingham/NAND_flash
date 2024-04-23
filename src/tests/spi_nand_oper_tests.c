@@ -488,6 +488,6 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
         return ret;
     }
 
-    LOG_INF("All SPI NAND communicator tests passed successfully\n\n");
+    LOG_INF("All SPI NAND driver tests passed successfully\n\n");
     return 0;
 }

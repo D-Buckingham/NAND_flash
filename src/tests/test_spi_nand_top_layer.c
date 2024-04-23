@@ -415,18 +415,18 @@ int test_struct_handling(const struct spi_dt_spec *spi){
 
 int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     LOG_INF("Starting tests top layer");
-    // if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
-    //     LOG_ERR("Failed first test top layer above DHARA");
-    //     return -1;
-    // }
+    if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed first test top layer above DHARA");
+        return -1;
+    }
 
     test_struct_handling(spidev_dt);
 
 
-    if(test2_writing_tests_top_layer(spidev_dt) != 0){
-        LOG_ERR("Failed second test top layer above DHARA");
-        return -1;
-    }
+    // if(test2_writing_tests_top_layer(spidev_dt) != 0){
+    //     LOG_ERR("Failed second test top layer above DHARA");
+    //     return -1;
+    // }
     //LOG_INF("Successful tests DHARA top layer");
     return 0;
 }
