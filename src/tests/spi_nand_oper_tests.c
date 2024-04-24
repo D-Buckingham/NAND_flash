@@ -303,7 +303,7 @@ static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
         uint8_t val = src[i];
         uint8_t expected = rand() & 0xFF; 
         if (val != expected) {
-            LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+            //LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
             ret = -1;
         }
     }
@@ -319,18 +319,22 @@ static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
     }
 }
 
-static uint8_t pattern_buf[2048];
-static uint8_t temp_buf[2048];
+static uint8_t pattern_buf[2175];
+static uint8_t temp_buf[2175];
 
 //final test, write and read it
 int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Test 7: testing SPI NAND sector write and read register");
+    int status;
+
+    memset(pattern_buf, 0x00, 2175);
+    memset(temp_buf, 0x00, 2175);
     
     //PREPARATION:
 
     //we assume a sector size of 2048 (smaller than page size of 2175)
     uint16_t sector_size = 2048;
-    uint32_t page = 0x00;
+    uint32_t page = 1;
     uint16_t column_address = 0;//starting point to read from in page in cache
 
 
@@ -341,13 +345,14 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         LOG_ERR("Test 7: Device not ready");
         return -1;
     }
+    wait_and_chill(dev);
 
     int ret = spi_nand_read_page(dev, page); 
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
         return -1;
     }
-
+    wait_and_chill(dev);
     ret = spi_nand_write_enable(dev);
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
@@ -358,7 +363,8 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     
     //We just overwrite existing data in NAND array
     //load data into cache
-    if(spi_nand_program_load(dev, pattern_buf, column_address, sector_size) == 0){
+    if(spi_nand_program_load(dev, pattern_buf, column_address, 2175) == 0){
+        wait_and_chill(dev);
         if(spi_nand_program_execute(dev, page) != 0){
             LOG_ERR("Test7: Failed to write sector at index %d", 1);
             return -1;
@@ -385,7 +391,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         return -1;
     }
     //read from cache
-    ret = spi_nand_read(dev, temp_buf, 0, sector_size);
+    ret = spi_nand_read(dev, temp_buf, 0, 2175);
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read , err: %d", ret);
         return -1; 
@@ -402,25 +408,53 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
     // Log the first 100 bytes of temp_buf as hexadecimal values
     LOG_INF("Contents of temp_buf (800 bytes):");
-    for (int i = 0; i < 800 && i < sector_size; i++) {
+    for (int i = 0; i < 2175 && i < sector_size; i++) {
         if (i % 40 == 0 && i != 0) {
             LOG_INF("");  
         }
         printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
     }
+    wait_and_chill(dev);
+    
 
-    if (sector_size > 800) {
-        LOG_INF("\n... (plus %d more bytes)", sector_size - 800);
+    memset(pattern_buf, 0xFF, 2175);
+
+    LOG_INF("patternbuf is:");
+    for (int i = 0; i < 2175 && i < sector_size; i++) {
+        if (i % 40 == 0 && i != 0) {
+            LOG_INF("");  
+        }
+        printk("%02X ", pattern_buf[i]);  // Using printk for continuous output on the same line
     }
-
-    memset(pattern_buf, 0xFF, sector_size);
 
     // Write 0xFF to the entire page
     if (spi_nand_program_load(dev, pattern_buf, column_address, 2175) == 0) {
+        wait_and_chill(dev);
         if (spi_nand_program_execute(dev, page) != 0) {
             LOG_ERR("Test7: Failed to reset sector to 0xFF at index %d", 1);
             return -1;
         }
+    }
+
+    ret = wait_and_chill(dev);
+
+    //read sector into buffer
+    // Read from the NAND array the block 0, page 0 everything 
+    ret = spi_nand_read_page(dev, page); 
+    if (ret != 0) {
+        LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
+        return -1;
+    }
+ 
+    ret = wait_and_chill(dev);
+    if (ret != 0) {
+        return -1;
+    }
+    //read from cache
+    ret = spi_nand_read(dev, temp_buf, 0, 2175);
+    if (ret != 0) {
+        LOG_ERR("Test 7: Failed to read , err: %d", ret);
+        return -1; 
     }
 
     return 0;

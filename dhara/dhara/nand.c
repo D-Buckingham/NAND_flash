@@ -421,12 +421,12 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     }
     wait_for_ready_nand(&spidev_dt, 3000, NULL);
     
-    uint16_t column = 2048 + 2;
-    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&used_marker, column, 2);//put a flag there
-    if (ret) {
-        LOG_ERR("Failed to load used marker, error: %d", ret);
-        return -1;
-    }
+    // uint16_t column = 2048 + 2;
+    // ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&used_marker, column, 2);//put a flag there
+    // if (ret) {
+    //     LOG_ERR("Failed to load used marker, error: %d", ret);
+    //     return -1;
+    // }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // //Log the data written, 40 bytes per line ==> lead to entire buffer filled, go deeper

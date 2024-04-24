@@ -39,18 +39,18 @@ int  main(void)
 	//Test the SPI communication
 	int ret;
 	
-	// ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
-	// if (ret != 0) {
-    //     LOG_ERR("Communication tests failed, err: %d", ret);
-    // }
+	ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
+	if (ret != 0) {
+        LOG_ERR("Communication tests failed, err: %d", ret);
+    }
 
 	//Test glue between NAND flash communicator and DHARA flash translation layer???
 
 	//test top layer ftl
-	ret = test_nand_top_layer(&spidev_dt);
-	if (ret != 0) {
-        LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
-    }
+	// ret = test_nand_top_layer(&spidev_dt);
+	// if (ret != 0) {
+    //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
+    // }
 
 	//spi_nand_test(dev);//returns manufacturere and device ID
 	//test_SPI_NAND_Communicator_all_tests(dev);
