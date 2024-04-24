@@ -387,6 +387,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
  * E_BAD_BLOCK.
  * 
  */
+uint8_t buffer_marker[2050];
 int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 {
     LOG_DBG("prog, page=%u", p);
@@ -395,6 +396,10 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     int ret;
     uint8_t status;
     uint16_t used_marker = 0;
+    memset((void *)buffer_marker, 0x00, sizeof(buffer_marker));
+    memcpy(buffer_marker, data, 2048);  // Copy the main data
+    buffer_marker[2048] = 0x00;         // Setting the used marker at the end of the data
+    buffer_marker[2049] = 0x00;
 
     ret = read_page_and_wait(&spidev_dt, p, NULL);//Initiate page read operation to cache. Reads the specified page from NAND to the device's internal cache.
     if (ret) {
@@ -409,14 +414,14 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     }
 
 
-    ret = spi_nand_program_load(&spidev_dt, data, 0, 2048);//Load data into the SPI NAND device's cache.
+    ret = spi_nand_program_load(&spidev_dt, buffer_marker, 0, sizeof(buffer_marker));//Load data into the SPI NAND device's cache.
     if (ret) {
         LOG_ERR("Failed to load program, error: %d", ret);
         return -1;
     }
     wait_for_ready_nand(&spidev_dt, 3000, NULL);
     
-    uint16_t column = 2;
+    uint16_t column = 2048 + 2;
     ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&used_marker, column, 2);//put a flag there
     if (ret) {
         LOG_ERR("Failed to load used marker, error: %d", ret);
@@ -426,13 +431,13 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // //Log the data written, 40 bytes per line ==> lead to entire buffer filled, go deeper
     LOG_INF("Data write to page  %u in nand.c:", p);
-    for (size_t i = 0; i < 2048; i++) {
+    for (size_t i = 0; i < 2050; i++) {
         if (i % 40 == 0 && i != 0) {
             LOG_INF("");  // New line every 40 bytes, but not at the start
         }
-        printk("%02X ", data[i]);  // Using printk for continuous output on the same line
+        printk("%02X ", buffer_marker[i]);  // Using printk for continuous output on the same line
     }
-    if (2048 % 40 != 0) {
+    if (2050 % 40 != 0) {
         LOG_INF("");  // Ensure ending on a new line if not already done
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

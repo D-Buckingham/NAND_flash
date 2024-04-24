@@ -453,12 +453,20 @@ static int test_external(const struct spi_dt_spec *spi){
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
     fill_buffer(PATTERN_SEED, pattern_buf, 2048);
 
+    int ret = spi_nand_erase_block(spi, 0);
+    if (ret != 0) {
+        LOG_ERR("Failed to erase block");
+    }
+
+    
+
     // spi_nand_flash_device_t *flash;
     // setup_nand_flash(&flash, spi);
 
     dhara_map_init(&map, &nand, page_buffer, 4);
+    dhara_map_clear(&map);
     dhara_error_t err = DHARA_E_NONE;
-    int ret = dhara_map_resume(&map, &err);
+    ret = dhara_map_resume(&map, &err);
     if (ret == -1){
         LOG_INF("Error while resuming dhara map, nothing there to resume");
     }
@@ -466,7 +474,7 @@ static int test_external(const struct spi_dt_spec *spi){
     unprotect_chip(spi);
 
     LOG_INF("Starting to write");
-    if(dhara_map_write(&map, 1, pattern_buf, &err) != 0){
+    if(dhara_map_write(&map, 2, pattern_buf, &err) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
     }
@@ -478,7 +486,7 @@ static int test_external(const struct spi_dt_spec *spi){
     }
     LOG_INF("Starting to read");
 
-    if(dhara_map_read(&map, 1, temp_buf, &err) != 0){
+    if(dhara_map_read(&map, 2, temp_buf, &err) != 0){
         LOG_ERR("Failed to read sector at index %d", 1);
         return -1;
     }
@@ -494,6 +502,7 @@ static int test_external(const struct spi_dt_spec *spi){
     // if (2048 > 800) {
     //     LOG_INF("\n... (plus %d more bytes)", 2048 - 800);
     // }
+    LOG_INF("End of external test");
     return 0;
 
 }
