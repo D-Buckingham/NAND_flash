@@ -34,9 +34,10 @@ const struct spi_dt_spec spi_nand_init(void) {
 
     if (!device_is_ready((&spidev_dt)->bus)) {
         LOG_ERR("SPI device is not ready");
-    } else {
-        LOG_INF("NAND flash as SPI device initialized!\n\n");
-    }
+    } 
+    // else {
+    //     LOG_INF("NAND flash as SPI device initialized!\n\n");
+    // }
 
     return spidev_dt;
 }
@@ -182,6 +183,7 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
         .miso_data = data,
         .dummy_bytes = 1
     };
+    LOG_INF("The read out data length is: %u", length);
 
     int ret = spi_nand_execute_transaction(dev, &t);
     // if (ret != 0) {
@@ -234,6 +236,7 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
         .mosi_len = length,//(N+1)*8+24
         .mosi_data = data
     };
+    LOG_INF("The loaded data length is: %u", length);
     //TODO remove
     // LOG_INF("Data write on oper lever");
     // for (size_t i = 0; i < length; i++) {

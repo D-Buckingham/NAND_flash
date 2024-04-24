@@ -275,7 +275,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 
     // Assuming spi_nand_read function reads 'len' bytes starting from 'offset' to 'buf'
     // And assuming the OOB data can be accessed directly following the main data area
-    ret = spi_nand_read(&spidev_dt, (uint8_t *)&bad_block_indicator, dev->page_size, 2);
+    ret = spi_nand_read(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to read bad block indicator, err: %d", ret);
         return 1; // Assume bad block on error
@@ -317,7 +317,7 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
         return;
     }
 
-    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, dev->page_size, 2);
+    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
         return;
@@ -359,7 +359,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    ret = wait_for_ready_nand(&spidev_dt, dev->erase_block_delay_us, &status);//(dev->config.spi_dev);
+    ret = wait_for_ready_nand(&spidev_dt, 3000, &status);//(dev->config.spi_dev);
     if (ret != 0) {
         LOG_ERR("Failed to wait for ready, error: %d", ret);
         return -1;
@@ -409,34 +409,40 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     }
 
 
-    ret = spi_nand_program_load(&spidev_dt, data, 0, dev->page_size);//Load data into the SPI NAND device's cache.
+    ret = spi_nand_program_load(&spidev_dt, data, 0, 2048);//Load data into the SPI NAND device's cache.
     if (ret) {
         LOG_ERR("Failed to load program, error: %d", ret);
         return -1;
     }
-    // Log the data written, 40 bytes per line ==> lead to entire buffer filled, go deeper
-    // LOG_INF("Data write to page  %u in nand.c:", p);
-    // for (size_t i = 0; i < dev->page_size; i++) {
-    //     if (i % 40 == 0 && i != 0) {
-    //         LOG_INF("");  // New line every 40 bytes, but not at the start
-    //     }
-    //     printk("%02X ", data[i]);  // Using printk for continuous output on the same line
-    // }
-    // if (dev->page_size % 40 != 0) {
-    //     LOG_INF("");  // Ensure ending on a new line if not already done
-    // }
-
-    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&used_marker, dev->page_size + 2, 2);//put a flag there
+    wait_for_ready_nand(&spidev_dt, 3000, NULL);
+    
+    uint16_t column = 2;
+    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&used_marker, column, 2);//put a flag there
     if (ret) {
         LOG_ERR("Failed to load used marker, error: %d", ret);
         return -1;
     }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // //Log the data written, 40 bytes per line ==> lead to entire buffer filled, go deeper
+    LOG_INF("Data write to page  %u in nand.c:", p);
+    for (size_t i = 0; i < 2048; i++) {
+        if (i % 40 == 0 && i != 0) {
+            LOG_INF("");  // New line every 40 bytes, but not at the start
+        }
+        printk("%02X ", data[i]);  // Using printk for continuous output on the same line
+    }
+    if (2048 % 40 != 0) {
+        LOG_INF("");  // Ensure ending on a new line if not already done
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ret = program_execute_and_wait(&spidev_dt, p, &status);//Execute a program operation. Commits the data previously loaded into the device's cache to the NAND array
     if (ret) {
         LOG_ERR("Failed to execute program, error: %d", ret);
         return -1;
     }
+
 
     if ((status & STAT_PROGRAM_FAILED) != 0) {
         LOG_DBG("prog failed, page=%u", p);
@@ -463,7 +469,7 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
         return 0; 
     }
 
-    ret = spi_nand_read(&spidev_dt, (uint8_t *)&used_marker, dev->page_size + 2, 2);
+    ret = spi_nand_read(&spidev_dt, (uint8_t *)&used_marker, 2048 + 2, 2);
     if (ret) {
         LOG_ERR("Failed to read OOB area for page %u", p);
         return 0; 

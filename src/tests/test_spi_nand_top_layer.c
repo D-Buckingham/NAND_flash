@@ -417,11 +417,28 @@ int test_struct_handling(const struct spi_dt_spec *spi){
 
 
 //////////////////////////////////     NEW TESTS EXTERNAL        /////////////
+static int unprotect_chip(const struct spi_dt_spec *dev)
+{
+    uint8_t status;
+    int ret = spi_nand_read_register(dev, REG_PROTECT, &status);
+    if (ret != 0) {
+        LOG_ERR("Failed to read register: %d", ret);
+        return ret;
+    }
 
+    if (status != 0x00) {
+        ret = spi_nand_write_register(dev, REG_PROTECT, 0);
+    }
+    if (ret != 0) {
+        LOG_ERR("Failed to remove protection bit with error code: %d", ret);
+        return -1;
+    }
+
+    return 0;
+}
 
 
 // private variables
-static bool initialized = false;
 static struct dhara_map map;
 uint8_t page_buffer[2048];
 static struct dhara_nand nand = {
@@ -436,16 +453,19 @@ static int test_external(const struct spi_dt_spec *spi){
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
     fill_buffer(PATTERN_SEED, pattern_buf, 2048);
 
-    spi_nand_flash_device_t *flash;
-    setup_nand_flash(&flash, spi);
+    // spi_nand_flash_device_t *flash;
+    // setup_nand_flash(&flash, spi);
 
     dhara_map_init(&map, &nand, page_buffer, 4);
     dhara_error_t err = DHARA_E_NONE;
     int ret = dhara_map_resume(&map, &err);
     if (ret == -1){
-        LOG_ERR("Error whili resuming dhara map");
+        LOG_INF("Error while resuming dhara map, nothing there to resume");
     }
 
+    unprotect_chip(spi);
+
+    LOG_INF("Starting to write");
     if(dhara_map_write(&map, 1, pattern_buf, &err) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
@@ -456,6 +476,7 @@ static int test_external(const struct spi_dt_spec *spi){
     if (ret != 0) {
         return -1;
     }
+    LOG_INF("Starting to read");
 
     if(dhara_map_read(&map, 1, temp_buf, &err) != 0){
         LOG_ERR("Failed to read sector at index %d", 1);
@@ -463,16 +484,16 @@ static int test_external(const struct spi_dt_spec *spi){
     }
 
     LOG_INF("Contents of temp_buf (800 bytes):");
-    for (int i = 0; i < 800 && i < 2048; i++) {
+    for (int i = 0; i < 2048; i++) {
         if (i % 40 == 0 && i != 0) {
             LOG_INF("");  
         }
         printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
     }
 
-    if (2048 > 800) {
-        LOG_INF("\n... (plus %d more bytes)", 2048 - 800);
-    }
+    // if (2048 > 800) {
+    //     LOG_INF("\n... (plus %d more bytes)", 2048 - 800);
+    // }
     return 0;
 
 }
