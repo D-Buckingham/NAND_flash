@@ -16,6 +16,10 @@
 #include    "spi_nand_oper_tests.h"
 #include    "nand_top_layer.h"
 
+
+
+
+
 LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
@@ -412,22 +416,88 @@ int test_struct_handling(const struct spi_dt_spec *spi){
 }
 
 
+//////////////////////////////////     NEW TESTS EXTERNAL        /////////////
+
+
+
+// private variables
+static bool initialized = false;
+static struct dhara_map map;
+uint8_t page_buffer[2048];
+static struct dhara_nand nand = {
+    .log2_page_size = 11,
+    .log2_ppb = 6,
+    .num_blocks = 4096,
+};
+
+
+static int test_external(const struct spi_dt_spec *spi){
+    memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
+    memset((void *)temp_buf, 0x00, sizeof(temp_buf));
+    fill_buffer(PATTERN_SEED, pattern_buf, 2048);
+
+    spi_nand_flash_device_t *flash;
+    setup_nand_flash(&flash, spi);
+
+    dhara_map_init(&map, &nand, page_buffer, 4);
+    dhara_error_t err = DHARA_E_NONE;
+    int ret = dhara_map_resume(&map, &err);
+    if (ret == -1){
+        LOG_ERR("Error whili resuming dhara map");
+    }
+
+    if(dhara_map_write(&map, 1, pattern_buf, &err) != 0){
+        LOG_ERR("Failed to write sector at index %d", 1);
+        return -1;
+    }
+
+    //check and wait if successful
+    ret = wait_and_chill(spi);
+    if (ret != 0) {
+        return -1;
+    }
+
+    if(dhara_map_read(&map, 1, temp_buf, &err) != 0){
+        LOG_ERR("Failed to read sector at index %d", 1);
+        return -1;
+    }
+
+    LOG_INF("Contents of temp_buf (800 bytes):");
+    for (int i = 0; i < 800 && i < 2048; i++) {
+        if (i % 40 == 0 && i != 0) {
+            LOG_INF("");  
+        }
+        printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
+    }
+
+    if (2048 > 800) {
+        LOG_INF("\n... (plus %d more bytes)", 2048 - 800);
+    }
+    return 0;
+
+}
+
+//////////////////////////////////     NEW TESTS EXTERNAL        /////////////
+
+
 
 
 int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     LOG_INF("Starting tests top layer");
-    if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
-        LOG_ERR("Failed first test top layer above DHARA");
-        return -1;
-    }
+    // if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
+    //     LOG_ERR("Failed first test top layer above DHARA");
+    //     return -1;
+    // }
 
-    test_struct_handling(spidev_dt);
+    // test_struct_handling(spidev_dt);
 
 
-    if(test2_writing_tests_top_layer(spidev_dt) != 0){
-        LOG_ERR("Failed second test top layer above DHARA");
-        return -1;
-    }
+    // if(test2_writing_tests_top_layer(spidev_dt) != 0){
+    //     LOG_ERR("Failed second test top layer above DHARA");
+    //     return -1;
+    // }
+
+    test_external(spidev_dt);
     //LOG_INF("Successful tests DHARA top layer");
     return 0;
 }

@@ -35,7 +35,7 @@ const struct spi_dt_spec spi_nand_init(void) {
     if (!device_is_ready((&spidev_dt)->bus)) {
         LOG_ERR("SPI device is not ready");
     } else {
-        LOG_INF("NOR flash as SPI device initialized!\n\n");
+        LOG_INF("NAND flash as SPI device initialized!\n\n");
     }
 
     return spidev_dt;
