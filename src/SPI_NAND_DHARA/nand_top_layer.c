@@ -350,7 +350,7 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     dhara_error_t ignored;
     ret = dhara_map_resume(&(*handle)->dhara_map, &ignored);
     if (ret != 0) {
-        LOG_ERR("Failed to recover stored state in dhara map resume, empty map initialized");
+        LOG_INF("No stored state in dhara map, empty map initialized");
     }
 
     return 0;

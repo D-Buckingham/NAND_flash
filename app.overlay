@@ -15,7 +15,7 @@
                 <NRF_PSEL(SPIM_MISO, 1, 14)>,//0.12
                 <NRF_PSEL(SPIM_MOSI, 0, 5)>; //0.09
             //bias-pull-up;
-            nordic,drive-mode = <NRF_DRIVE_E0E1>;
+            //nordic,drive-mode = <NRF_DRIVE_E0E1>;
         };
     };
 
@@ -26,7 +26,7 @@
                 <NRF_PSEL(SPIM_MOSI, 0, 5)>; //0.09
             low-power-enable;
             //bias-pull-up;
-            nordic,drive-mode = <NRF_DRIVE_E0E1>;
+            //nordic,drive-mode = <NRF_DRIVE_E0E1>;
         };
     };
 };

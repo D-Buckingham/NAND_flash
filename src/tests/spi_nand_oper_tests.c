@@ -560,7 +560,6 @@ int check_write_read_cash(const struct spi_dt_spec *dev){
     //we assume a sector size of 2048 (smaller than page size of 2175)
     uint16_t sector_size = 2048;
     uint32_t page = 320;
-    uint16_t column_address = 0;//starting point to read from in page in cache
     int ret;
 
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
