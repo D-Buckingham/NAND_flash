@@ -287,11 +287,11 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
 
 int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle)
 {
-    // Verify SPI device is ready
-    // if (!device_is_ready((config->spi_dev)->bus)) {
-    //     LOG_ERR("SPI device is not ready");
-    //     return -1;
-    // }
+    //Verify SPI device is ready
+    if (!device_is_ready((config->spi_dev)->bus)) {
+        LOG_ERR("SPI device is not ready");
+        return -1;
+    }
 
     // Apply default garbage collection factor if not set
     if (config->gc_factor == 0) {
@@ -418,11 +418,6 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
 
     if (dhara_map_read(&handle->dhara_map, sector_id, buffer, &err) == 0) {
         ret = err;
-        //TODO check on this ret
-        // for (size_t i = 300; i < 600; ++i) {
-        //     LOG_INF("Value read at index %zu: 0x%02X", i, *((uint8_t*)buffer + i));
-        // }
-        //we don't read everything
     } else if (err == DHARA_E_ECC) {
         // This indicates a soft ECC error, we rewrite the sector to recover
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {

@@ -12,6 +12,7 @@ file(GLOB APP_SOURCES
             "nand_top_layer.c"
             "src/tests/spi_nand_oper_tests.c"
             "src/tests/test_spi_nand_top_layer.c"
+            "src/SPI_NAND_DHARA/diskio_nand.c"
            
 )
 
