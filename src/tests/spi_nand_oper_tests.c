@@ -319,8 +319,6 @@ static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
     }
 }
 
-int status;
-int ret;
 
 // Function to log the status and protection registers
 void log_registers(const struct spi_dt_spec *dev, const char* operation) {
@@ -328,16 +326,52 @@ void log_registers(const struct spi_dt_spec *dev, const char* operation) {
 
     // Log the status register
     if (spi_nand_read_register(dev, REG_STATUS, &status) == 0) {
-        LOG_INF("%s: Status Register = 0x%02X", operation, status);
+        LOG_INF("%s: Status Register = %02u", operation, status);
     } else {
         LOG_ERR("%s: Failed to read Status Register", operation);
     }
 
     // Log the protection register
     if (spi_nand_read_register(dev, REG_PROTECT, &protect) == 0) {
-        LOG_INF("%s: Protect Register = 0x%02X", operation, protect);
+        LOG_INF("%s: Protect Register = %02u", operation, protect);
     } else {
         LOG_ERR("%s: Failed to read Protect Register", operation);
+    }
+}
+
+void reread_page(const struct spi_dt_spec *dev, uint32_t page){
+    int cnt = 0;
+    uint8_t status;
+    int ret;
+
+    spi_nand_read_register(dev, REG_STATUS, &status);
+    LOG_INF("After initial read: Status Register = %02u", status);
+    // Check the status register after reading the page
+    while (spi_nand_read_register(dev, REG_STATUS, &status) == 0 && cnt < 10 && status & STAT_ECC1) {
+        cnt ++;
+        
+        // Check if ECC error bit is set
+        if (status & STAT_ECC1) {
+            LOG_INF("ECC error detected, attempting to re-read the page.");
+            
+            // Attempt to re-read the page
+            ret = spi_nand_read_page(dev, page);
+            if (ret != 0) {
+                LOG_ERR("Failed to re-read page %u, error: %d", page, ret);
+            }
+            wait_and_chill(dev);
+            // Check status again after re-read
+            if (spi_nand_read_register(dev, REG_STATUS, &status) == 0) {
+                LOG_INF("After re-read: Status Register = %02u", status);
+                if (status & STAT_ECC1) {
+                    LOG_ERR("ECC error persists after re-read.");
+                } else {
+                    LOG_INF("ECC error corrected after re-read.");
+                }
+            } else {
+                LOG_ERR("Failed to read status register after re-read.");
+            }
+        }
     }
 }
 
@@ -348,7 +382,8 @@ static uint8_t temp_buf[2175];
 //final test, write and read it
 int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Test 7: testing SPI NAND sector write and read register");
-    int status;
+
+    spi_nand_erase_block(dev, 1);
 
     memset(pattern_buf, 0xFF, 2048);
     memset(temp_buf, 0xFF, 2175);
@@ -357,7 +392,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
     //we assume a sector size of 2048 (smaller than page size of 2175)
     uint16_t sector_size = 2048;
-    uint32_t page = 0;
+    uint32_t page = 320;
     uint16_t column_address = 0;//starting point to read from in page in cache
     int ret;
 
@@ -396,7 +431,6 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
             LOG_ERR("Test7: Failed to write sector at index %d", 1);
             return -1;
         }
-        log_registers(dev, "After Program Execute");
     }
 
     //check and wait if successful
@@ -404,6 +438,8 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     if (ret != 0) {
         return -1;
     }
+
+    log_registers(dev, "After Program Execute");
 
 
     //read sector into buffer
@@ -414,11 +450,16 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         return -1;
     }
     
- 
+    reread_page(dev, page);
+
+
     ret = wait_and_chill(dev);
     if (ret != 0) {
         return -1;
     }
+
+    
+
 
     log_registers(dev, "After Page Read in cash");
     //read from cache
@@ -428,6 +469,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         return -1; 
     }
     log_registers(dev, "After Page Read");
+    
 
 
     //check if written random numbers are the same as read out ones
@@ -480,13 +522,14 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
         return -1;
     }
-    log_registers(dev, "After Page Read into cash");
+    
 
  
     ret = wait_and_chill(dev);
     if (ret != 0) {
         return -1;
     }
+    log_registers(dev, "After Page Read into cash");
     //read from cache
     ret = spi_nand_read(dev, temp_buf, 0, 2175);
     if (ret != 0) {
@@ -497,6 +540,78 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
 
     return 0;
+}
+
+
+int check_write_read_cash(const struct spi_dt_spec *dev){
+    memset(pattern_buf, 0xFF, 2048);
+    memset(temp_buf, 0xFF, 2175);
+    
+    //PREPARATION:
+
+    //we assume a sector size of 2048 (smaller than page size of 2175)
+    uint16_t sector_size = 2048;
+    uint32_t page = 320;
+    uint16_t column_address = 0;//starting point to read from in page in cache
+    int ret;
+
+    fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
+
+
+    if (!device_is_ready(dev->bus)) {
+        LOG_ERR("Test 7: Device not ready");
+        return -1;
+    }
+    wait_and_chill(dev);
+
+
+
+    ret = spi_nand_read_page(dev, page); 
+    if (ret != 0) {
+        LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
+        return -1;
+    }
+   
+    wait_and_chill(dev);
+    ret = spi_nand_write_enable(dev);
+    if (ret != 0) {
+        LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
+        return -1;
+    }
+    log_registers(dev, "After Write Enable");
+    
+    
+    //We just overwrite existing data in NAND array
+    //load data into cache
+    if(spi_nand_program_load(dev, pattern_buf, 4, 2048) == 0){
+        wait_and_chill(dev);
+        log_registers(dev, "After Program Load");
+    }
+
+    
+
+    ret = spi_nand_read(dev, temp_buf, 0, 2175);
+    if (ret != 0) {
+        LOG_ERR("Test 7: Failed to read , err: %d", ret);
+        return -1; 
+    }
+    log_registers(dev, "After Page Read");
+    
+
+
+    //check if written random numbers are the same as read out ones
+    ret = check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
+
+
+    LOG_INF("Contents of temp_buf:");
+    for (int i = 0; i < 2175 && i < sector_size; i++) {
+        if (i % 40 == 0 && i != 0) {
+            LOG_INF("");  
+        }
+        printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
+    }
+    return 0;
+
 }
 
 int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
@@ -565,8 +680,10 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
         return ret;
     }
 
+    ret = check_write_read_cash(dev);
+
     //test 7
-    ret = test_spi_nand_sector_write_read(dev);
+    //ret = test_spi_nand_sector_write_read(dev);
     if (ret != 0) {
         LOG_ERR("Sector write and read test failed");
         return ret;

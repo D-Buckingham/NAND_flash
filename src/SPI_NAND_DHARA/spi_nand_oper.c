@@ -191,7 +191,7 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
         return ret;
     }
 
-    k_msleep(300);
+    
 
     // Log the length of the data read
     LOG_INF("Length of data read: %u bytes", length);
