@@ -198,12 +198,6 @@ int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page);
 int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id);
 
 
-/**
- * @brief Test function to validate the SPI communication. Reads out the device ID
- * 
- * @param dev Device SPI configuration data obtained from devicetree. 
-*/
-int spi_nand_test(const struct spi_dt_spec *dev);
 
 
 
