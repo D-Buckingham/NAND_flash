@@ -17,6 +17,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 
+
 /**
  * S5F14G04SND-10LIN
  * 0 ... 4095 blocks RA <17:6>
@@ -178,7 +179,7 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
     spi_nand_transaction_t  t = {
         .command = CMD_READ_FAST,
         .address_bytes = 2,
-        .address = column,
+        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//big to small endian
         .miso_len = length,//usually 2 bytes
         .miso_data = data,
         .dummy_bytes = 1
@@ -232,10 +233,11 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
         .address_bytes = 2,
-        .address = column,
+        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//BSWAP_16(column),
         .mosi_len = length,//(N+1)*8+24
         .mosi_data = data
     };
+    LOG_INF("The column is: %u", column);
     LOG_INF("The loaded data length is: %u", length);
     //TODO remove
     LOG_INF("Data write on oper lever");

@@ -546,6 +546,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 int check_write_read_cash(const struct spi_dt_spec *dev){
     memset(pattern_buf, 0xFF, 2048);
     memset(temp_buf, 0xFF, 2175);
+    LOG_INF("Test 8: Write read to cash test");
     
     //PREPARATION:
 
@@ -583,25 +584,20 @@ int check_write_read_cash(const struct spi_dt_spec *dev){
     
     //We just overwrite existing data in NAND array
     //load data into cache
-    if(spi_nand_program_load(dev, pattern_buf, 4, 2048) == 0){
+    if(spi_nand_program_load(dev, pattern_buf, 0, 2048) == 0){
         wait_and_chill(dev);
         log_registers(dev, "After Program Load");
     }
 
     
 
-    ret = spi_nand_read(dev, temp_buf, 0, 2175);
+    ret = spi_nand_read(dev, temp_buf, 4, 2175);
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read , err: %d", ret);
         return -1; 
     }
     log_registers(dev, "After Page Read");
     
-
-
-    //check if written random numbers are the same as read out ones
-    ret = check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
-
 
     LOG_INF("Contents of temp_buf:");
     for (int i = 0; i < 2175 && i < sector_size; i++) {
@@ -610,6 +606,8 @@ int check_write_read_cash(const struct spi_dt_spec *dev){
         }
         printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
     }
+
+    LOG_INF("Shift by four bytes")
     return 0;
 
 }
@@ -680,12 +678,18 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
         return ret;
     }
 
-    ret = check_write_read_cash(dev);
 
     //test 7
-    //ret = test_spi_nand_sector_write_read(dev);
+    ret = test_spi_nand_sector_write_read(dev);
     if (ret != 0) {
         LOG_ERR("Sector write and read test failed");
+        return ret;
+    }
+
+    //test 8
+    ret = check_write_read_cash(dev);
+    if (ret != 0) {
+        LOG_ERR("Cash write and read test failed");
         return ret;
     }
 
