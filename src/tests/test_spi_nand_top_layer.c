@@ -449,6 +449,7 @@ static struct dhara_nand nand = {
 
 
 static int test_external(const struct spi_dt_spec *spi){
+    uint32_t sector = 5;
     memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
     fill_buffer(PATTERN_SEED, pattern_buf, 2048);
@@ -474,7 +475,7 @@ static int test_external(const struct spi_dt_spec *spi){
     unprotect_chip(spi);
 
     LOG_INF("Starting to write");
-    if(dhara_map_write(&map, 2, pattern_buf, &err) != 0){
+    if(dhara_map_write(&map, sector, pattern_buf, &err) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
     }
@@ -486,7 +487,7 @@ static int test_external(const struct spi_dt_spec *spi){
     }
     LOG_INF("Starting to read");
 
-    if(dhara_map_read(&map, 2, temp_buf, &err) != 0){
+    if(dhara_map_read(&map, sector, temp_buf, &err) != 0){
         LOG_ERR("Failed to read sector at index %d", 1);
         return -1;
     }
@@ -514,12 +515,12 @@ static int test_external(const struct spi_dt_spec *spi){
 
 int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     LOG_INF("Starting tests top layer");
-    // if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
-    //     LOG_ERR("Failed first test top layer above DHARA");
-    //     return -1;
-    // }
+    if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed first test top layer above DHARA");
+        return -1;
+    }
 
-    // test_struct_handling(spidev_dt);
+     test_struct_handling(spidev_dt);
 
 
     // if(test2_writing_tests_top_layer(spidev_dt) != 0){

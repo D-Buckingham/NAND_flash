@@ -473,6 +473,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
 
     //check if written random numbers are the same as read out ones
+    LOG_INF("Mismatches after reading and writing:");
     ret = check_buffer(PATTERN_SEED, temp_buf, sector_size);//TODO figure out how to address the entire page
 
     if(ret == 0){
