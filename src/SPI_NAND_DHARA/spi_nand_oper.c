@@ -35,10 +35,9 @@ const struct spi_dt_spec spi_nand_init(void) {
 
     if (!device_is_ready((&spidev_dt)->bus)) {
         LOG_ERR("SPI device is not ready");
-    } 
-    // else {
-    //     LOG_INF("NAND flash as SPI device initialized!\n\n");
-    // }
+    }else {
+        LOG_INF("NAND flash as SPI device initialized!\n\n");
+    }
 
     return spidev_dt;
 }
@@ -123,7 +122,6 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
         
         ret = spi_transceive_dt(spidev_dt, &tx, &rx);
         }
-    //ret = spi_transceive_dt(spidev_dt, &tx, &rx);
     return ret;
 }
 
@@ -188,26 +186,7 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
     };
     
 
-    int ret = spi_nand_execute_transaction(dev, &t);
-
-
-    // // Log the data read, formatted in rows of 40 bytes
-    // LOG_INF("Data read from SPI NAND oper:");
-    // char line_buf[128]; // Buffer to hold one line of output
-    // int line_idx = 0;   // Index in the current line
-
-    // for (size_t i = 0; i < length; i++) {
-    //     line_idx += snprintf(&line_buf[line_idx], sizeof(line_buf) - line_idx, "%02X ", t.miso_data[i]);
-        
-    //     if ((i + 1) % 40 == 0 || i == length - 1) {
-    //         LOG_INF("%s", line_buf);  // Print the accumulated line of data
-    //         line_idx = 0;            // Reset index for the next line
-    //     }
-    // }
-
-    return ret;
-
-    //return spi_nand_execute_transaction(dev, &t);
+    return spi_nand_execute_transaction(dev, &t);
 }
 
 int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
@@ -228,23 +207,10 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
     spi_nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
         .address_bytes = 2,
-        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//BSWAP_16(column),
+        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),
         .mosi_len = length,//(N+1)*8+24
         .mosi_data = data
     };
-   
-    // //TODO remove
-    // LOG_INF("Data write on oper lever");
-    // for (size_t i = 0; i < length; i++) {
-    //     if (i % 40 == 0 && i != 0) {
-    //         LOG_INF("");  // New line every 40 bytes, but not at the start
-    //     }
-    //     printk("%02X ", data[i]);  // Using printk for continuous output on the same line
-    // }
-    // if (length % 40 != 0) {
-    //     LOG_INF("");  // Ensure ending on a new line if not already done
-    // }
-    
 
     return spi_nand_execute_transaction(dev, &t);
 }
@@ -263,13 +229,12 @@ int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page)
 }
 
 int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
-    //ask for device ID
 
     spi_nand_transaction_t  t = {
         .command = CMD_READ_ID,
         .address_bytes = 1,
         .address = DEVICE_ADDR_READ,
-        .miso_len = 1,//command byte + address byte + return buffer
+        .miso_len = 1,
         .miso_data = device_id,
     };
 

@@ -184,7 +184,7 @@ not_found:
 	}
 
 	dhara_set_error(err, DHARA_E_NOT_FOUND);
-	LOG_ERR("DHARA_E_NOT_FOUND");
+	LOG_DBG("DHARA_E_NOT_FOUND");
 	return -1;
 }
 
@@ -204,7 +204,7 @@ int dhara_map_read(struct dhara_map *m, dhara_sector_t s,
 	if (dhara_map_find(m, s, &p, &my_err) < 0) {
 		if (my_err == DHARA_E_NOT_FOUND) {
 			memset(data, 0xff, 1 << n->log2_page_size);
-			LOG_ERR("DHARA_E_NOT_FOUND");
+			LOG_DBG("DHARA_E_NOT_FOUND");
 			return 0;
 		}
 
@@ -340,13 +340,13 @@ static int prepare_write(struct dhara_map *m, dhara_sector_t dst,
 	if (trace_path(m, dst, NULL, meta, &my_err) < 0) {
 		if (my_err != DHARA_E_NOT_FOUND) {
 			dhara_set_error(err, my_err);
-			LOG_ERR("DHARA_E_NOT_FOUND");
+			LOG_DBG("DHARA_E_NOT_FOUND");
 			return -1;
 		}
 
 		if (m->count >= dhara_map_capacity(m)) {
 			dhara_set_error(err, DHARA_E_MAP_FULL);
-			LOG_ERR("DHARA_E_MAP_FULL");
+			LOG_DBG("DHARA_E_MAP_FULL");
 			return -1;
 		}
 
@@ -411,7 +411,7 @@ int dhara_map_copy_sector(struct dhara_map *m, dhara_sector_t src,
 
 	if (dhara_map_find(m, src, &p, &my_err) < 0) {
 		if (my_err == DHARA_E_NOT_FOUND){
-			LOG_ERR("DHARA_E_NOT_FOUND");
+			LOG_DBG("DHARA_E_NOT_FOUND");
 			return dhara_map_trim(m, dst, err);}
 
 		dhara_set_error(err, my_err);
@@ -433,7 +433,7 @@ static int try_delete(struct dhara_map *m, dhara_sector_t s,
 
 	if (trace_path(m, s, NULL, meta, &my_err) < 0) {
 		if (my_err == DHARA_E_NOT_FOUND){
-			LOG_ERR("DHARA_E_NOT_FOUND");
+			LOG_DBG("DHARA_E_NOT_FOUND");
 			return 0;
 		}
 		dhara_set_error(err, my_err);

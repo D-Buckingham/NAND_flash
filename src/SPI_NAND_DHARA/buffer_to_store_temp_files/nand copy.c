@@ -67,59 +67,13 @@ static int wait_for_ready_nand(const struct spi_dt_spec *device, uint32_t expect
         }
 
         if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
-            k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
+            k_sleep(K_MSEC(1)); 
         }
     }
 
     return 0; // Success
 }
 
-//     uint8_t status;
-//     int ret = 0;
-//     while (true) {
-//         ret = spi_nand_read_register(device, REG_STATUS, &status);
-//         if (ret != 0) {
-//             LOG_ERR("Error reading NAND status register while waiting");
-//             ret = -1;
-//         }
-
-//         if ((status & STAT_BUSY) == 0) {
-//             break;
-//         }
-//         k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay  
-//     }
-//     return 0;
-// }
-
-
-
-//     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
-//     if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
-//         k_busy_wait(expected_operation_time_us); // busy wait for microseconds
-//     }
-
-//     while (true) {
-//         uint8_t status;
-//         int err = spi_nand_read_register(device, REG_STATUS, &status);
-//         if (err != 0) {
-//             LOG_ERR("Error reading NAND status register");
-//             return -1; 
-//         }
-
-//         if ((status & STAT_BUSY) == 0) {
-//             if (status_out) {
-//                 *status_out = status;
-//             }
-//             break;
-//         }
-
-//         if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
-//             k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
-//         }
-//     }
-
-//     return 0;
-// }
 
 
 /**
@@ -148,36 +102,7 @@ static int read_page_and_wait(struct spi_nand_flash_device_t *device, uint32_t p
 
     return wait_for_ready_nand(device -> config.spi_dev,device -> read_page_delay_us, status_out);
 }
-// static int read_page_and_wait(struct spi_nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
-// {
-//     int err;
-//     uint8_t status;
-//     err = wait_for_ready_nand(device -> config.spi_dev);
-//     if (err != 0) {
-//         LOG_ERR("Error while waiting; page: %u, error: %d", page, err);
-//     }
 
-//     err = spi_nand_read_page(device -> config.spi_dev, page); 
-//     if (err != 0) {
-//         LOG_ERR("Failed to read page itself; page: %u, error: %d", page, err);
-//         return -1;
-//     }
-//     err = wait_for_ready_nand(device -> config.spi_dev);
-//     if (err != 0) {
-//         LOG_ERR("Error while waiting; page: %u, error: %d", page, err);
-//     }
-
-//     int ret = spi_nand_read_register(device -> config.spi_dev, REG_STATUS, &status);
-//     if (ret != 0) {
-//         LOG_ERR("Error reading NAND status register");
-//         return -1; 
-//     }
-//     if (status_out != NULL) {
-//         *status_out = status;
-//     }
-
-//     return err;
-// }
 
 /**
  * @brief Program a NAND flash page and wait for the operation to complete.
@@ -213,39 +138,6 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
 }
 
 
-// static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
-// {
-//     int err;
-//     uint8_t status;
-
-//     err = wait_for_ready_nand(device -> config.spi_dev);
-//     if (err != 0) {
-//         LOG_ERR("Error while waiting; page: %u, error: %d", page, err);
-//     }
-
-//     err = spi_nand_program_execute(device -> config.spi_dev, page);
-//     if (err != 0) {
-//         LOG_ERR("Failed to execute program on page %u, error: %d", page, err);
-//         return -1;
-//     }
-
-//     err = wait_for_ready_nand(device -> config.spi_dev);
-//     if (err != 0) {
-//         LOG_ERR("Error while waiting; page: %u, error: %d", page, err);
-//     }
-
-//     int ret = spi_nand_read_register(device -> config.spi_dev, REG_STATUS, &status);
-//     if (ret != 0) {
-//         LOG_ERR("Error reading NAND status register");
-//         return -1; 
-//     }
-//     if (status_out != NULL) {
-//         *status_out = status;
-//     }
-
-//     return err;
-// }
-
 
 
 /**
@@ -253,8 +145,7 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
 */
 int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 {
-    //const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(arduino_spi));
-
+    
     /**
      * to retrieve a pointer to a container structure given a pointer to a member of that structure. It's used to obtain
      * a pointer to a parent or enclosing structure by knowing the pointer to a member field and the type of the parent 
@@ -356,17 +247,13 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    ret = wait_for_ready_nand(dev->config.spi_dev, dev->erase_block_delay_us, &status);//(dev->config.spi_dev);
+    ret = wait_for_ready_nand(dev->config.spi_dev, dev->erase_block_delay_us, &status);
     if (ret != 0) {
         LOG_ERR("Failed to wait for ready, error: %d", ret);
         return -1;
     }
 
-    // ret = spi_nand_read_register(dev -> config.spi_dev, REG_STATUS, &status);
-    // if (ret != 0) {
-    //     LOG_ERR("Error reading NAND status register");
-    //     return -1; 
-    // }
+   
 
     if ((status & STAT_ERASE_FAILED) != 0) {
         dhara_set_error(err, DHARA_E_BAD_BLOCK);
@@ -498,11 +385,6 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
         return -1;
     }
 
-    //ret = spi_nand_read_register(dev->config.spi_dev, REG_STATUS, &status);
-    //if (ret != 0) {
-    //     LOG_ERR("Failed to read data from page %u", p);
-    //     return -1;
-    // }
     if (is_ecc_error(status)) {
         LOG_ERR("ECC error on page %u", p);
         dhara_set_error(err, DHARA_E_ECC);
