@@ -71,6 +71,30 @@ static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_bu
  */
 static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff);
 
+/**
+ * @brief Initializes and registers the NAND disk.
+ *
+ * This function sets up the disk information structure and registers
+ * the NAND disk with the disk access layer of Zephyr. This registration
+ * is necessary for the system to recognize and interact with the disk.
+ *
+ * @return 0 on success, negative error code on failure.
+ */
+int disk_nand_init(void);
+
+/**
+ * @brief Unregisters and deinitializes the NAND disk.
+ *
+ * This function unregisters the NAND disk from the disk access layer,
+ * effectively making the system no longer recognize it as a valid disk.
+ * This is useful for cleanly shutting down or reconfiguring the system.
+ *
+ * @return 0 on success, negative error code on failure.
+ */
+int disk_nand_uninit(void);
+
+
+
 #ifdef __cplusplus
 }
 #endif

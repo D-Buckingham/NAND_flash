@@ -6,9 +6,9 @@
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/drivers/gpio.h>                                                                                                                                                     
-#include <zephyr/drivers/spi.h>
+#include <zephyr/drivers/gpio.h> 
 #include <zephyr/devicetree.h>
+#include <errno.h>
 
 #define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
@@ -104,7 +104,7 @@ static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buf
     switch (cmd) {
         case DISK_IOCTL_GET_SECTOR_COUNT:
             // Assuming that the capacity function requires the device handle and a pointer to store the result
-            ret = spi_nand_flash_get_capacity(device_handle, (uint32_t *)buff);
+            ret = spi_nand_flash_get_capacity(device_handle, (uint16_t *)buff);
             if (ret < 0) {
                 LOG_ERR("Failed to get capacity: error %d", ret);
                 return -EIO;
@@ -113,7 +113,7 @@ static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buf
 
         case DISK_IOCTL_GET_SECTOR_SIZE:
             // Assuming that the sector size function requires the device handle and a pointer to store the result
-            ret = spi_nand_flash_get_sector_size(device_handle, (uint32_t *)buff);
+            ret = spi_nand_flash_get_sector_size(device_handle, (uint16_t *)buff);
             if (ret < 0) {
                 LOG_ERR("Failed to get sector size: error %d", ret);
                 return -EIO;
@@ -132,6 +132,27 @@ static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buf
         default:
             LOG_ERR("Unsupported IOCTL command: %d", cmd);
             return -EINVAL;
+    }
+    return 0;
+}
+
+
+int disk_nand_init(void)
+{
+    int ret = disk_access_register(&nand_disk);  // Register the disk
+    if (ret) {
+        LOG_ERR("Failed to register NAND disk");
+        return ret;
+    }
+    return 0;
+}
+
+int disk_nand_uninit(void)
+{
+    int ret = disk_access_unregister(&nand_disk);  // Register the disk
+    if (ret) {
+        LOG_ERR("Failed to unregister NAND disk");
+        return ret;
     }
     return 0;
 }

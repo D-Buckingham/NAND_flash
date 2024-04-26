@@ -482,70 +482,14 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
 
     // Log the first 100 bytes of temp_buf as hexadecimal values
-    LOG_INF("Contents of temp_buf:");
-    for (int i = 0; i < 2175 && i < sector_size; i++) {
+    LOG_INF("Contents of receiving buffer (800 bytes):");
+    for (int i = 0; i < 800 && i < sector_size; i++) {
         if (i % 40 == 0 && i != 0) {
             LOG_INF("");  
         }
         printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
     }
-    // wait_and_chill(dev);
-    
-
-    // memset(pattern_buf, 0xFF, 2048);
-
-    // // LOG_INF("patternbuf is:");
-    // // for (int i = 0; i < 2048 && i < sector_size; i++) {
-    // //     if (i % 40 == 0 && i != 0) {
-    // //         LOG_INF("");  
-    // //     }
-    // //     printk("%02X ", pattern_buf[i]);  // Using printk for continuous output on the same line
-    // // }
-    // ret = spi_nand_write_enable(dev);
-    // wait_and_chill(dev);
-    // log_registers(dev, "After write enable");
-
-    // // Write 0xFF to the entire page
-    // if (spi_nand_program_load(dev, pattern_buf, column_address, 2048) == 0) {
-    //     wait_and_chill(dev);
-    //     if (spi_nand_program_execute(dev, page) != 0) {
-    //         LOG_ERR("Test7: Failed to reset sector to 0xFF at index %d", 1);
-    //         return -1;
-    //     }
-    // }
-
-    // ret = wait_and_chill(dev);
-
-    // //read sector into buffer
-    // // Read from the NAND array the block 0, page 0 everything 
-    // ret = spi_nand_read_page(dev, page); 
-    // if (ret != 0) {
-    //     LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
-    //     return -1;
-    // }
-    
-
- 
-    // ret = wait_and_chill(dev);
-    // if (ret != 0) {
-    //     return -1;
-    // }
-    // log_registers(dev, "After Page Read into cash");
-    // //read from cache
-    // ret = spi_nand_read(dev, temp_buf, 0, 2175);
-    // if (ret != 0) {
-    //     LOG_ERR("Test 7: Failed to read , err: %d", ret);
-    //     return -1; 
-    // }
-    // log_registers(dev, "After Page Read");
-    // LOG_INF("Contents of temp_buf:");
-    // for (int i = 0; i < 2175 && i < sector_size; i++) {
-    //     if (i % 40 == 0 && i != 0) {
-    //         LOG_INF("");  
-    //     }
-    //     printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
-    // }
-
+    LOG_INF("\n");
     return 0;
 }
 
@@ -605,13 +549,14 @@ int check_write_read_cash(const struct spi_dt_spec *dev){
     //log_registers(dev, "After Page Read");
     
 
-    LOG_INF("Contents of temp_buf:");
-    for (int i = 0; i < 2175 && i < sector_size; i++) {
+    LOG_INF("Contents of receiving buffer (800 bytes):");
+    for (int i = 0; i < 800 && i < sector_size; i++) {
         if (i % 40 == 0 && i != 0) {
             LOG_INF("");  
         }
         printk("%02X ", temp_buf[i]);  // Using printk for continuous output on the same line
     }
+    LOG_INF("\n");
 
     LOG_INF("Shift by four bytes!");
     return 0;
