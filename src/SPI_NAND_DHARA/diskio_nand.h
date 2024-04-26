@@ -2,121 +2,77 @@
  * @file diskio_nand.h
  * @brief Adapter to integrate the Dhara NAND Flash Translation Layer (FTL) with the FAT file system in Zephyr RTOS.
  *
- * 
+ * This header file defines the disk access interface for NAND flash devices,
+ * allowing integration of NAND storage as a disk with file system support in Zephyr.
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
  */
 
 
-/**
- * @file
- * @brief Disk Access layer API
- *
- * This file contains APIs for disk access.
- */
+#ifndef DISKIO_NAND_H
+#define DISKIO_NAND_H
 
-#ifndef NAND_DISKIO_H
-#define NAND_DISKIO_H
-
-/**
- * @brief Storage APIs
- * @defgroup storage_apis Storage APIs
- * @ingroup os_services
- * @{
- * @}
- */
-
-/**
- * @brief Disk Access APIs
- * @defgroup disk_access_interface Disk Access Interface
- * @ingroup storage_apis
- * @{
- */
-
-#include <zephyr/drivers/disk.h>
+#include <zephyr/types.h>
+#include <zephyr/device.h>
+#include <zephyr/kernel.h>
+#include "zephyr/storage/disk_access.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief perform any initialization
+ * Initializes the disk for NAND flash.
  *
- * This call is made by the consumer before doing any IO calls so that the
- * disk or the backing device can do any initialization.
- *
- * @param[in] pdrv          Disk name
- *
- * @return 0 on success, negative errno code on fail
+ * @param disk Pointer to the disk_info structure representing the NAND disk.
+ * @return 0 on success, negative errno code on failure.
  */
-int nand_disk_access_init(const char *pdrv);
+static int nand_disk_access_init(struct disk_info *disk);
 
 /**
- * @brief Get the status of disk
+ * Gets the status of the NAND flash disk.
  *
- * This call is used to get the status of the disk
- *
- * @param[in] pdrv          Disk name
- *
- * @return DISK_STATUS_OK or other DISK_STATUS_*s
+ * @param disk Pointer to the disk_info structure representing the NAND disk.
+ * @return DISK_STATUS_OK if the disk is ready, other DISK_STATUS_* codes on failure.
  */
-int nand_disk_access_status(const char *pdrv);
+static int nand_disk_access_status(struct disk_info *disk);
 
 /**
- * @brief read data from disk
+ * Reads data from the NAND flash disk.
  *
- * Function to read data from disk to a memory buffer.
- *
- * Note: if he disk is of NVMe type, user will need to ensure data_buf
- *       pointer is 4-bytes aligned.
- *
- * @param[in] pdrv          Disk name
- * @param[in] data_buf      Pointer to the memory buffer to put data.
- * @param[in] start_sector  Start disk sector to read from
- * @param[in] num_sector    Number of disk sectors to read
- *
- * @return 0 on success, negative errno code on fail
+ * @param disk Pointer to the disk_info structure representing the NAND disk.
+ * @param data_buf Buffer to store read data.
+ * @param start_sector Start sector number from which to start reading.
+ * @param num_sector Number of sectors to read.
+ * @return 0 on success, negative errno code on failure.
  */
-int nand_disk_access_read(const char *pdrv, uint8_t *data_buf,
-		     uint32_t start_sector, uint32_t num_sector);
+static int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf,
+                          uint32_t start_sector, uint32_t num_sector);
 
 /**
- * @brief write data to disk
+ * Writes data to the NAND flash disk.
  *
- * Function write data from memory buffer to disk.
- *
- * Note: if he disk is of NVMe type, user will need to ensure data_buf
- *       pointer is 4-bytes aligned.
- *
- * @param[in] pdrv          Disk name
- * @param[in] data_buf      Pointer to the memory buffer
- * @param[in] start_sector  Start disk sector to write to
- * @param[in] num_sector    Number of disk sectors to write
- *
- * @return 0 on success, negative errno code on fail
+ * @param disk Pointer to the disk_info structure representing the NAND disk.
+ * @param data_buf Buffer containing the data to write.
+ * @param start_sector Start sector number at which to start writing.
+ * @param num_sector Number of sectors to write.
+ * @return 0 on success, negative errno code on failure.
  */
-int nand_disk_access_write(const char *pdrv, const uint8_t *data_buf,
-		      uint32_t start_sector, uint32_t num_sector);
+static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf,
+                           uint32_t start_sector, uint32_t num_sector);
 
 /**
- * @brief Get/Configure disk parameters
+ * Executes IOCTL commands on the NAND flash disk.
  *
- * Function to get disk parameters and make any special device requests.
- *
- * @param[in] pdrv          Disk name
- * @param[in] cmd           DISK_IOCTL_* code describing the request
- * @param[in] buff          Command data buffer
- *
- * @return 0 on success, negative errno code on fail
+ * @param disk Pointer to the disk_info structure representing the NAND disk.
+ * @param cmd IOCTL command to execute.
+ * @param buff Buffer to transfer data for some IOCTL commands.
+ * @return 0 on success, negative errno code on failure.
  */
-int nand_disk_access_ioctl(const char *pdrv, uint8_t cmd, void *buff);
+static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff);
 
 #ifdef __cplusplus
 }
 #endif
 
-/**
- * @}
- */
-
-#endif /* NAND_DISKIO_H */
+#endif /* DISKIO_NAND_H */

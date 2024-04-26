@@ -9,7 +9,8 @@
         "device.h": "c",
         "sim.h": "c",
         "nand_top_layer.h": "c",
-        "test_spi_nand_top_layer.h": "c"
+        "test_spi_nand_top_layer.h": "c",
+        "limits": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
