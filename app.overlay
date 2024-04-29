@@ -56,42 +56,27 @@ my_spi_master:&spi4 {
         spi-max-frequency = <126000>;
         label = "spidev";
     };
-
-    
 };
 
+// &flash0 {
+//     partitions {
+//         compatible = "fixed-partitions";
+//         #address-cells = <1>;
+//         #size-cells = <1>;
 
+//         storage_partition: partition@0 {
+//             label = "storage";
+//             reg = <0x00000000 0x010000000>; // Partition starts at 0, size 16MB
+//         };
 
-
-
- 
-
-// &spidev {
-
-// 	partitions {
-// 		compatible = "fixed-partitions";
-// 		#address-cells = <1>;
-// 		#size-cells = <1>;
-
-// 		// slot0_partition: partition@c000 {
-// 		// 	reg = <0x0000C000 0x00066000>;
-// 		// };
-// 		// slot1_partition: partition@72000 {
-// 		// 	reg = <0x00072000 0x00066000>;
-// 		// };
-
-// 		storage_partition: partition@0 {
-// 			label = "storage";
-// 			reg = <0x000000 0x1DCD6500>;
-// 		};
-// 	};
+//         firmware_partition: partition@1 {
+//             label = "firmware";
+//             reg = <0x01000000 0x020000000>; // Partition starts at 16MB, size 32MB
+//         };
+//     };
 // };
-
-// /delete-node/ &storage_partition;
-
-
 // / {
-//     &spi4 : nand_disk0 {
+//     msc_disk0 {
 //         compatible = "zephyr,flash-disk";
 //         partition = <&storage_partition>;
 //         sector-size = <2048>;
