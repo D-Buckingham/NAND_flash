@@ -25,6 +25,8 @@ static struct fs_mount_t nand_mount_fat = {
     .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS
 };
 
+static K_MUTEX_DEFINE(mutex);
+
 void mount_nand_fs(void) {
     int ret;
 
@@ -36,9 +38,10 @@ void mount_nand_fs(void) {
     //     LOG_INF("Successful disk initialized, message %d", ret);//TODO remove and uncomment in diskio_nand.c ==> automatic initialization on start up
     // }
     
-
+    k_mutex_lock(&mutex, K_FOREVER);
     // Attempt to mount the file system
     ret = fs_mount(&nand_mount_fat);
+    k_mutex_unlock(&mutex);
     if (ret) {
         LOG_ERR("Failed to mount NAND FS (%d)", ret);
     } else {

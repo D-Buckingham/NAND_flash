@@ -7,6 +7,7 @@
 #include <zephyr/drivers/spi.h>
 #include <zephyr/fs/fs.h>
 #include <zephyr/devicetree.h>
+#include "zephyr/storage/disk_access.h"
 
 #ifndef MAIN
 
@@ -14,6 +15,7 @@
 #include "SPI_NAND_DHARA/spi_nand_oper.h"
 #include "tests/spi_nand_oper_tests.h"
 #include "tests/test_spi_nand_top_layer.h"
+#include "tests/test_disk_access.h"
 #include "vfs_NAND_flash.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
@@ -29,7 +31,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #define SPI_DEVICE "reg_my_spi_master"
 
 
-
+static const struct disk_info *nand_disk = NULL;
 
 int  main(void)
 {
@@ -49,6 +51,8 @@ int  main(void)
 	// if (ret != 0) {
     //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
     // }
+
+	test_disk_initialize_status_read(nand_disk);
 
 	mount_nand_fs();
 
