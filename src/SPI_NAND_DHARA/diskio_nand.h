@@ -94,7 +94,6 @@ int disk_nand_init(void);
 int disk_nand_uninit(void);
 
 
-
 #ifdef __cplusplus
 }
 #endif

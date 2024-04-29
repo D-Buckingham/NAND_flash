@@ -4,6 +4,7 @@
 #include "diskio_nand.h"
 
 #include <zephyr/device.h>
+#include <zephyr/types.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h> 
@@ -31,11 +32,14 @@ static const struct disk_operations nand_disk_ops = {
 
 const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
+
+
+
 /* Disk information structure required by Zephyr */
 static struct disk_info nand_disk = {
     .name = "NAND_DISK",
     .ops = &nand_disk_ops,
-    .dev = spidev_dt.bus
+    .dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)))
 };
 
 spi_nand_flash_config_t nand_flash_config = {
@@ -139,6 +143,7 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
 
 int disk_nand_init(void)
 {
+   
     LOG_INF("Initializing disk NAND flash");
     int ret = disk_access_register(&nand_disk);  // Register the disk
     if (ret) {
@@ -157,5 +162,7 @@ int disk_nand_uninit(void)
     }
     return 0;
 }
+
+
 
 SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);

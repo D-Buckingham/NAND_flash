@@ -14,7 +14,7 @@
 
 LOG_MODULE_REGISTER(vfs_NAND_flash, CONFIG_LOG_DEFAULT_LEVEL);
 
-static FATFS fat_fs;
+FATFS fat_fs;
 
 /* FAT fs mount info */
 static struct fs_mount_t nand_mount_fat = {
