@@ -12,3 +12,6 @@
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
  */
+
+
+void mount_nand_fs(void);

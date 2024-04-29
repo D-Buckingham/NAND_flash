@@ -14,11 +14,11 @@
 
 LOG_MODULE_REGISTER(diskio_nand, CONFIG_LOG_DEFAULT_LEVEL);
 
-static int nand_disk_access_init(struct disk_info *disk);
-static int nand_disk_access_status(struct disk_info *disk);
-static int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector);
-static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector);
-static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff);
+int nand_disk_access_init(struct disk_info *disk);
+int nand_disk_access_status(struct disk_info *disk);
+int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector);
+int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector);
+int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff);
 
 /* Disk operations for NAND flash */
 static const struct disk_operations nand_disk_ops = {
@@ -45,12 +45,12 @@ spi_nand_flash_config_t nand_flash_config = {
 spi_nand_flash_device_t *device_handle = NULL;
 
 
-static int nand_disk_access_init(struct disk_info *disk) {
+int nand_disk_access_init(struct disk_info *disk) {
     
     return spi_nand_flash_init_device(&nand_flash_config, &device_handle);
 }
 
-static int nand_disk_access_status(struct disk_info *disk) {
+int nand_disk_access_status(struct disk_info *disk) {
     if (!device_is_ready(disk->dev)) {
         LOG_ERR("SPI device is not ready");
         return DISK_STATUS_UNINIT;
@@ -58,7 +58,7 @@ static int nand_disk_access_status(struct disk_info *disk) {
     return DISK_STATUS_OK;
 }
 
-static int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
+int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
     LOG_DBG("nand_disk_access_read - disk=%s, start_sector=%u, num_sector=%u", disk->name, start_sector, num_sector);
     uint16_t sector_size;
     int ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
@@ -78,7 +78,7 @@ static int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint
 
 }
 
-static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
+int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
     LOG_DBG("nand_disk_access_write - disk=%s, start_sector=%u, num_sector=%u", disk->name, start_sector, num_sector);
     uint16_t sector_size;
     int ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
@@ -98,7 +98,7 @@ static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_bu
 
 }
 
-static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
+int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
     int ret = 0;
 
     switch (cmd) {
@@ -139,6 +139,7 @@ static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buf
 
 int disk_nand_init(void)
 {
+    LOG_INF("Initializing disk NAND flash");
     int ret = disk_access_register(&nand_disk);  // Register the disk
     if (ret) {
         LOG_ERR("Failed to register NAND disk");
@@ -156,3 +157,5 @@ int disk_nand_uninit(void)
     }
     return 0;
 }
+
+SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);

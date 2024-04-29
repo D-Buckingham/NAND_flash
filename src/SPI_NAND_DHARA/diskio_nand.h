@@ -27,7 +27,7 @@ extern "C" {
  * @param disk Pointer to the disk_info structure representing the NAND disk.
  * @return 0 on success, negative errno code on failure.
  */
-static int nand_disk_access_init(struct disk_info *disk);
+int nand_disk_access_init(struct disk_info *disk);
 
 /**
  * Gets the status of the NAND flash disk.
@@ -35,7 +35,7 @@ static int nand_disk_access_init(struct disk_info *disk);
  * @param disk Pointer to the disk_info structure representing the NAND disk.
  * @return DISK_STATUS_OK if the disk is ready, other DISK_STATUS_* codes on failure.
  */
-static int nand_disk_access_status(struct disk_info *disk);
+int nand_disk_access_status(struct disk_info *disk);
 
 /**
  * Reads data from the NAND flash disk.
@@ -46,7 +46,7 @@ static int nand_disk_access_status(struct disk_info *disk);
  * @param num_sector Number of sectors to read.
  * @return 0 on success, negative errno code on failure.
  */
-static int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf,
+int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf,
                           uint32_t start_sector, uint32_t num_sector);
 
 /**
@@ -58,7 +58,7 @@ static int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf,
  * @param num_sector Number of sectors to write.
  * @return 0 on success, negative errno code on failure.
  */
-static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf,
+int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf,
                            uint32_t start_sector, uint32_t num_sector);
 
 /**
@@ -69,7 +69,7 @@ static int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_bu
  * @param buff Buffer to transfer data for some IOCTL commands.
  * @return 0 on success, negative errno code on failure.
  */
-static int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff);
+int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff);
 
 /**
  * @brief Initializes and registers the NAND disk.
