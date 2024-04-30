@@ -75,8 +75,9 @@ my_spi_master:&spi4 {
 //         };
 //     };
 // };
+
 // / {
-//     msc_disk0 {
+//     nand_disk0 {
 //         compatible = "zephyr,flash-disk";
 //         partition = <&storage_partition>;
 //         sector-size = <2048>;
@@ -88,8 +89,8 @@ my_spi_master:&spi4 {
 // / {
 // 	nanddisk0 {
 // 		compatible = "zephyr,ram-disk";
-// 		disk-name = "RAM";
-// 		sector-size = <512>;
-// 		sector-count = <160>;
+// 		disk-name = "NAND_DISK";
+// 		sector-size = <2048>;
+// 		sector-count = <257985>;
 // 	};
 // };

@@ -1,0 +1,23 @@
+# Copyright (c) 2022 Nordic Semiconductor ASA
+# SPDX-License-Identifier: Apache-2.0
+
+description: Block storage device on NAND flash partition
+
+compatible: "custom,nand-disk"
+
+include: base.yaml
+include: spi-device.yaml
+
+properties:
+  partition:
+    type: phandle
+    required: true
+    description: |
+      Backing storage flash map partition.
+
+  label:
+    type: string
+    required: true
+    description: |
+      Disk name.
+
