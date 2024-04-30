@@ -33,7 +33,7 @@ static const struct disk_operations nand_disk_ops = {
 const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
 
-
+static struct k_mutex disk_mutex;
 
 /* Disk information structure required by Zephyr */
 static struct disk_info nand_disk = {
@@ -50,14 +50,16 @@ spi_nand_flash_device_t *device_handle = NULL;
 
 
 int nand_disk_access_init(struct disk_info *disk) {
-    disk->name = "NAND_DISK";
-    disk->ops = &nand_disk_ops;
-    disk->dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)));
-    return spi_nand_flash_init_device(&nand_flash_config, &device_handle);
+    // disk->name = "NAND_DISK";
+    // disk->ops = &nand_disk_ops;
+    // disk->dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)));
+    int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);
+    return ret;
 }
 
 int nand_disk_access_status(struct disk_info *disk) {
-    if (!device_is_ready(disk->dev)) {
+    //if (!device_is_ready(disk->dev)) {
+    if (!device_is_ready(nand_disk.dev)) {
         LOG_ERR("SPI device is not ready");
         return DISK_STATUS_UNINIT;
     }
@@ -65,7 +67,7 @@ int nand_disk_access_status(struct disk_info *disk) {
 }
 
 int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
-    LOG_DBG("nand_disk_access_read - disk=%s, start_sector=%u, num_sector=%u", disk->name, start_sector, num_sector);
+    LOG_DBG("nand_disk_access_read - disk=%s, start_sector=%u, num_sector=%u", nand_disk.name, start_sector, num_sector);
     uint16_t sector_size;
     int ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if (ret < 0) {
@@ -85,7 +87,7 @@ int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t st
 }
 
 int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
-    LOG_DBG("nand_disk_access_write - disk=%s, start_sector=%u, num_sector=%u", disk->name, start_sector, num_sector);
+    LOG_DBG("nand_disk_access_write - disk=%s, start_sector=%u, num_sector=%u", nand_disk.name, start_sector, num_sector);
     uint16_t sector_size;
     int ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if (ret < 0) {
@@ -145,12 +147,18 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
 
 int disk_nand_init(void)
 {
-   
+    k_mutex_lock(&disk_mutex, K_FOREVER);
     LOG_INF("Initializing disk NAND flash");
     int ret = disk_access_register(&nand_disk);  // Register the disk
     if (ret) {
         LOG_ERR("Failed to register NAND disk");
         return ret;
+    }
+    k_mutex_unlock(&disk_mutex);
+    if(sys_dnode_is_linked(&nand_disk.node)){
+        LOG_INF("Node on disk level NAND is linked");
+    }else{
+        LOG_ERR("no linked node for disk");
     }
     return 0;
 }
@@ -167,4 +175,4 @@ int disk_nand_uninit(void)
 
 
 
-//SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);

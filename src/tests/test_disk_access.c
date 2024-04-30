@@ -116,13 +116,12 @@ int test_disk_initialize_status_read(struct disk_info *nand_disk){
     int ret = disk_access_register(nand_disk);
     if (ret) {
         LOG_ERR("Failed to register NAND disk");
-        k_mutex_unlock(&disk_mutex); // Unlock the mutex even if there's an error
+        k_mutex_unlock(&disk_mutex); 
         return ret;
     }else{
         LOG_INF("Registered nand disk");
     }
 
-    // Unlock the mutex after the critical section
     k_mutex_unlock(&disk_mutex);
 
     return 0;
