@@ -22,7 +22,7 @@
 
 
 
-int test_disk_initialize_status_read(const struct disk_info *nand_disk);
+int test_disk_initialize_status_read(struct disk_info *nand_disk);
 
 
 

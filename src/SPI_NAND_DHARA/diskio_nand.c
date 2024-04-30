@@ -50,7 +50,9 @@ spi_nand_flash_device_t *device_handle = NULL;
 
 
 int nand_disk_access_init(struct disk_info *disk) {
-    
+    disk->name = "NAND_DISK";
+    disk->ops = &nand_disk_ops;
+    disk->dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)));
     return spi_nand_flash_init_device(&nand_flash_config, &device_handle);
 }
 
@@ -165,4 +167,4 @@ int disk_nand_uninit(void)
 
 
 
-SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+//SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);

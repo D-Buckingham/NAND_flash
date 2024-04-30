@@ -31,7 +31,7 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 #define SPI_DEVICE "reg_my_spi_master"
 
 
-static const struct disk_info *nand_disk = NULL;
+static struct disk_info nand_disk;
 
 int  main(void)
 {
@@ -52,7 +52,7 @@ int  main(void)
     //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
     // }
 
-	test_disk_initialize_status_read(nand_disk);
+	test_disk_initialize_status_read(&nand_disk);
 
 	mount_nand_fs();
 
