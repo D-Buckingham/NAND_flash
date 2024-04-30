@@ -20,9 +20,10 @@ FATFS fat_fs;
 static struct fs_mount_t nand_mount_fat = {
     .type = FS_FATFS,
     .fs_data = &fat_fs,
+    .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS,
     .storage_dev = "NAND_DISK",  // This should match the name of your disk registered
-    .mnt_point = "/NAND",       // Mount point in the filesystem
-    .flags = 0//.flags = FS_MOUNT_FLAG_USE_DISK_ACCESS
+    .mnt_point = "/NAND"       // Mount point in the filesystem
+    
 };
 
 

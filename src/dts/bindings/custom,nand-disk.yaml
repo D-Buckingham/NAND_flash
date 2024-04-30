@@ -9,11 +9,11 @@ include: base.yaml
 include: spi-device.yaml
 
 properties:
-  partition:
-    type: phandle
-    required: true
-    description: |
-      Backing storage flash map partition.
+  # partition:
+  #   type: phandle
+  #   required: true
+  #   description: |
+  #     Backing storage flash map partition.
 
   label:
     type: string

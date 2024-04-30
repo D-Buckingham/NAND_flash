@@ -55,8 +55,15 @@ my_spi_master:&spi4 {
         reg = <0>;
         spi-max-frequency = <126000>;
         label = "spidev";
+        nandflash: nandflash{
+            compatible = "custom,nand-disk";
+            label = "NAND_DISK";
+            //partition = <&nand_partition>
+        };
     };
 };
+
+
 
 // &flash0 {
 //     partitions {
