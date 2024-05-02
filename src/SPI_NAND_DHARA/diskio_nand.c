@@ -37,7 +37,7 @@ static struct k_mutex disk_mutex;
 
 /* Disk information structure required by Zephyr */
 static struct disk_info nand_disk = {
-    .name = "NAND_DISK",
+    .name = "NAND",
     .ops = &nand_disk_ops,
     .dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)))
 };

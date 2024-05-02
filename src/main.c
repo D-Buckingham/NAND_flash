@@ -27,8 +27,8 @@ int  main(void)
 {
 	LOG_INF("My first breath as an IoT device");
 	
-	 const struct spi_dt_spec spidev_dt = spi_nand_init();
-	 static struct disk_info nand_disk;
+	//  const struct spi_dt_spec spidev_dt = spi_nand_init();
+	//  static struct disk_info nand_disk;
 	 int ret;
 
 	//Test the SPI communication
@@ -42,7 +42,7 @@ int  main(void)
     //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
     // }
 
-	test_disk_initialize_status_read(&nand_disk);
+	//test_disk_initialize_status_read(&nand_disk);
 
 	mount_nand_fs();
 
