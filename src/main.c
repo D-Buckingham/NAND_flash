@@ -42,7 +42,7 @@ int  main(void)
     //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
     // }
 
-	test_disk_initialize_status_read(&nand_disk);
+	//test_disk_initialize_status_read(&nand_disk);
 
 	mount_nand_fs();
 

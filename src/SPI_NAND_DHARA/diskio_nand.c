@@ -33,7 +33,7 @@ static const struct disk_operations nand_disk_ops = {
 const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
 
-static struct k_mutex disk_mutex;
+//static struct k_mutex disk_mutex;
 
 /* Disk information structure required by Zephyr */
 static struct disk_info nand_disk = {
@@ -179,4 +179,4 @@ int disk_nand_uninit(void)
 
 
 
-//SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);

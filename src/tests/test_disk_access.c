@@ -17,7 +17,7 @@ LOG_MODULE_REGISTER(test_disk_access, CONFIG_LOG_DEFAULT_LEVEL);
 
 #define PATTERN_SEED    0x12345678
 
-static struct k_mutex disk_mutex;
+//static struct k_mutex disk_mutex;
 
 
 static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
@@ -110,19 +110,20 @@ int test_disk_initialize_status_read(struct disk_info *nand_disk){
     }
     LOG_INF("\n... (plus %d more bytes)", 2048 - 800);
 
-    k_mutex_lock(&disk_mutex, K_FOREVER);
+    //Commented due to handling an empty struct.
+    // k_mutex_lock(&disk_mutex, K_FOREVER);
 
-    // Register the disk
-    int ret = disk_access_register(nand_disk);
-    if (ret) {
-        LOG_ERR("Failed to register NAND disk");
-        k_mutex_unlock(&disk_mutex); 
-        return ret;
-    }else{
-        LOG_INF("Registered nand disk");
-    }
+    // // Register the disk
+    // int ret = disk_access_register(nand_disk);
+    // if (ret) {
+    //     LOG_ERR("Failed to register NAND disk");
+    //     k_mutex_unlock(&disk_mutex); 
+    //     return ret;
+    // }else{
+    //     LOG_INF("Registered nand disk");
+    // }
 
-    k_mutex_unlock(&disk_mutex);
+    // k_mutex_unlock(&disk_mutex);
 
     return 0;
 
