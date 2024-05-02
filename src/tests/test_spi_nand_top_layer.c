@@ -124,7 +124,7 @@ int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uin
 {
     static uint8_t pattern_buf[2048];
     static uint8_t temp_buf[2048];
-    uint16_t sector_size, sector_num;
+    uint32_t sector_size, sector_num;
 
     memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
@@ -177,7 +177,7 @@ int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uin
 int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 {
     
-    uint16_t sector_num, sector_size;
+    uint32_t sector_num, sector_size;
     spi_nand_flash_device_t *nand_flash_device_handle;
     setup_nand_flash(&nand_flash_device_handle, spi);
 
@@ -253,7 +253,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     spi_nand_flash_device_t *flash;
     setup_nand_flash(&flash, spi);
 
-    uint16_t sector_size, sector_num;
+    uint32_t sector_size, sector_num;
     memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
 

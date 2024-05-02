@@ -14,7 +14,8 @@
         "type_traits": "c",
         "fs.h": "c",
         "disk_access.h": "c",
-        "ff.h": "c"
+        "ff.h": "c",
+        "diskio.h": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"

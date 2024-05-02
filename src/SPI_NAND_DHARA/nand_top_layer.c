@@ -463,14 +463,14 @@ int spi_nand_flash_sync(spi_nand_flash_device_t *handle)
 }
 
 
-int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint16_t *number_of_sectors)
+int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint32_t *number_of_sectors)
 {
     *number_of_sectors = dhara_map_capacity(&handle->dhara_map);
     return 0; 
 }
 
 
-int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint16_t *sector_size)
+int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint32_t *sector_size)
 {
     *sector_size = handle->page_size;
     return 0;

@@ -68,7 +68,7 @@ int nand_disk_access_status(struct disk_info *disk) {
 
 int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
     LOG_DBG("nand_disk_access_read - disk=%s, start_sector=%u, num_sector=%u", nand_disk.name, start_sector, num_sector);
-    uint16_t sector_size;
+    uint32_t sector_size;
     int ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if (ret < 0) {
         LOG_ERR("Error getting sector size: %d", ret);
@@ -88,7 +88,7 @@ int nand_disk_access_read(struct disk_info *disk, uint8_t *data_buf, uint32_t st
 
 int nand_disk_access_write(struct disk_info *disk, const uint8_t *data_buf, uint32_t start_sector, uint32_t num_sector) {
     LOG_DBG("nand_disk_access_write - disk=%s, start_sector=%u, num_sector=%u", nand_disk.name, start_sector, num_sector);
-    uint16_t sector_size;
+    uint32_t sector_size;
     int ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if (ret < 0) {
         LOG_ERR("Error getting sector size: %d", ret);
@@ -112,7 +112,7 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
     switch (cmd) {
         case DISK_IOCTL_GET_SECTOR_COUNT:
             // Assuming that the capacity function requires the device handle and a pointer to store the result
-            ret = spi_nand_flash_get_capacity(device_handle, (uint16_t *)buff);
+            ret = spi_nand_flash_get_capacity(device_handle, (uint32_t *)buff);
             if (ret < 0) {
                 LOG_ERR("Failed to get capacity: error %d", ret);
                 return -EIO;
@@ -121,7 +121,7 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
 
         case DISK_IOCTL_GET_SECTOR_SIZE:
             // Assuming that the sector size function requires the device handle and a pointer to store the result
-            ret = spi_nand_flash_get_sector_size(device_handle, (uint16_t *)buff);
+            ret = spi_nand_flash_get_sector_size(device_handle, (uint32_t *)buff);
             if (ret < 0) {
                 LOG_ERR("Failed to get sector size: error %d", ret);
                 return -EIO;
@@ -137,6 +137,10 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
             }
             break;
 
+        case DISK_IOCTL_GET_ERASE_BLOCK_SZ:
+            *(uint32_t *)buff = device_handle->block_size;
+		    break;
+
         default:
             LOG_ERR("Unsupported IOCTL command: %d", cmd);
             return -EINVAL;
@@ -147,14 +151,14 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
 
 int disk_nand_init(void)
 {
-    k_mutex_lock(&disk_mutex, K_FOREVER);
+    //k_mutex_lock(&disk_mutex, K_FOREVER);
     LOG_INF("Initializing disk NAND flash");
     int ret = disk_access_register(&nand_disk);  // Register the disk
     if (ret) {
         LOG_ERR("Failed to register NAND disk");
         return ret;
     }
-    k_mutex_unlock(&disk_mutex);
+    //k_mutex_unlock(&disk_mutex);
     if(sys_dnode_is_linked(&nand_disk.node)){
         LOG_INF("Node on disk level NAND is linked");
     }else{
@@ -175,4 +179,4 @@ int disk_nand_uninit(void)
 
 
 
-SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+//SYS_INIT(disk_nand_init, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);

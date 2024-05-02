@@ -124,7 +124,7 @@ int spi_nand_flash_sync(spi_nand_flash_device_t *handle);
  * @param[out] number_of_sectors A pointer of where to put the return value
  * @return 0 on success, or -1 if the operation failed.
  */
-int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint16_t *number_of_sectors);
+int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint32_t *number_of_sectors);
 
 /** @brief Retrieve the size of each sector.
  *
@@ -132,7 +132,7 @@ int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint16_t *numbe
  * @param[out] number_of_sectors A pointer of where to put the return value
  * @return 0 on success, or -1 if the operation failed.
  */
-int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint16_t *sector_size);
+int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint32_t *sector_size);
 
 /** @brief Erases the entire chip, invalidating any data on the chip.
  *

@@ -14,13 +14,13 @@
 
 LOG_MODULE_REGISTER(vfs_NAND_flash, CONFIG_LOG_DEFAULT_LEVEL);
 
-FATFS fat_fs;
+static FATFS fat_fs;
 
 /* FAT fs mount info */
 static struct fs_mount_t nand_mount_fat = {
     .type = FS_FATFS,
     .fs_data = &fat_fs,
-    .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS,
+    .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS,//FS_MOUNT_FLAG_NO_FORMAT//FS_MOUNT_FLAG_USE_DISK_ACCESS,
     .storage_dev = "NAND",  // This should match the name of your disk registered
     .mnt_point = "/NAND:"       // Mount point in the filesystem
     
