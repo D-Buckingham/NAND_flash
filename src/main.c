@@ -37,10 +37,10 @@ int  main(void)
     //     LOG_ERR("Communication tests failed, err: %d", ret);
     // }
 
-	ret = test_nand_top_layer(&spidev_dt);
-	if (ret != 0) {
-        LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
-    }
+	// ret = test_nand_top_layer(&spidev_dt);
+	// if (ret != 0) {
+    //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
+    // }
 
 	test_disk_initialize_status_read(&nand_disk);
 
