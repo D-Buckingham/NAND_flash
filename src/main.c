@@ -17,6 +17,7 @@
 #include "tests/test_spi_nand_top_layer.h"
 #include "tests/test_disk_access.h"
 #include "vfs_NAND_flash.h"
+#include "tests/vfs_test.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
@@ -37,14 +38,15 @@ int  main(void)
     //     LOG_ERR("Communication tests failed, err: %d", ret);
     // }
 
-	// ret = test_nand_top_layer(&spidev_dt);
-	// if (ret != 0) {
-    //     LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
-    // }
+	ret = test_nand_top_layer(&spidev_dt);
+	if (ret != 0) {
+        LOG_ERR("Top layer DHARA tests failed, err: %d", ret);
+    }
 
 	//test_disk_initialize_status_read(&nand_disk);
 
-	mount_nand_fs();
+	test_NAND_flash();
+//	mount_nand_fs();
 
 	return 0;
 

@@ -9,12 +9,14 @@
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/drivers/flash.h>
 
+#include <stdio.h>
 
-#include "vfs_NAND_flash.h"
+#include <zephyr/storage/disk_access.h>
+#include <ff.h> 
 #include "vfs_test.h"
 
 
-//testing functions to check if littlefs is properly mounted and works
+//testing functions to check if fat fs is properly mounted and works
 //expecting pattern 55 or aa
 
 #include <stdio.h>
@@ -23,11 +25,21 @@
 #include <zephyr/device.h>
 #include <zephyr/fs/fs.h>
 
+static FATFS fat_fs;
+
+/* FAT fs mount info */
+static struct fs_mount_t nand_mount_fat = {
+    .type = FS_FATFS,
+    .fs_data = &fat_fs,
+    .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS,//FS_MOUNT_FLAG_NO_FORMAT//FS_MOUNT_FLAG_USE_DISK_ACCESS,
+    .storage_dev = (void *) "NAND",  // This should match the name of your disk registered
+    .mnt_point = "/NAND:"       // Mount point in the filesystem
+};
 
 
 LOG_MODULE_REGISTER(NAND_mount_test);
 
-/* Matches LFS_NAME_MAX */
+/* Matches FF LFN max */
 #define MAX_PATH_LEN 255
 #define TEST_FILE_SIZE 547
 
@@ -74,7 +86,7 @@ static int lsdir(const char *path)
 	return res;
 }
 
-static int littlefs_increase_infile_value(char *fname)
+static int nand_increase_infile_value(char *fname)
 {
 	uint8_t boot_count = 0;
 	struct fs_file_t file;
@@ -177,7 +189,7 @@ static void print_pattern(uint8_t *p, uint16_t size)
 	LOG_PRINTK("\n");
 }
 
-static int littlefs_binary_file_adj(char *fname)
+static int nand_binary_file_adj(char *fname)
 {
 	struct fs_dirent dirent;
 	struct fs_file_t file;
@@ -185,7 +197,7 @@ static int littlefs_binary_file_adj(char *fname)
 
 	/*
 	 * Uncomment below line to force re-creation of the test pattern
-	 * file on the littlefs FS.
+	 * file on the FAT FS.
 	 */
 	/* fs_unlink(fname); */
 	fs_file_t_init(&file);
@@ -244,9 +256,7 @@ static int littlefs_binary_file_adj(char *fname)
 
 
 
-
-#ifdef CONFIG_APP_LITTLEFS_STORAGE_FLASH
-static int littlefs_flash_erase(unsigned int id)
+static int nand_flash_erase(unsigned int id)
 {
 	const struct flash_area *pfa;
 	int rc;
@@ -274,76 +284,7 @@ static int littlefs_flash_erase(unsigned int id)
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-#define PARTITION_NODE DT_NODELABEL(lfs1)
-
-FS_FSTAB_DECLARE_ENTRY(PARTITION_NODE);
-
-static struct fs_mount_t *mountpoint =	&FS_FSTAB_ENTRY(PARTITION_NODE);
-
-
-// static void test_read_flash(void){
-//     const size_t len = 800;
-// 	uint8_t buf[len];
-//     memset(buf, 0, len);
-//     const struct device *flash_dev = DEVICE_DT_GET(DT_ALIAS(extflash));
-// 	int rc = flash_read(flash_dev, 0x00, buf, len);
-//     LOG_INF("Validating if random area is deleted");
-// 	if (rc != 0) {
-// 		printf("Flash read failed! %d\n", rc);
-// 	}
-//     for (size_t i = 0; i < len; i++) {
-//         printk("%02x ", buf[i]);
-// 		if ((i + 1) % 30 == 0) { 
-// 			printk("\n");
-// 		}
-//     }
-//     printk("\n");
-
-// }
-
-
-
-static int littlefs_mount(struct fs_mount_t *mp)
-{
-	int rc;
-
-	rc = littlefs_flash_erase((uintptr_t)mp->storage_dev);
-	if (rc < 0) {
-		LOG_INF("flash erase failed");
-		return rc;
-	}
-
-    //test a random place if erased
-
-    //test_read_flash();
-	/* Do not mount if auto-mount has been enabled */
- #if !DT_NODE_EXISTS(PARTITION_NODE) ||						\
- 	!(FSTAB_ENTRY_DT_MOUNT_FLAGS(PARTITION_NODE) & FS_MOUNT_FLAG_AUTOMOUNT)
-	rc = fs_mount(mp);
-	if (rc < 0) {
-		LOG_PRINTK("FAIL: mount id %" PRIuPTR " at %s: %d\n",
-		       (uintptr_t)mp->storage_dev, mp->mnt_point, rc);
-		return rc;
-	}
-	LOG_PRINTK("%s mount: %d\n", mp->mnt_point, rc);
- #else
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	LOG_PRINTK("%s automounted\n", mp->mnt_point);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- #endif
-
-	return 0;
-}
-
-
-
-#endif /* CONFIG_APP_LITTLEFS_STORAGE_FLASH */
 
 
 int test_NAND_flash(void)
@@ -353,21 +294,21 @@ int test_NAND_flash(void)
 	struct fs_statvfs sbuf;
 	int rc;
 
-	LOG_PRINTK("Sample program to r/w files on littlefs\n");
+	LOG_PRINTK("Sample program to r/w files on NAND FAT fs\n");
 
-	rc = littlefs_mount(mountpoint);
+	rc = fs_mount(&nand_mount_fat);
 	if (rc < 0) {
-        LOG_ERR("LittleFS mount failed: %d\n", rc);
+        LOG_ERR("NAND FAT mount failed: %d\n", rc);
 		return 0;
 	}else{
-        LOG_INF("LittleFS mount successful!");
+        LOG_INF("NAND FAT mount successful!");
     }
 
-	snprintf(fname1, sizeof(fname1), "%s/boot_count", mountpoint->mnt_point);
-	snprintf(fname2, sizeof(fname2), "%s/pattern.bin", mountpoint->mnt_point);
+	snprintf(fname1, sizeof(fname1), "%s/boot_count", nand_mount_fat.mnt_point);
+	snprintf(fname2, sizeof(fname2), "%s/pattern.bin", nand_mount_fat.mnt_point);
 	
 
-	rc = fs_statvfs(mountpoint->mnt_point, &sbuf);
+	rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
 	if (rc < 0) {
 		LOG_PRINTK("FAIL: statvfs: %d\n", rc);
 		goto out;
@@ -375,28 +316,28 @@ int test_NAND_flash(void)
 
 	LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
 		   " blocks = %lu ; bfree = %lu\n",
-		   mountpoint->mnt_point,
+		   nand_mount_fat.mnt_point,
 		   sbuf.f_bsize, sbuf.f_frsize,
 		   sbuf.f_blocks, sbuf.f_bfree);
 
-	rc = lsdir(mountpoint->mnt_point);
+	rc = lsdir(nand_mount_fat.mnt_point);
 	if (rc < 0) {
-		LOG_PRINTK("FAIL: lsdir %s: %d\n", mountpoint->mnt_point, rc);
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
 		goto out;
 	}
 
-	rc = littlefs_increase_infile_value(fname1);
+	rc = nand_increase_infile_value(fname1);
 	if (rc) {
 		goto out;
 	}
 
-	rc = littlefs_binary_file_adj(fname2);
+	rc = nand_binary_file_adj(fname2);
 	if (rc) {
 		goto out;
 	}
 
 out:
-	rc = fs_unmount(mountpoint);
-	LOG_PRINTK("%s unmount: %d\n", mountpoint->mnt_point, rc);
+	rc = fs_unmount(&nand_mount_fat);
+	LOG_PRINTK("%s unmount: %d\n", nand_mount_fat.mnt_point, rc);
 	return 0;
 }

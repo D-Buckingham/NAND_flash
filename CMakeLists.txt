@@ -15,6 +15,7 @@ file(GLOB APP_SOURCES
             "src/SPI_NAND_DHARA/diskio_nand.c"
             "src/vfs_NAND_flash.c"
             "src/tests/test_disk_access.c"
+            "src/tests/vfs_test.c"
            
 )
 

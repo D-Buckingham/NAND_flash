@@ -54,8 +54,6 @@ int nand_disk_access_init(struct disk_info *disk) {
     // disk->ops = &nand_disk_ops;
     // disk->dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)));
     int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);
-    if(ret != 0){LOG_ERR("Disk error while initializing");}
-    else{LOG_INF("Disk initialized");}
     return ret;
 }
 
