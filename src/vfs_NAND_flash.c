@@ -23,7 +23,6 @@ static struct fs_mount_t nand_mount_fat = {
     .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS,//FS_MOUNT_FLAG_NO_FORMAT//FS_MOUNT_FLAG_USE_DISK_ACCESS,
     .storage_dev = (void *) "NAND",  // This should match the name of your disk registered
     .mnt_point = "/NAND:"       // Mount point in the filesystem
-    
 };
 
 
@@ -31,6 +30,23 @@ static struct fs_mount_t nand_mount_fat = {
 void mount_nand_fs(void) {
     int ret;
 
+	// struct ext2_cfg ext2_config = {
+	// 	.block_size = 2048,
+	// 	.fs_size = 0x2000000,
+	// 	.bytes_per_inode = 0,
+	// 	.volume_name[0] = 0,
+	// 	.set_uuid = false,
+	// };
+
+    // static MKFS_PARM def_cfg = {
+    //     .fmt = FM_ANY | FM_SFD,	/* Any suitable FAT */
+    //     .n_fat = 1,		/* One FAT fs table */
+    //     .align = 0,		/* Get sector size via diskio query */
+    //     .n_root = CONFIG_FS_FATFS_MAX_ROOT_ENTRIES,
+    //     .au_size = 0		/* Auto calculate cluster size */
+    // };
+
+    // ret = fs_mkfs(FS_FATFS, (uintptr_t)nand_mount_fat.storage_dev, &ext2_config, 0);
     
 
     // ret = disk_nand_init();
