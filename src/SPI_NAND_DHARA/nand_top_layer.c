@@ -349,8 +349,8 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     // Resume map to handle power failures
     dhara_error_t ignored;
     ret = dhara_map_resume(&(*handle)->dhara_map, &ignored);
-    if (ret != 0) {
-        LOG_INF("No stored state in dhara map, empty map initialized");
+    if (ret == -1) {
+        LOG_INF("No valid stored state, reinitializing map");
     }
 
     return 0;
