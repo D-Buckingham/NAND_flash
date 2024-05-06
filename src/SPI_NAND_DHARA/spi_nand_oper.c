@@ -166,8 +166,8 @@ int spi_nand_write_enable(const struct spi_dt_spec *dev)
 
 int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
 {
-    uint32_t block = RA_TO_BLOCK(page);
-    uint32_t page2 = RA_TO_PAGE(page);
+    // uint32_t block = RA_TO_BLOCK(page);
+    // uint32_t page2 = RA_TO_PAGE(page);
     spi_nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
         .address_bytes = 3,
@@ -177,7 +177,7 @@ int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
     };
 
     
-    LOG_INF("Reading from Block: %d, Page: %d", block, page2);
+    //LOG_INF("Reading from Block: %d, Page: %d", block, page2);
 
 
     return spi_nand_execute_transaction(dev, &t);

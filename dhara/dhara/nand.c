@@ -228,7 +228,7 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
  */
 int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t *err)
 {
-    LOG_DBG("erase_block, block=%u", b);
+    LOG_INF("erase_block, block=%u", b);
     struct spi_nand_flash_device_t *dev = CONTAINER_OF(n, struct spi_nand_flash_device_t, dhara_nand);
     int ret;
 
@@ -322,7 +322,7 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     }
 
     if ((status & STAT_PROGRAM_FAILED) != 0) {
-        LOG_DBG("prog failed, page=%u", p);
+        LOG_INF("prog failed, page=%u", p);
         dhara_set_error(err, DHARA_E_BAD_BLOCK);
         return -1;
     }
@@ -455,7 +455,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
 
     // Check for programming failure
     if ((status & STAT_PROGRAM_FAILED) != 0) {
-        LOG_DBG("Copy, program failed");
+        LOG_INF("Copy, program failed");
         dhara_set_error(err, DHARA_E_BAD_BLOCK);
         return -1;
     }

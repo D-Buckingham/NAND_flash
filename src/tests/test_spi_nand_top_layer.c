@@ -77,6 +77,26 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
         return -1;
     }
 
+    uint32_t sector_size, sector_num;
+
+
+    int ret = spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num);
+    if(ret != 0){
+        LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
+        return -1;
+    }else{
+        LOG_INF("capacity of the NAND flash is: %u", sector_num);
+    }
+
+
+    ret = spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size);
+    if(ret != 0){
+        LOG_ERR("Unable to get sector size, error: %d", ret);
+        return -1;
+    }  else{
+        LOG_INF("size of sector is: %u", sector_size);
+    }
+
     err = spi_nand_flash_deinit_device(nand_flash_device_handle);
     if(err != 0){
         LOG_ERR("Deinitialize device on top layer, error: %d", err);
