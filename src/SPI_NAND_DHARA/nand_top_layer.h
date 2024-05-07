@@ -77,7 +77,7 @@ typedef struct spi_nand_flash_device_t{
  */
 int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation_time_us, uint8_t *status_out);
 
-
+extern spi_nand_flash_device_t *nand_flash_device_handle;
 
 
 
