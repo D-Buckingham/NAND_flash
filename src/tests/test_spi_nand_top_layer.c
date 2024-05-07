@@ -4,6 +4,8 @@
 #include <string.h>
 #include <sys/param.h>
 
+#include <stdlib.h>
+#include <string.h>
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
@@ -22,8 +24,6 @@ LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
 #define PATTERN_SEED    0x12345678
-
-
 
 
 //put the spi_handle into the spi_nand_flash_device_t struct and initialize the device
@@ -66,10 +66,9 @@ int wait_and_chill(const struct spi_dt_spec *dev){
 }
 
 
-
 int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 {
-    
+    spi_nand_flash_device_t *nand_flash_device_handle = NULL;
     setup_nand_flash(&nand_flash_device_handle, spi);
     int err;
     err = spi_nand_erase_chip(nand_flash_device_handle);
@@ -199,6 +198,7 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 {
     
     uint32_t sector_num, sector_size;
+    spi_nand_flash_device_t *nand_flash_device_handle;
     setup_nand_flash(&nand_flash_device_handle, spi);
 
     if(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num) != 0){
@@ -270,19 +270,20 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 int test_struct_handling(const struct spi_dt_spec *spi){
     static uint8_t pattern_buf[2048];
     static uint8_t temp_buf[2048];
-    setup_nand_flash(&nand_flash_device_handle, spi);
+    spi_nand_flash_device_t *flash;
+    setup_nand_flash(&flash, spi);
 
     uint32_t sector_size, sector_num;
     memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
 
-    int ret = spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num);
+    int ret = spi_nand_flash_get_capacity(flash, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size);
+    ret = spi_nand_flash_get_sector_size(flash, &sector_size);
     if(ret != 0){
         LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
@@ -294,18 +295,18 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
 
 
-    if(spi_nand_flash_write_sector(nand_flash_device_handle, pattern_buf, 2) != 0){
+    if(spi_nand_flash_write_sector(flash, pattern_buf, 2) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
     }
     
 
-    ret = wait_and_chill(nand_flash_device_handle -> config.spi_dev);
+    ret = wait_and_chill(flash -> config.spi_dev);
     if (ret != 0) {
         return -1;
     }
 
-    if(spi_nand_flash_read_sector(nand_flash_device_handle, temp_buf, 2) != 0){
+    if(spi_nand_flash_read_sector(flash, temp_buf, 2) != 0){
             LOG_ERR("Failed to read sector at index %d", 1);
             return -1;
         }
@@ -340,7 +341,7 @@ int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     // }
 
     if(test_struct_handling(spidev_dt) != 0){
-        LOG_ERR("Failed to write to random sector");
+        LOG_ERR("Failed to write to random secor");
         return -1;
     }
 

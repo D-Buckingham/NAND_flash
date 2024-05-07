@@ -46,6 +46,11 @@ int top_device_connected(void){
 
 
     //get sector size to validate if dhara map layer works
+    spi_nand_flash_device_t *nand_flash_device_handle = NULL;
+    spi_nand_flash_config_t nand_flash_config = {
+        .spi_dev = &spidev_dt,
+    };
+    spi_nand_flash_init_device(&nand_flash_config, &nand_flash_device_handle);
     res = spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size);
     if(res != 0){
         LOG_ERR("Unable to get sector size, error: %d", res);
