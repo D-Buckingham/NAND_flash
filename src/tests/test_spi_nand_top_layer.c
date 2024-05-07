@@ -4,8 +4,6 @@
 #include <string.h>
 #include <sys/param.h>
 
-#include <stdlib.h>
-#include <string.h>
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>

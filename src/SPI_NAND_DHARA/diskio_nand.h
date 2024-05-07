@@ -21,6 +21,8 @@
 extern "C" {
 #endif
 
+extern struct disk_info nand_disk;
+
 /**
  * Initializes the disk for NAND flash.
  *

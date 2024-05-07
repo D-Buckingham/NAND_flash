@@ -47,12 +47,17 @@ static int spi_nand_winbond_init(spi_nand_flash_device_t *dev)
 
     switch (device_id) {
     case WINBOND_DI_AA20:
+        LOG_INF("Automatic recognition of WINBOND_DI_AA20 flash");
     case WINBOND_DI_BA20:
+        LOG_INF("Automatic recognition of WINBOND_DI_BA20 flash");
         dev->dhara_nand.num_blocks = 512;
         break;
     case WINBOND_DI_AA21:
+        LOG_INF("Automatic recognition of WINBOND_DI_AA21 flash");
     case WINBOND_DI_BA21:
+        LOG_INF("Automatic recognition of WINBOND_DI_BA21 flash");
     case WINBOND_DI_BC21:
+        LOG_INF("Automatic recognition of WINBOND_DI_BC21 flash");
         dev->dhara_nand.num_blocks = 1024;
         break;
     default:
@@ -97,21 +102,28 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     dev->program_page_delay_us = 630;
     switch (device_id) {
     case ALLIANCE_DI_25: //AS5F31G04SND-08LIN
+        LOG_INF("Automatic recognition of AS5F31G04SND-08LIN flash");
         dev->dhara_nand.num_blocks = 1024;
         dev->read_page_delay_us = 60;
         break;
     case ALLIANCE_DI_2E: //AS5F32G04SND-08LIN
+        LOG_INF("Automatic recognition of AS5F32G04SND-08LIN flash");
     case ALLIANCE_DI_8E: //AS5F12G04SND-10LIN
+        LOG_INF("Automatic recognition of AS5F12G04SND-10LIN flash");
         dev->dhara_nand.num_blocks = 2048;
         dev->read_page_delay_us = 60;
         break;
     case ALLIANCE_DI_2F: //AS5F34G04SND-08LIN
+        LOG_INF("Automatic recognition of AS5F34G04SND-08LIN flash");
     case ALLIANCE_DI_8F: //AS5F14G04SND-10LIN ==> Current implementation
+        LOG_INF("Automatic recognition of AS5F14G04SND-10LIN flash");
         dev->dhara_nand.num_blocks = 4096;
         dev->read_page_delay_us = 70;
         break;
     case ALLIANCE_DI_2D: //AS5F38G04SND-08LIN
+        LOG_INF("Automatic recognition of AS5F38G04SND-08LIN flash");
     case ALLIANCE_DI_8D: //AS5F18G04SND-10LIN
+        LOG_INF("Automatic recognition of AS5F18G04SND-10LIN flash");
         dev->dhara_nand.log2_page_size = 12; // 4k pages
         dev->dhara_nand.num_blocks = 4096;
         dev->read_page_delay_us = 130; // somewhat slower reads
@@ -154,21 +166,33 @@ static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
     dev->program_page_delay_us = 380;
     switch (device_id) {
     case GIGADEVICE_DI_51:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_51 flash");
     case GIGADEVICE_DI_41:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_41 flash");
     case GIGADEVICE_DI_31:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_31 flash");
     case GIGADEVICE_DI_21:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_21 flash");
         dev->dhara_nand.num_blocks = 1024;
         break;
     case GIGADEVICE_DI_52:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_52 flash");
     case GIGADEVICE_DI_42:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_42 flash");
     case GIGADEVICE_DI_32:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_32 flash");
     case GIGADEVICE_DI_22:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_22 flash");
         dev->dhara_nand.num_blocks = 2048;
         break;
     case GIGADEVICE_DI_55:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_55 flash");
     case GIGADEVICE_DI_45:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_45 flash");
     case GIGADEVICE_DI_35:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_35 flash");
     case GIGADEVICE_DI_25:
+        LOG_INF("Automatic recognition of GIGADEVICE_DI_25 flash");
         dev->dhara_nand.num_blocks = 4096;
         break;
     default:

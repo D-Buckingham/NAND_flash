@@ -15,6 +15,8 @@
 #include <ff.h> 
 #include "vfs_test.h"
 
+#include "../vfs_NAND_flash.h"
+
 
 //testing functions to check if fat fs is properly mounted and works
 //expecting pattern 55 or aa
@@ -25,16 +27,7 @@
 #include <zephyr/device.h>
 #include <zephyr/fs/fs.h>
 
-static FATFS fat_fs;
 
-/* FAT fs mount info */
-static struct fs_mount_t nand_mount_fat = {
-    .type = FS_FATFS,
-    .fs_data = &fat_fs,
-    .flags = FS_MOUNT_FLAG_USE_DISK_ACCESS,//FS_MOUNT_FLAG_NO_FORMAT//FS_MOUNT_FLAG_USE_DISK_ACCESS,
-    .storage_dev = (void *) "NAND",  // This should match the name of your disk registered
-    .mnt_point = "/NAND:"       // Mount point in the filesystem
-};
 
 
 LOG_MODULE_REGISTER(NAND_mount_test);
@@ -44,7 +37,7 @@ LOG_MODULE_REGISTER(NAND_mount_test);
 #define TEST_FILE_SIZE 547
 
 static uint8_t file_test_pattern[TEST_FILE_SIZE];
-static int lsdir(const char *path)
+int lsdir(const char *path)
 {
 	int res;
 	struct fs_dir_t dirp;
@@ -86,7 +79,7 @@ static int lsdir(const char *path)
 	return res;
 }
 
-static int nand_increase_infile_value(char *fname)
+int nand_increase_infile_value(char *fname)
 {
 	uint8_t boot_count = 0;
 	struct fs_file_t file;
@@ -132,7 +125,7 @@ static int nand_increase_infile_value(char *fname)
 	return (rc < 0 ? rc : 0);
 }
 
-static void incr_pattern(uint8_t *p, uint16_t size, uint8_t inc)
+void incr_pattern(uint8_t *p, uint16_t size, uint8_t inc)
 {
 	uint8_t fill = 0x55;
 
@@ -151,7 +144,7 @@ static void incr_pattern(uint8_t *p, uint16_t size, uint8_t inc)
 	p[size - 1] += inc;
 }
 
-static void init_pattern(uint8_t *p, uint16_t size)
+void init_pattern(uint8_t *p, uint16_t size)
 {
 	uint8_t v = 0x1;
 
@@ -164,7 +157,7 @@ static void init_pattern(uint8_t *p, uint16_t size)
 	p[size - 1] = 0xAA;
 }
 
-static void print_pattern(uint8_t *p, uint16_t size)
+void print_pattern(uint8_t *p, uint16_t size)
 {
 	int i, j = size / 16, k;
 
@@ -189,7 +182,7 @@ static void print_pattern(uint8_t *p, uint16_t size)
 	LOG_PRINTK("\n");
 }
 
-static int nand_binary_file_adj(char *fname)
+int nand_binary_file_adj(char *fname)
 {
 	struct fs_dirent dirent;
 	struct fs_file_t file;

@@ -36,7 +36,7 @@ const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_O
 //static struct k_mutex disk_mutex;
 
 /* Disk information structure required by Zephyr */
-static struct disk_info nand_disk = {
+struct disk_info nand_disk = {
     .name = "NAND",
     .ops = &nand_disk_ops,
     .dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)))

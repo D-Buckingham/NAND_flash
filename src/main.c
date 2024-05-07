@@ -8,6 +8,7 @@
 #include <zephyr/fs/fs.h>
 #include <zephyr/devicetree.h>
 #include "zephyr/storage/disk_access.h"
+#include <ff.h> 
 
 #ifndef MAIN
 
@@ -20,7 +21,6 @@
 #include "tests/vfs_test.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
-
 
 
 

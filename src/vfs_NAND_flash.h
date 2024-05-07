@@ -13,5 +13,10 @@
  * Date: [10.03.2024]
  */
 
+#include <zephyr/fs/fs.h>
+#include <ff.h>  // FatFs API
+
+// Declare the mount object as extern
+extern struct fs_mount_t nand_mount_fat;
 
 void mount_nand_fs(void);
