@@ -17,6 +17,7 @@
 #include <ff.h>  // FatFs API
 
 // Declare the mount object as extern
+extern FATFS fat_fs;
 extern struct fs_mount_t nand_mount_fat;
 
 int mount_nand_fs(void);

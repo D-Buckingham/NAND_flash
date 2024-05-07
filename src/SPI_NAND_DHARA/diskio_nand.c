@@ -42,11 +42,15 @@ struct disk_info nand_disk = {
     .dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)))
 };
 
+
+//shared externally
 spi_nand_flash_config_t nand_flash_config = {
     .spi_dev = &spidev_dt,
 };
 
 spi_nand_flash_device_t *device_handle = NULL;
+
+
 
 
 int nand_disk_access_init(struct disk_info *disk) {

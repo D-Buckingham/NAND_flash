@@ -61,7 +61,10 @@ typedef struct spi_nand_flash_device_t{
 //typedef struct spi_nand_flash_config_t {} spi_nand_flash_config_t;
 //typedef struct spi_nand_flash_device_t {} spi_nand_flash_device_t;
 
+//shared externally
+extern spi_nand_flash_config_t nand_flash_config;
 
+extern spi_nand_flash_device_t *device_handle;
 
 
 

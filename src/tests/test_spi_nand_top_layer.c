@@ -30,11 +30,9 @@ LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle)
 {
 
-    spi_nand_flash_config_t nand_flash_config = {
-        .spi_dev = spi_handle,
-    };
+    nand_flash_config.spi_dev = spi_handle;
 
-    spi_nand_flash_device_t *device_handle = NULL;
+    
 
     int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);//TODO correctly handled? &
     if(ret != 0){
