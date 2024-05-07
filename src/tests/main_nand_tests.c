@@ -15,6 +15,7 @@
 #include    "../SPI_NAND_DHARA/diskio_nand.h"
 #include    "../SPI_NAND_DHARA/spi_nand_oper.h"
 
+
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
 //is a device connected?
@@ -22,6 +23,7 @@ LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 int top_device_connected(void){
     int res;
     struct fs_statvfs sbuf;
+    uint32_t sector_size;
 
     LOG_INF("Top Test 1: Checking initialization on every level");
 
@@ -34,11 +36,22 @@ int top_device_connected(void){
         LOG_INF("Device correctly retrieved from device tree");
     }
 
+
     //check if the communication works by reading out the device ID
-    ret = test_IDs_spi_nand(&spidev_dt);
-    if (ret != 0) {
+    res = test_IDs_spi_nand(&spidev_dt);
+    if (res != 0) {
         LOG_ERR("Device & Manufacturer ID test failed");
         return -1;
+    }
+
+
+    //get sector size to validate if dhara map layer works
+    res = spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size);
+    if(res != 0){
+        LOG_ERR("Unable to get sector size, error: %d", res);
+        return -1;
+    }  else{
+        LOG_INF("size of sector is: %u", sector_size);
     }
 
 
@@ -49,6 +62,7 @@ int top_device_connected(void){
     }else{
         LOG_INF("Disk access status = ok");
     }
+
 
     //if flash correctly mounted
     res = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
@@ -63,6 +77,7 @@ int top_device_connected(void){
 		   sbuf.f_blocks, sbuf.f_bfree);
     }
 
+    
     return 0;
 }
 
@@ -94,3 +109,15 @@ int top_device_connected(void){
 
 //How are multiple small files stored in dhara?
 
+
+
+//Main function in which the other ones are called
+int test_all_main_nand_tests(void){
+
+    //is the device on each layer connected/initialized?
+    int ret = top_device_connected();
+    if(ret == 0){
+        LOG_INF("Test 1 passed!");
+    }
+    return 0;
+}

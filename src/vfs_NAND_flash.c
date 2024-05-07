@@ -24,7 +24,7 @@ struct fs_mount_t nand_mount_fat = {
     .mnt_point = "/NAND:"       // Mount point in the filesystem
 };
 
-void mount_nand_fs(void) {
+int mount_nand_fs(void) {
     int ret;
 
     // Attempt to mount the file system
@@ -32,6 +32,9 @@ void mount_nand_fs(void) {
     if (ret) {
         LOG_ERR("Failed to mount NAND FS (%d)", ret);
     } else {
-        LOG_INF("NAND FS mounted");
+        LOG_INF("NAND ELM FAT FS mounted");
     } 
+    return ret;
 }
+
+SYS_INIT(mount_nand_fs, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEVICE);

@@ -21,7 +21,7 @@
 //testing functions to check if fat fs is properly mounted and works
 //expecting pattern 55 or aa
 
-#include <stdio.h>
+
 
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>

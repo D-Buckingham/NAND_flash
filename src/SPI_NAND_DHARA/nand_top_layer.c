@@ -13,6 +13,8 @@
 
 LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
+spi_nand_flash_device_t *nand_flash_device_handle = NULL;
+
 /**
  * @brief Initialize a Winbond SPI NAND device.
  *

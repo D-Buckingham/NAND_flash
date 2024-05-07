@@ -19,4 +19,4 @@
 // Declare the mount object as extern
 extern struct fs_mount_t nand_mount_fat;
 
-void mount_nand_fs(void);
+int mount_nand_fs(void);
