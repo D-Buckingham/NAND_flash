@@ -11,7 +11,7 @@
 #include <zephyr/devicetree.h>
 #include <errno.h>
 
-#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+
 
 LOG_MODULE_REGISTER(diskio_nand, CONFIG_LOG_DEFAULT_LEVEL);
 
@@ -30,7 +30,6 @@ static const struct disk_operations nand_disk_ops = {
     .ioctl = nand_disk_access_ioctl
 };
 
-const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
 
 //static struct k_mutex disk_mutex;
@@ -43,12 +42,6 @@ struct disk_info nand_disk = {
 };
 
 
-//shared externally
-spi_nand_flash_config_t nand_flash_config = {
-    .spi_dev = &spidev_dt,
-};
-
-spi_nand_flash_device_t *device_handle = NULL;
 
 
 

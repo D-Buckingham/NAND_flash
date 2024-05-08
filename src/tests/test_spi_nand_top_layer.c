@@ -66,10 +66,10 @@ int wait_and_chill(const struct spi_dt_spec *dev){
 
 int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 {
-    spi_nand_flash_device_t *nand_flash_device_handle = NULL;
-    setup_nand_flash(&nand_flash_device_handle, spi);
+    // spi_nand_flash_device_t *device_handle = NULL;
+    // setup_nand_flash(&device_handle, spi);
     int err;
-    err = spi_nand_erase_chip(nand_flash_device_handle);
+    err = spi_nand_erase_chip(device_handle);
     if(err != 0){
         LOG_ERR("Erase chip of device on top layer, error: %d", err);
         return -1;
@@ -78,7 +78,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
     uint32_t sector_size, sector_num;
 
 
-    int ret = spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num);
+    int ret = spi_nand_flash_get_capacity(device_handle, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
@@ -87,7 +87,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
     }
 
 
-    ret = spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size);
+    ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if(ret != 0){
         LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
@@ -95,7 +95,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
         LOG_INF("size of sector is: %u", sector_size);
     }
 
-    err = spi_nand_flash_deinit_device(nand_flash_device_handle);
+    err = spi_nand_flash_deinit_device(device_handle);
     if(err != 0){
         LOG_ERR("Deinitialize device on top layer, error: %d", err);
         return -1;
@@ -196,14 +196,14 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 {
     
     uint32_t sector_num, sector_size;
-    spi_nand_flash_device_t *nand_flash_device_handle;
-    setup_nand_flash(&nand_flash_device_handle, spi);
+    // spi_nand_flash_device_t *device_handle;
+    // setup_nand_flash(&device_handle, spi);
 
-    if(spi_nand_flash_get_capacity(nand_flash_device_handle, &sector_num) != 0){
+    if(spi_nand_flash_get_capacity(device_handle, &sector_num) != 0){
         LOG_ERR("Unable to retrieve flash capacity");
         return -1;
     }
-    if(spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size) != 0){
+    if(spi_nand_flash_get_sector_size(device_handle, &sector_size) != 0){
         LOG_ERR("Unable to get sector size");
         return -1;
     }
@@ -211,49 +211,49 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 
     LOG_INF("Test2, Setup complete");
     
-    if(do_single_write_test(nand_flash_device_handle, 1, 16)!= 0){
+    if(do_single_write_test(device_handle, 1, 16)!= 0){
         LOG_ERR("fails first single write test");
     }else{
         LOG_INF("single write read test 1 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, 16, 32) != 0) {
+    if (do_single_write_test(device_handle, 16, 32) != 0) {
         LOG_ERR("Failed second single write test");
     }else{
         LOG_INF("single write read test 2 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, 32, 64) != 0) {
+    if (do_single_write_test(device_handle, 32, 64) != 0) {
         LOG_ERR("Failed third single write test");
     }else{
         LOG_INF("single write read test 3 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, 64, 128) != 0) {
+    if (do_single_write_test(device_handle, 64, 128) != 0) {
         LOG_ERR("Failed fourth single write test");
     }else{
         LOG_INF("single write read test 4 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 32) != 0) {
+    if (do_single_write_test(device_handle, sector_num / 2, 32) != 0) {
         LOG_ERR("Failed fifth single write test at middle of the flash");
     }else{
         LOG_INF("single write read test 5 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, sector_num / 2, 256) != 0) {
+    if (do_single_write_test(device_handle, sector_num / 2, 256) != 0) {
         LOG_ERR("Failed sixth single write test at middle with larger span");
     }else{
         LOG_INF("single write read test 6 successful");
     }
 
-    if (do_single_write_test(nand_flash_device_handle, sector_num - 20, 16) != 0) {
+    if (do_single_write_test(device_handle, sector_num - 20, 16) != 0) {
         LOG_ERR("Failed last single write test near the end of the flash");
     }else{
         LOG_INF("single write read test 7 successful");
     }
 
-    if(spi_nand_flash_deinit_device(nand_flash_device_handle) != 0){
+    if(spi_nand_flash_deinit_device(device_handle) != 0){
         LOG_ERR("Deinitialize device on top layer");
         return -1;
     }else{
@@ -268,20 +268,20 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 int test_struct_handling(const struct spi_dt_spec *spi){
     static uint8_t pattern_buf[2048];
     static uint8_t temp_buf[2048];
-    spi_nand_flash_device_t *flash;
-    setup_nand_flash(&flash, spi);
+    // spi_nand_flash_device_t *flash;
+    // setup_nand_flash(&flash, spi);
 
     uint32_t sector_size, sector_num;
     memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
 
-    int ret = spi_nand_flash_get_capacity(flash, &sector_num);
+    int ret = spi_nand_flash_get_capacity(device_handle, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_flash_get_sector_size(flash, &sector_size);
+    ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if(ret != 0){
         LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
@@ -293,18 +293,18 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
 
 
-    if(spi_nand_flash_write_sector(flash, pattern_buf, 2) != 0){
+    if(spi_nand_flash_write_sector(device_handle, pattern_buf, 2) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
     }
     
 
-    ret = wait_and_chill(flash -> config.spi_dev);
+    ret = wait_and_chill(device_handle -> config.spi_dev);
     if (ret != 0) {
         return -1;
     }
 
-    if(spi_nand_flash_read_sector(flash, temp_buf, 2) != 0){
+    if(spi_nand_flash_read_sector(device_handle, temp_buf, 2) != 0){
             LOG_ERR("Failed to read sector at index %d", 1);
             return -1;
         }
@@ -333,15 +333,19 @@ int test_struct_handling(const struct spi_dt_spec *spi){
 int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
     LOG_INF("Starting tests top layer");
 
+    
+
     // if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
     //     LOG_ERR("Failed first test top layer above DHARA");
     //     return -1;
     // }
+    // LOG_INF("setup erase deinit finished");
 
     if(test_struct_handling(spidev_dt) != 0){
         LOG_ERR("Failed to write to random secor");
         return -1;
     }
+    LOG_INF("test struct handling finished");
 
 
     if(test2_writing_tests_top_layer(spidev_dt) != 0){

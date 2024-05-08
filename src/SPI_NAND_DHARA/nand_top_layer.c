@@ -14,6 +14,17 @@
 LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+
+const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+
+//shared externally
+spi_nand_flash_config_t nand_flash_config = {
+    .spi_dev = &spidev_dt,
+};
+
+spi_nand_flash_device_t *device_handle = NULL;
+
 
 /**
  * @brief Initialize a Winbond SPI NAND device.

@@ -49,7 +49,7 @@ int  main(void)
 	//test_NAND_flash();
 	
 
-	test_all_main_nand_tests();
+	//test_all_main_nand_tests();
 //	mount_nand_fs();
 
 	return 0;

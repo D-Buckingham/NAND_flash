@@ -14,6 +14,7 @@
 #include    "../vfs_NAND_flash.h"
 #include    "../SPI_NAND_DHARA/diskio_nand.h"
 #include    "../SPI_NAND_DHARA/spi_nand_oper.h"
+#include    "../SPI_NAND_DHARA/nand_top_layer.h"
 
 
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
@@ -46,12 +47,10 @@ int top_device_connected(void){
 
 
     //get sector size to validate if dhara map layer works
-    spi_nand_flash_device_t *nand_flash_device_handle = NULL;
-    spi_nand_flash_config_t nand_flash_config = {
-        .spi_dev = &spidev_dt,
-    };
-    spi_nand_flash_init_device(&nand_flash_config, &nand_flash_device_handle);
-    res = spi_nand_flash_get_sector_size(nand_flash_device_handle, &sector_size);
+    //nand_flash_config.spi_dev = &spidev_dt; //unnecessary
+
+    //spi_nand_flash_init_device(&nand_flash_config, &device_handle); // already initialized
+    res = spi_nand_flash_get_sector_size(device_handle, &sector_size);
     if(res != 0){
         LOG_ERR("Unable to get sector size, error: %d", res);
         return -1;
