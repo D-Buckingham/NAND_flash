@@ -335,11 +335,11 @@ int test_nand_top_layer(const struct spi_dt_spec *spidev_dt){
 
     
 
-    // if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
-    //     LOG_ERR("Failed first test top layer above DHARA");
-    //     return -1;
-    // }
-    // LOG_INF("setup erase deinit finished");
+    if(test1_setup_erase_deinit_top_layer(spidev_dt) != 0){
+        LOG_ERR("Failed first test top layer above DHARA");
+        return -1;
+    }
+    LOG_INF("setup erase deinit finished");
 
     if(test_struct_handling(spidev_dt) != 0){
         LOG_ERR("Failed to write to random secor");

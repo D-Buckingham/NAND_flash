@@ -342,7 +342,6 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     //*handle = calloc(sizeof(spi_nand_flash_device_t), 1);//TODO check on this //k_calloc leads to bus fault
 
     *handle = device_handle;
-    //memset(*handle, 0, sizeof(spi_nand_flash_device_t));
 
     if (*handle == NULL) {
         LOG_ERR("Failed to allocate memory for NAND flash device");
@@ -374,7 +373,10 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     (*handle)->num_blocks = (*handle)->dhara_nand.num_blocks;
 
     // Allocate work buffer for NAND operations
-    (*handle)->work_buffer = malloc((*handle)->page_size);
+    //(*handle)->work_buffer = malloc((*handle)->page_size);
+    if ((*handle)->work_buffer == NULL) {
+        (*handle)->work_buffer = malloc((*handle)->page_size);
+    }
 
 
     if ((*handle)->work_buffer == NULL) {
@@ -406,7 +408,6 @@ fail:
         free((*handle)->work_buffer);
     }
     LOG_ERR("Failed to initalize mapping");
-    free(*handle);
     return ret;
 }
 
@@ -524,7 +525,10 @@ int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint32_t *se
 
 int spi_nand_flash_deinit_device(spi_nand_flash_device_t *handle)
 {
-    free(handle->work_buffer);
+    if (handle->work_buffer != NULL) {
+        free(handle->work_buffer);
+        handle->work_buffer = NULL;
+    }
     //free(handle);
     return 0;
 }

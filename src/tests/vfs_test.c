@@ -280,7 +280,7 @@ int nand_binary_file_adj(char *fname)
 
 
 
-int test_NAND_flash(void)
+int test_vfs_NAND_flash(void)
 {
 	char fname1[MAX_PATH_LEN];
 	char fname2[MAX_PATH_LEN];

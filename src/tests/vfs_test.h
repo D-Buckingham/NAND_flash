@@ -21,7 +21,7 @@
  *
  * @return 0 on success, negative error code on failure.
  */
-int test_NAND_flash(void);
+int test_vfs_NAND_flash(void);
 
 /**
  * @brief List the contents of a directory.

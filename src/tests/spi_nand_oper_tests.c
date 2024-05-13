@@ -177,11 +177,10 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
     uint8_t device_id;
     int ret = spi_nand_device_id(dev, (uint8_t *) &device_id);
     if (ret != 0) {
-        LOG_ERR("Test 1: Failed to read device ID");
+        LOG_ERR("Failed to read device ID");
     } else {
-        LOG_INF("Test 1: SPI NAND Device ID: 0x%x ", device_id);
+        LOG_INF("SPI NAND Device ID: 0x%x ", device_id);
     }
-    LOG_INF("Test 1 No error thrown");
     return ret;
 }
 
