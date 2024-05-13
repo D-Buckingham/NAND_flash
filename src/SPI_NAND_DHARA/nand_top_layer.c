@@ -321,6 +321,8 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
     return 0; 
 }
 
+// Single static instance of the device
+static spi_nand_flash_device_t spi_nand_flash_device;
 
 int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle)
 {
@@ -336,7 +338,11 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     }
 
     // Allocate memory for the NAND flash device structure
-    *handle = calloc(sizeof(spi_nand_flash_device_t), 1);//TODO check on this //k_calloc leads to bus fault
+    //*handle = calloc(sizeof(spi_nand_flash_device_t), 1);//TODO check on this //k_calloc leads to bus fault
+
+    *handle = &spi_nand_flash_device;
+    memset(*handle, 0, sizeof(spi_nand_flash_device_t));
+    
     if (*handle == NULL) {
         LOG_ERR("Failed to allocate memory for NAND flash device");
         return -1;
