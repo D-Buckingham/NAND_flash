@@ -23,7 +23,8 @@ spi_nand_flash_config_t nand_flash_config = {
     .spi_dev = &spidev_dt,
 };
 
-spi_nand_flash_device_t *device_handle = NULL;
+static spi_nand_flash_device_t spi_nand_flash_device;
+spi_nand_flash_device_t *device_handle = &spi_nand_flash_device;
 
 
 /**
@@ -321,8 +322,8 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
     return 0; 
 }
 
-// Single static instance of the device
-static spi_nand_flash_device_t spi_nand_flash_device;
+
+
 
 int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle)
 {
@@ -340,9 +341,9 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     // Allocate memory for the NAND flash device structure
     //*handle = calloc(sizeof(spi_nand_flash_device_t), 1);//TODO check on this //k_calloc leads to bus fault
 
-    *handle = &spi_nand_flash_device;
-    memset(*handle, 0, sizeof(spi_nand_flash_device_t));
-    
+    *handle = device_handle;
+    //memset(*handle, 0, sizeof(spi_nand_flash_device_t));
+
     if (*handle == NULL) {
         LOG_ERR("Failed to allocate memory for NAND flash device");
         return -1;
@@ -374,6 +375,8 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
 
     // Allocate work buffer for NAND operations
     (*handle)->work_buffer = malloc((*handle)->page_size);
+
+
     if ((*handle)->work_buffer == NULL) {
         LOG_ERR("Failed to allocate work buffer");
         ret = -1;
@@ -522,6 +525,6 @@ int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint32_t *se
 int spi_nand_flash_deinit_device(spi_nand_flash_device_t *handle)
 {
     free(handle->work_buffer);
-    free(handle);
+    //free(handle);
     return 0;
 }

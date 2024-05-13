@@ -29,7 +29,7 @@ int top_device_connected(void){
     LOG_INF("Top Test 1: Checking initialization on every level");
 
     //device connected?
-    //const struct spi_dt_spec spidev_dt = spi_nand_init();//gets pointer to device from DT
+    const struct spi_dt_spec spidev_dt = spi_nand_init();//gets pointer to device from DT
     if (!device_is_ready(spidev_dt.bus)) {
         LOG_ERR("Device not ready on SPI level");
         return -1;
