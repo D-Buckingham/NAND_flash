@@ -18,12 +18,17 @@
 
 #define MAX_PATH_LEN 255
 #define TEST_FILE_SIZE 547
+#define FILE_NAME "sonnet.txt"
+#define FILE_NAME_LARGE "large_file.txt"
+#define FILE_CONTENT "This is a test content for a large file. "
+#define CONTENT_REPEAT_COUNT 1000 // Adjust this to make the file large enough
+#define READ_CHUNK_SIZE 2048
 
 
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-#define FILE_NAME "sonnet.txt"
+
 
 
 static int lsdir(const char *path)
@@ -69,28 +74,40 @@ static int lsdir(const char *path)
 }
 
 
-static void create_and_write_file(const char *filename, const char *data) {
+static int create_and_write_file(const char *filename, const char *data) {
     struct fs_file_t file;
     fs_file_t_init(&file);
 
     int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
     if (rc < 0) {
         printk("Failed to open file %s: %d\n", filename, rc);
-        return;
+        return -1;
     }
 
-    rc = fs_write(&file, data, strlen(data));
+    size_t length = strlen(data);
+    rc = fs_write(&file, data, length);
     if (rc < 0) {
         printk("Failed to write to file %s: %d\n", filename, rc);
+        fs_close(&file);
+        return -1;
     }
 
+    // Ensure data is flushed to the file
+    rc = fs_sync(&file);
+    if (rc < 0) {
+        LOG_ERR("Failed to sync file %s: %d", filename, rc);
+        return -1;
+    }
     fs_close(&file);
+    
+
+    return 0;
 }
 
 static void read_file(const char *filename) {
     struct fs_file_t file;
     fs_file_t_init(&file);
-    char buffer[128];
+    char buffer[4096];
     int bytes_read;
 
     int rc = fs_open(&file, filename, FS_O_READ);
@@ -140,7 +157,46 @@ static int read_file_out(const char *filename, char *out_buffer, size_t buffer_s
     return bytes_read; // Return the number of bytes read
 }
 
+static int verify_file_content(const char *fname, const char *expected_content, size_t expected_len) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
 
+    int rc = fs_open(&file, fname, FS_O_READ);
+    if (rc < 0) {
+        LOG_ERR("Failed to open file %s: %d", fname, rc);
+        return -1;
+    }
+
+    char buffer[READ_CHUNK_SIZE];
+    size_t total_bytes_read = 0;
+
+    while ((rc = fs_read(&file, buffer, READ_CHUNK_SIZE)) > 0) {
+        for (int i = 0; i < rc; i++) {
+            if (buffer[i] != expected_content[total_bytes_read + i]) {
+                LOG_ERR("Mismatch at byte %zu: expected 0x%02x, got 0x%02x",
+                        total_bytes_read + i, expected_content[total_bytes_read + i], buffer[i]);
+                fs_close(&file);
+                return -1;
+            }
+        }
+        total_bytes_read += rc;
+    }
+
+    if (rc < 0) {
+        LOG_ERR("Failed to read the content of the file %s: %d", fname, rc);
+        fs_close(&file);
+        return -1;
+    }
+
+    if (total_bytes_read != expected_len) {
+        LOG_ERR("File size mismatch: expected %zu, got %zu", expected_len, total_bytes_read);
+        fs_close(&file);
+        return -1;
+    }
+
+    fs_close(&file);
+    return 0;
+}
 //////////////////////////////////////      END OF STATIC FUNCTIONS     ///////////////////////////////////////
 
 //is a device connected?
@@ -341,6 +397,8 @@ int test_create_folder(void){
  * @return 0 if successful, -1 otherwise.
  */
 int test_create_file(void) {
+
+    LOG_INF("Overall, Test 3: Creating file, writing, reading out and deleting");
     char fname[MAX_PATH_LEN];
     struct fs_statvfs sbuf;
     const char *sonnet = 
@@ -448,27 +506,70 @@ int test_create_file(void) {
 
     LOG_INF("Content of file %s:\n%s", fname, buffer);
 
+    LOG_INF("Deleting file %s", fname);
+    fs_unlink(fname);//deleting file
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
+    }
+
+    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+           " blocks = %lu ; bfree = %lu\n",
+           nand_mount_fat.mnt_point,
+           sbuf.f_bsize, sbuf.f_frsize,
+           sbuf.f_blocks, sbuf.f_bfree);
+
     return 0;
 }
 
 
 
 
-/**
- * @brief Test if a file can be read from the NAND filesystem.
- * 
- * @return 0 if successful, -1 otherwise.
- */
-int test_read_file(void){
-    return 0;
-}
+
 
 /**
  * @brief Test storing a large file that spans multiple blocks on the NAND filesystem.
  * 
  * @return 0 if successful, -1 otherwise.
  */
-int test_store_large_file(void){
+int test_store_large_file(void) {
+    LOG_INF("Overall, Test 4: Creating large file, comparing if correctly stored");
+    char fname[MAX_PATH_LEN];
+    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_LARGE);
+
+    // Create a large content by repeating FILE_CONTENT multiple times
+    size_t content_len = strlen(FILE_CONTENT) * CONTENT_REPEAT_COUNT;
+    char *large_content = malloc(content_len + 1);
+    if (!large_content) {
+        LOG_ERR("Failed to allocate memory for large content");
+        return -1;
+    }
+
+    large_content[0] = '\0';
+    for (int i = 0; i < CONTENT_REPEAT_COUNT; i++) {
+        strcat(large_content, FILE_CONTENT);
+    }
+
+    // Create and write the large file
+    int rc = create_and_write_file(fname, large_content);
+    if (rc < 0) {
+        LOG_ERR("Failed to create and write large file");
+        free(large_content);
+        return -1;
+    }
+
+    
+    // Verify the content of the large file
+    rc = verify_file_content(fname, large_content, content_len); //read and compare in chunks. Otherwise memcmp throws error
+    if (rc < 0) {
+        LOG_ERR("Content verification failed for large file");
+        free(large_content);
+        return -1;
+    }
+
+    free(large_content);
     return 0;
 }
 
@@ -563,6 +664,11 @@ int test_all_main_nand_tests(void){
     ret = test_create_file();
     if(ret == 0){
         LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
+    }
+
+    ret = test_store_large_file();
+    if(ret == 0){
+        LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
     }
 
     return 0;

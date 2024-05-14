@@ -16,7 +16,11 @@
         "disk_access.h": "c",
         "ff.h": "c",
         "diskio.h": "c",
-        "diskio_nand.h": "c"
+        "diskio_nand.h": "c",
+        "concepts": "c",
+        "cstdio": "c",
+        "new": "c",
+        "typeinfo": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
