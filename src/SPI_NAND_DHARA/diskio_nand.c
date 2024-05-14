@@ -149,7 +149,7 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
 int disk_nand_init(void)
 {
     //k_mutex_lock(&disk_mutex, K_FOREVER);
-    LOG_INF("Initializing disk NAND flash");
+    LOG_INF("DISK LAYER: Initializing NAND disk");
     int ret = disk_access_register(&nand_disk);  // Register the disk
     if (ret) {
         LOG_ERR("Failed to register NAND disk");
@@ -157,7 +157,7 @@ int disk_nand_init(void)
     }
     //k_mutex_unlock(&disk_mutex);
     if(sys_dnode_is_linked(&nand_disk.node)){
-        LOG_INF("Node on disk level NAND is linked");
+        LOG_INF("DISK LAYER: Node successfully linked!");
     }else{
         LOG_ERR("no linked node for disk");
     }

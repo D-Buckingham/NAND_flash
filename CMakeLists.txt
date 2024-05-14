@@ -13,7 +13,7 @@ file(GLOB APP_SOURCES
             "src/tests/spi_nand_oper_tests.c"
             "src/tests/test_spi_nand_top_layer.c"
             "src/SPI_NAND_DHARA/diskio_nand.c"
-            "src/vfs_NAND_flash.c"
+            "src/SPI_NAND_DHARA/vfs_NAND_flash.c"
             "src/tests/test_disk_access.c"
             "src/tests/vfs_test.c"
             "src/tests/main_nand_tests.c"

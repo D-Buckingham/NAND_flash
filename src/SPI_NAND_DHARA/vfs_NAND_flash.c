@@ -26,13 +26,14 @@ struct fs_mount_t nand_mount_fat = {
 
 int mount_nand_fs(void) {
     int ret;
+    LOG_INF("VFS Layer: Start Mounting FAT file system");
 
     // Attempt to mount the file system
     ret = fs_mount(&nand_mount_fat);
     if (ret) {
-        LOG_ERR("Failed to mount NAND FS (%d)", ret);
+        LOG_ERR("VFS Layer: Failed to mount NAND FS (%d)", ret);
     } else {
-        LOG_INF("NAND ELM FAT FS mounted");
+        LOG_INF("VFS Layer: NAND ELM FAT FS mounted");
     } 
     return ret;
 }

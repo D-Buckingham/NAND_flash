@@ -11,13 +11,58 @@
 #include    "test_spi_nand_top_layer.h"
 #include    "spi_nand_oper_tests.h"
 #include    "nand_top_layer.h"
-#include    "../vfs_NAND_flash.h"
+#include    "../SPI_NAND_DHARA/vfs_NAND_flash.h"
 #include    "../SPI_NAND_DHARA/diskio_nand.h"
 #include    "../SPI_NAND_DHARA/spi_nand_oper.h"
 #include    "../SPI_NAND_DHARA/nand_top_layer.h"
 
+#define MAX_PATH_LEN 255
+#define TEST_FILE_SIZE 547
+
 
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
+
+static int lsdir(const char *path)
+{
+	int res;
+	struct fs_dir_t dirp;
+	static struct fs_dirent entry;
+
+	fs_dir_t_init(&dirp);
+
+	/* Verify fs_opendir() */
+	res = fs_opendir(&dirp, path);
+	if (res) {
+		LOG_ERR("Error opening dir %s [%d]\n", path, res);
+		return res;
+	}
+
+	LOG_PRINTK("\nListing dir %s ...\n", path);
+	for (;;) {
+		/* Verify fs_readdir() */
+		res = fs_readdir(&dirp, &entry);
+
+		/* entry.name[0] == 0 means end-of-dir */
+		if (res || entry.name[0] == 0) {
+			if (res < 0) {
+				LOG_ERR("Error reading dir [%d]\n", res);
+			}
+			break;
+		}
+
+		if (entry.type == FS_DIR_ENTRY_DIR) {
+			LOG_PRINTK("[DIR ] %s\n", entry.name);
+		} else {
+			LOG_PRINTK("[FILE] %s (size = %zu)\n",
+				   entry.name, entry.size);
+		}
+	}
+
+	/* Verify fs_closedir() */
+	fs_closedir(&dirp);
+
+	return res;
+}
 
 //is a device connected?
 //get device through dhara and check if it is there
@@ -26,7 +71,7 @@ int top_device_connected(void){
     struct fs_statvfs sbuf;
     uint32_t sector_size;
 
-    LOG_INF("Top Test 1: Checking initialization on every level");
+    LOG_INF("Overall, Test 1: Checking initialization on every level");
 
     //device connected?
     const struct spi_dt_spec spidev_dt = spi_nand_init();//gets pointer to device from DT
@@ -55,7 +100,7 @@ int top_device_connected(void){
         LOG_ERR("Unable to get sector size, error: %d", res);
         return -1;
     }  else{
-        LOG_INF("size of sector is: %u", sector_size);
+        LOG_INF("Size of sector is: %u", sector_size);
     }
 
 
@@ -85,6 +130,114 @@ int top_device_connected(void){
     return 0;
 }
 
+
+/**
+ * @brief Test if a folder can be created on the NAND filesystem.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_create_folder(void){
+    struct fs_statvfs sbuf;
+    char fname1[MAX_PATH_LEN];
+    snprintf(fname1, sizeof(fname1), "%s/boot_count", nand_mount_fat.mnt_point);
+
+    //Print out current state
+    LOG_INF("Directories before adding a folder");
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+	if (rc < 0) {
+		LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+		return -1;
+	}
+
+	LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+		   " blocks = %lu ; bfree = %lu\n",
+		   nand_mount_fat.mnt_point,
+		   sbuf.f_bsize, sbuf.f_frsize,
+		   sbuf.f_blocks, sbuf.f_bfree);
+
+	rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		return -1;
+	}
+
+    //add a folder
+
+
+    return 0;
+}
+
+/**
+ * @brief Test if a file can be created on the NAND filesystem.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_create_file(void){
+    return 0;
+}
+
+/**
+ * @brief Test if a file can be read from the NAND filesystem.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_read_file(void){
+    return 0;
+}
+
+/**
+ * @brief Test storing a large file that spans multiple blocks on the NAND filesystem.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_store_large_file(void){
+    return 0;
+}
+
+/**
+ * @brief Test appending data to a large file and inspect the changes.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_append_data_large_file(void){
+    return 0;
+}
+
+/**
+ * @brief Test changing the data of a file and analyze the process on the NAND device.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_change_file_data(void){
+    return 0;
+}
+
+/**
+ * @brief Test deleting a file from the NAND filesystem.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_delete_file(void){
+    return 0;
+}
+
+/**
+ * @brief Test writing to one-eighth of the flash memory.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_write_one_eighth_flash(void){
+    return 0;
+}
+
+/**
+ * @brief Test how multiple small files are stored in the Dhara mapping layer.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_store_multiple_small_files(void){
+    return 0;
+}
 
 
 //Can I create a folder?
@@ -121,7 +274,7 @@ int test_all_main_nand_tests(void){
     //is the device on each layer connected/initialized?
     int ret = top_device_connected();
     if(ret == 0){
-        LOG_INF("Test 1 passed!");
+        LOG_INF("Overall Test 1: All modalities sucessful recognized!");
     }
     return 0;
 }

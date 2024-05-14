@@ -130,7 +130,7 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     case ALLIANCE_DI_2F: //AS5F34G04SND-08LIN
         LOG_INF("Automatic recognition of AS5F34G04SND-08LIN flash");
     case ALLIANCE_DI_8F: //AS5F14G04SND-10LIN ==> Current implementation
-        LOG_INF("Automatic recognition of AS5F14G04SND-10LIN flash");
+        LOG_INF("NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash");
         dev->dhara_nand.num_blocks = 4096;
         dev->read_page_delay_us = 70;
         break;
@@ -327,6 +327,7 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
 
 int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle)
 {
+    LOG_INF("NAND MAPPING LAYER: Initializing DHARA mapping");
     //Verify SPI device is ready
     if (!device_is_ready((config->spi_dev)->bus)) {
         LOG_ERR("SPI device is not ready");

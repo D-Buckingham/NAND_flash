@@ -15,7 +15,7 @@
 #include <ff.h> 
 #include "vfs_test.h"
 
-#include "../vfs_NAND_flash.h"
+#include "../SPI_NAND_DHARA/vfs_NAND_flash.h"
 
 
 //testing functions to check if fat fs is properly mounted and works
