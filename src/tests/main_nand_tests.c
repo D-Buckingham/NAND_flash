@@ -21,6 +21,7 @@
 #define FILE_NAME "sonnet.txt"
 #define FILE_NAME_LARGE "large_file.txt"
 #define FILE_CONTENT "This is a test content for a large file. "
+#define APPEND_CONTENT "Appending this new data to the large file. "
 #define CONTENT_REPEAT_COUNT 1000 // Adjust this to make the file large enough
 #define READ_CHUNK_SIZE 2048
 
@@ -28,7 +29,78 @@
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-
+const char *sonnet = 
+        "In Zephyr's realm, where microchips do sing,\n"
+        "And circuits dance in symphony's embrace,\n"
+        "There dwells a marvel, NAND's enduring king,\n"
+        "Whose steadfast cells all data do encase.\n"
+        "\n"
+        "Within its silicon heart, electrons glide,\n"
+        "A maze of gates and channels they traverse,\n"
+        "As bits and bytes in ordered lines abide,\n"
+        "To store our dreams in memory's universe.\n"
+        "\n"
+        "From ancient days of core and floppy's spin,\n"
+        "To flash's reign, a speed unmatched we see,\n"
+        "Yet NAND, with modest grace, the race doth win,\n"
+        "Ensuring data's constancy with glee.\n"
+        "\n"
+        "Oh NAND, thy blocks and pages interlaced,\n"
+        "In Zephyr's realm, thy presence is embraced.\n"
+        "\n"
+        "With every read and write, a tale unfolds,\n"
+        "Of knowledge vast, a library untold,\n"
+        "From microcosm's depths to space-bound holds,\n"
+        "Thy silent work a saga does uphold.\n"
+        "\n"
+        "Thy cells, like stars in digital array,\n"
+        "Illuminate the path for future's dawn,\n"
+        "As algorithms weave, and firmwares play,\n"
+        "In Zephyr's code, thy legacy is drawn.\n"
+        "\n"
+        "No tempest fierce nor wear shall thee subdue,\n"
+        "For in thy NAND, our trust doth rest secure,\n"
+        "With steadfast will, thou doth our data strew,\n"
+        "In Zephyr's sky, thy permanence is pure.\n"
+        "\n"
+        "Oh NAND, thou art the heart of storage might,\n"
+        "In Zephyr's hands, thou bring'st our data light.\n"
+        "\n"
+        "Beneath the surface of thy structure small,\n"
+        "A labyrinth of logic subtly laid,\n"
+        "Where ones and zeros heed the system's call,\n"
+        "And fleeting thoughts in permanence are made.\n"
+        "\n"
+        "Through cycles wear, thou still dost persevere,\n"
+        "An e'er resilient keeper of our lore,\n"
+        "In depths of thee, all data holds dear,\n"
+        "And future's code in thee shall ever store.\n"
+        "\n"
+        "As currents flow and voltages do surge,\n"
+        "In Zephyr's domain, thy prowess reigns,\n"
+        "The bounds of possibility to urge,\n"
+        "And break the chains of memory's old chains.\n"
+        "\n"
+        "Oh NAND, in thee, our digital soul finds rest,\n"
+        "In Zephyr's breeze, thou art the silent guest.\n"
+        "\n"
+        "To realms beyond, where quantum leaps unfold,\n"
+        "Thy humble roots in silicon shall last,\n"
+        "For in thy cells, the universe is told,\n"
+        "A microcosmic echo of the vast.\n"
+        "\n"
+        "From finite gates to infinity's door,\n"
+        "Thou art the bridge o'er which our data treads,\n"
+        "In Zephyr's world, thy legacy doth soar,\n"
+        "A silent force where innovation spreads.\n"
+        "\n"
+        "And though the sands of time may wear us all,\n"
+        "Thy steadfast form in Zephyr shall remain,\n"
+        "A sentinel to answer every call,\n"
+        "A guardian of data's boundless plane.\n"
+        "\n"
+        "Oh NAND, in thee the future is enshrined,\n"
+        "In Zephyr's realm, thou art both guide and mind.\n";
 
 
 static int lsdir(const char *path)
@@ -190,6 +262,67 @@ static int verify_file_content(const char *fname, const char *expected_content, 
 
     if (total_bytes_read != expected_len) {
         LOG_ERR("File size mismatch: expected %zu, got %zu", expected_len, total_bytes_read);
+        fs_close(&file);
+        return -1;
+    }
+
+    fs_close(&file);
+    return 0;
+}
+
+
+
+static int append_to_file(const char *filename, const char *data) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_RDWR | FS_O_APPEND);
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
+
+    size_t length = strlen(data);
+    rc = fs_write(&file, data, length);
+    if (rc < 0) {
+        printk("Failed to write to file %s: %d\n", filename, rc);
+        fs_close(&file);
+        return -1;
+    }
+
+    rc = fs_sync(&file);
+    if (rc < 0) {
+        printk("Failed to sync file %s: %d\n", filename, rc);
+        fs_close(&file);
+        return -1;
+    }
+
+    fs_close(&file);
+    return 0;
+}
+
+
+static int overwrite_file_start(const char *filename, const char *data) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_RDWR);
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
+
+    size_t data_len = strlen(data);
+    rc = fs_write(&file, data, data_len);
+    if (rc < 0) {
+        printk("Failed to overwrite file %s: %d\n", filename, rc);
+        fs_close(&file);
+        return -1;
+    }
+
+    rc = fs_sync(&file);
+    if (rc < 0) {
+        printk("Failed to sync file %s: %d\n", filename, rc);
         fs_close(&file);
         return -1;
     }
@@ -401,78 +534,7 @@ int test_create_file(void) {
     LOG_INF("Overall, Test 3: Creating file, writing, reading out and deleting");
     char fname[MAX_PATH_LEN];
     struct fs_statvfs sbuf;
-    const char *sonnet = 
-        "In Zephyr's realm, where microchips do sing,\n"
-        "And circuits dance in symphony's embrace,\n"
-        "There dwells a marvel, NAND's enduring king,\n"
-        "Whose steadfast cells all data do encase.\n"
-        "\n"
-        "Within its silicon heart, electrons glide,\n"
-        "A maze of gates and channels they traverse,\n"
-        "As bits and bytes in ordered lines abide,\n"
-        "To store our dreams in memory's universe.\n"
-        "\n"
-        "From ancient days of core and floppy's spin,\n"
-        "To flash's reign, a speed unmatched we see,\n"
-        "Yet NAND, with modest grace, the race doth win,\n"
-        "Ensuring data's constancy with glee.\n"
-        "\n"
-        "Oh NAND, thy blocks and pages interlaced,\n"
-        "In Zephyr's realm, thy presence is embraced.\n"
-        "\n"
-        "With every read and write, a tale unfolds,\n"
-        "Of knowledge vast, a library untold,\n"
-        "From microcosm's depths to space-bound holds,\n"
-        "Thy silent work a saga does uphold.\n"
-        "\n"
-        "Thy cells, like stars in digital array,\n"
-        "Illuminate the path for future's dawn,\n"
-        "As algorithms weave, and firmwares play,\n"
-        "In Zephyr's code, thy legacy is drawn.\n"
-        "\n"
-        "No tempest fierce nor wear shall thee subdue,\n"
-        "For in thy NAND, our trust doth rest secure,\n"
-        "With steadfast will, thou doth our data strew,\n"
-        "In Zephyr's sky, thy permanence is pure.\n"
-        "\n"
-        "Oh NAND, thou art the heart of storage might,\n"
-        "In Zephyr's hands, thou bring'st our data light.\n"
-        "\n"
-        "Beneath the surface of thy structure small,\n"
-        "A labyrinth of logic subtly laid,\n"
-        "Where ones and zeros heed the system's call,\n"
-        "And fleeting thoughts in permanence are made.\n"
-        "\n"
-        "Through cycles wear, thou still dost persevere,\n"
-        "An e'er resilient keeper of our lore,\n"
-        "In depths of thee, all data holds dear,\n"
-        "And future's code in thee shall ever store.\n"
-        "\n"
-        "As currents flow and voltages do surge,\n"
-        "In Zephyr's domain, thy prowess reigns,\n"
-        "The bounds of possibility to urge,\n"
-        "And break the chains of memory's old chains.\n"
-        "\n"
-        "Oh NAND, in thee, our digital soul finds rest,\n"
-        "In Zephyr's breeze, thou art the silent guest.\n"
-        "\n"
-        "To realms beyond, where quantum leaps unfold,\n"
-        "Thy humble roots in silicon shall last,\n"
-        "For in thy cells, the universe is told,\n"
-        "A microcosmic echo of the vast.\n"
-        "\n"
-        "From finite gates to infinity's door,\n"
-        "Thou art the bridge o'er which our data treads,\n"
-        "In Zephyr's world, thy legacy doth soar,\n"
-        "A silent force where innovation spreads.\n"
-        "\n"
-        "And though the sands of time may wear us all,\n"
-        "Thy steadfast form in Zephyr shall remain,\n"
-        "A sentinel to answer every call,\n"
-        "A guardian of data's boundless plane.\n"
-        "\n"
-        "Oh NAND, in thee the future is enshrined,\n"
-        "In Zephyr's realm, thou art both guide and mind.\n";
+    
     snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME);
 
     // Create and write the sonnet into the file
@@ -509,6 +571,12 @@ int test_create_file(void) {
     LOG_INF("Deleting file %s", fname);
     fs_unlink(fname);//deleting file
 
+    rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		return -1;
+	}
+
     rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
     if (rc < 0) {
         LOG_PRINTK("FAIL: statvfs: %d\n", rc);
@@ -537,6 +605,7 @@ int test_create_file(void) {
 int test_store_large_file(void) {
     LOG_INF("Overall, Test 4: Creating large file, comparing if correctly stored");
     char fname[MAX_PATH_LEN];
+    struct fs_statvfs sbuf;
     snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_LARGE);
 
     // Create a large content by repeating FILE_CONTENT multiple times
@@ -558,7 +627,26 @@ int test_store_large_file(void) {
         LOG_ERR("Failed to create and write large file");
         free(large_content);
         return -1;
+    }LOG_INF("Large file written to storage");
+
+    rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		return -1;
+	}
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
     }
+
+    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+           " blocks = %lu ; bfree = %lu\n",
+           nand_mount_fat.mnt_point,
+           sbuf.f_bsize, sbuf.f_frsize,
+           sbuf.f_blocks, sbuf.f_bfree);
+
 
     
     // Verify the content of the large file
@@ -573,12 +661,58 @@ int test_store_large_file(void) {
     return 0;
 }
 
+
 /**
  * @brief Test appending data to a large file and inspect the changes.
  * 
  * @return 0 if successful, -1 otherwise.
  */
-int test_append_data_large_file(void){
+int test_append_data_large_file(void) {
+    LOG_INF("Test 5: Appending data to large file and verifying");
+
+    char fname[MAX_PATH_LEN];
+    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_LARGE);
+
+    // Append new content to the existing large file
+    int rc = append_to_file(fname, APPEND_CONTENT);
+    if (rc < 0) {
+        LOG_ERR("Failed to append to large file");
+        return -1;
+    }
+    LOG_INF("Appended data to large file");
+
+    // Verify the new content
+    size_t content_len = strlen(FILE_CONTENT) * CONTENT_REPEAT_COUNT;
+    size_t append_content_len = strlen(APPEND_CONTENT);
+    size_t new_content_len = content_len + append_content_len;
+
+    char *expected_content = malloc(new_content_len + 1);
+    if (!expected_content) {
+        LOG_ERR("Failed to allocate memory for expected content");
+        return -1;
+    }
+    
+    char *large_content = malloc(content_len + 1);
+
+    large_content[0] = '\0';
+    for (int i = 0; i < CONTENT_REPEAT_COUNT; i++) {
+        strcat(large_content, FILE_CONTENT);
+    }
+
+    strcpy(expected_content, large_content);
+    strcat(expected_content, APPEND_CONTENT);
+
+    rc = verify_file_content(fname, expected_content, new_content_len);
+    if (rc < 0) {
+        LOG_ERR("Content verification failed after appending to large file");
+        free(expected_content);
+        free(large_content);
+        return -1;
+    }
+    LOG_INF("Content of file with appended data as expected");
+
+    free(expected_content);
+    free(large_content);
     return 0;
 }
 
@@ -588,8 +722,56 @@ int test_append_data_large_file(void){
  * @return 0 if successful, -1 otherwise.
  */
 int test_change_file_data(void){
+    LOG_INF("Test 6: Changing the beginning of the file data and verifying");
+
+    char fname[MAX_PATH_LEN];
+    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_LARGE);
+
+    // Overwrite the beginning of the file with the sonnet
+    int rc = overwrite_file_start(fname, sonnet);
+    if (rc < 0) {
+        LOG_ERR("Failed to overwrite the beginning of the file");
+        return -1;
+    }
+    LOG_INF("Overwritten the beginning of the file with the sonnet");
+
+    size_t content_len = strlen(FILE_CONTENT) * CONTENT_REPEAT_COUNT;
+    size_t append_content_len = strlen(APPEND_CONTENT);
+    size_t new_content_len = content_len + append_content_len;
+
+   
+
+    char *expected_content = malloc(new_content_len + 1);
+    if (!expected_content) {
+        LOG_ERR("Failed to allocate memory for expected content");
+        return -1;
+    }
+
+    char *large_content = malloc(content_len + 1);
+
+    large_content[0] = '\0';
+    for (int i = 0; i < CONTENT_REPEAT_COUNT; i++) {
+        strcat(large_content, FILE_CONTENT);
+    }
+    size_t sonnet_len = strlen(sonnet);
+    strcpy(expected_content, sonnet);
+    strcat(expected_content, large_content + sonnet_len);
+    strcat(expected_content, APPEND_CONTENT);
+
+    // Verify the new content
+    rc = verify_file_content(fname, expected_content, new_content_len);
+    if (rc < 0) {
+        LOG_ERR("Content verification failed after changing the file data");
+        free(expected_content);
+        free(large_content);
+        return -1;
+    }
+
+    free(expected_content);
+    free(large_content);
     return 0;
 }
+  
 
 /**
  * @brief Test deleting a file from the NAND filesystem.
@@ -597,6 +779,31 @@ int test_change_file_data(void){
  * @return 0 if successful, -1 otherwise.
  */
 int test_delete_file(void){
+    LOG_INF("Test 7: Deleting a file from the fs and checking");
+    struct fs_statvfs sbuf;
+
+    char fname[MAX_PATH_LEN];
+    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_LARGE);
+    fs_unlink(fname);
+
+    int rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		return -1;
+	}
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
+    }
+
+    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+           " blocks = %lu ; bfree = %lu\n",
+           nand_mount_fat.mnt_point,
+           sbuf.f_bsize, sbuf.f_frsize,
+           sbuf.f_blocks, sbuf.f_bfree);
+
     return 0;
 }
 
@@ -669,6 +876,21 @@ int test_all_main_nand_tests(void){
     ret = test_store_large_file();
     if(ret == 0){
         LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
+    }
+
+    ret = test_append_data_large_file();
+    if(ret == 0){
+        LOG_INF("Overall Test 5: Appending to large file data successful");
+    }
+
+    ret = test_change_file_data();
+    if (ret == 0){
+        LOG_INF("Overall Test 6: Changing data in large file successful");
+    }
+
+    ret = test_delete_file();
+    if (ret == 0){
+        LOG_INF("Overall Test 7: Deleting the large file");
     }
 
     return 0;
