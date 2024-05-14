@@ -39,16 +39,12 @@ int test_create_folder(void);
 /**
  * @brief Test if a file can be created on the NAND filesystem.
  * 
+ * It creates, stores and reads out the file afterwards
+ * 
  * @return 0 if successful, -1 otherwise.
  */
 int test_create_file(void);
 
-/**
- * @brief Test if a file can be read from the NAND filesystem.
- * 
- * @return 0 if successful, -1 otherwise.
- */
-int test_read_file(void);
 
 /**
  * @brief Test storing a large file that spans multiple blocks on the NAND filesystem.
