@@ -138,6 +138,7 @@ int top_device_connected(void){
  */
 int test_create_folder(void){
     struct fs_statvfs sbuf;
+    int rc;
     char fname1[MAX_PATH_LEN];
     snprintf(fname1, sizeof(fname1), "%s/boot_count", nand_mount_fat.mnt_point);
 
@@ -162,7 +163,29 @@ int test_create_folder(void){
 	}
 
     //add a folder
+    rc = fs_mkdir(fname1);
+    if (rc < 0) {
+		LOG_INF("Failed to create directory");
+		return -1;
+	}
 
+    LOG_INF("Directories after adding a folder");
+    rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		return -1;
+	}
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+	if (rc < 0) {
+		LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+		return -1;
+	}
+
+	LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+		   " blocks = %lu ; bfree = %lu\n",
+		   nand_mount_fat.mnt_point,
+		   sbuf.f_bsize, sbuf.f_frsize,
+		   sbuf.f_blocks, sbuf.f_bfree);
 
     return 0;
 }
@@ -276,5 +299,11 @@ int test_all_main_nand_tests(void){
     if(ret == 0){
         LOG_INF("Overall Test 1: All modalities sucessful recognized!");
     }
+
+    ret = test_create_folder();
+    if(ret == 0){
+        LOG_INF("Overall Test 2: Creation of folder successful!");
+    }
+
     return 0;
 }
