@@ -20,10 +20,12 @@
 #define TEST_FILE_SIZE 547
 #define FILE_NAME "sonnet.txt"
 #define FILE_NAME_LARGE "large_file.txt"
+#define FILE_NAME_ONE_EIGHTH "one_eigth_file.txt"
 #define FILE_CONTENT "This is a test content for a large file. "
 #define APPEND_CONTENT "Appending this new data to the large file. "
-#define CONTENT_REPEAT_COUNT 1000 // Adjust this to make the file large enough
+#define CONTENT_REPEAT_COUNT 1500 // Adjust this to make the file large enough
 #define READ_CHUNK_SIZE 2048
+#define WRITE_CHUNK_SIZE 2048
 
 
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
@@ -318,6 +320,49 @@ static int overwrite_file_start(const char *filename, const char *data) {
         printk("Failed to overwrite file %s: %d\n", filename, rc);
         fs_close(&file);
         return -1;
+    }
+
+    rc = fs_sync(&file);
+    if (rc < 0) {
+        printk("Failed to sync file %s: %d\n", filename, rc);
+        fs_close(&file);
+        return -1;
+    }
+
+    fs_close(&file);
+    return 0;
+}
+
+
+static int create_and_write_file_in_chunks(const char *filename, size_t total_size) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
+
+    size_t total_bytes_written = 0;
+    size_t content_len = strlen(FILE_CONTENT);
+
+    while (total_bytes_written < total_size) {
+        size_t bytes_to_write = MIN(WRITE_CHUNK_SIZE, total_size - total_bytes_written);
+        size_t bytes_written_this_time = 0;
+
+        while (bytes_written_this_time < bytes_to_write) {
+            size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
+            rc = fs_write(&file, FILE_CONTENT, remaining_bytes_to_write);
+            if (rc < 0) {
+                printk("Failed to write to file %s: %d\n", filename, rc);
+                fs_close(&file);
+                return -1;
+            }
+            bytes_written_this_time += remaining_bytes_to_write;
+        }
+
+        total_bytes_written += bytes_to_write;
     }
 
     rc = fs_sync(&file);
@@ -812,18 +857,83 @@ int test_delete_file(void){
  * 
  * @return 0 if successful, -1 otherwise.
  */
-int test_write_one_eighth_flash(void){
+int test_write_one_eighth_flash(void) {
+    LOG_INF("Test: Writing to one-eighth of the flash memory");
+    struct fs_statvfs sbuf;
+    struct fs_statvfs sbuf2;
+
+    int rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+        return -1;
+    }
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
+    }
+
+    size_t one_eighth_flash_size = sbuf.f_bsize * sbuf.f_blocks / 8;
+
+    char fname2[MAX_PATH_LEN];
+    snprintf(fname2, sizeof(fname2), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
+
+    // Write data to file in chunks
+    rc = create_and_write_file_in_chunks(fname2, one_eighth_flash_size);
+    if (rc < 0) {
+        LOG_ERR("Failed to create and write to file");
+        return -1;
+    }
+    LOG_INF("Written one-eighth of the flash memory to file");
+
+    rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+        return -1;
+    }
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf2);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
+    }
+
+    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+           " blocks = %lu ; bfree = %lu\n",
+           nand_mount_fat.mnt_point,
+           sbuf2.f_bsize, sbuf2.f_frsize,
+           sbuf2.f_blocks, sbuf2.f_bfree);
+
+    // Delete the file
+    rc = fs_unlink(fname2);
+    if (rc < 0) {
+        LOG_ERR("Failed to delete the file");
+        return -1;
+    }
+    LOG_INF("Deleted the file successfully");
+
+    rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+        return -1;
+    }
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
+    }
+
+    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+           " blocks = %lu ; bfree = %lu\n",
+           nand_mount_fat.mnt_point,
+           sbuf.f_bsize, sbuf.f_frsize,
+           sbuf.f_blocks, sbuf.f_bfree);
+
     return 0;
 }
 
-/**
- * @brief Test how multiple small files are stored in the Dhara mapping layer.
- * 
- * @return 0 if successful, -1 otherwise.
- */
-int test_store_multiple_small_files(void){
-    return 0;
-}
 
 
 //Can I create a folder?
@@ -890,8 +1000,14 @@ int test_all_main_nand_tests(void){
 
     ret = test_delete_file();
     if (ret == 0){
-        LOG_INF("Overall Test 7: Deleting the large file");
+        LOG_INF("Overall Test 7: Deleting the large file is successful");
     }
 
+    ret = test_write_one_eighth_flash();
+    if (ret == 0){
+        LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
+    }
+
+    LOG_INF("All overall tests passed sucessfully!");
     return 0;
 }

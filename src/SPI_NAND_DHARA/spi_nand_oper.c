@@ -166,8 +166,6 @@ int spi_nand_write_enable(const struct spi_dt_spec *dev)
 
 int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
 {
-    // uint32_t block = RA_TO_BLOCK(page);
-    // uint32_t page2 = RA_TO_PAGE(page);
     spi_nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
         .address_bytes = 3,
@@ -176,8 +174,9 @@ int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
                    ((page & 0x000000FF) << 16)   // Move A7-A0 to the top position
     };
 
-    
-    //LOG_INF("Reading from Block: %d, Page: %d", block, page2);
+    // uint32_t block = RA_TO_BLOCK(page);
+    // uint32_t page2 = RA_TO_PAGE(page);
+    // LOG_INF("OPER LEVEL: Reading from Block: %d, Page: %d", block, page2);
 
 
     return spi_nand_execute_transaction(dev, &t);
@@ -208,6 +207,10 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
                    ((page & 0x000000FF) << 16)   // Move A7-A0 to the top position
     };
 
+    // uint32_t block = RA_TO_BLOCK(page);
+    // uint32_t page2 = RA_TO_PAGE(page);
+    // LOG_INF("OPER LEVEL: Execute to NAND array, Block: %d, Page: %d", block, page2);
+
     return spi_nand_execute_transaction(dev, &t);
 }
 
@@ -233,6 +236,10 @@ int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page)
                    ((page & 0x0000FF00))       |  // Keep A15-A8 in its place
                    ((page & 0x000000FF) << 16)   // Move A7-A0 to the top position
     };
+
+    // uint32_t block = RA_TO_BLOCK(page);
+    // uint32_t page2 = RA_TO_PAGE(page);
+    // LOG_INF("OPER LEVEL: Erasing Block: %d, Page: %d", block, page2);
 
     return spi_nand_execute_transaction(dev, &t);
 }
