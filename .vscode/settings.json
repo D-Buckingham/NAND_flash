@@ -21,7 +21,9 @@
         "cstdio": "c",
         "new": "c",
         "typeinfo": "c",
-        "vfs_nand_flash.h": "c"
+        "vfs_nand_flash.h": "c",
+        "usbd_msc.h": "c",
+        "usbd.h": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"

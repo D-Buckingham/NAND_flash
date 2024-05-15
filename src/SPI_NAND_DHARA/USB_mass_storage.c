@@ -4,6 +4,7 @@
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/usb/class/usbd_msc.h>
 #include <zephyr/usb/usbd.h>
+#include "zephyr/storage/disk_access.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,85 +30,67 @@
 LOG_MODULE_REGISTER(usb_mass, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-USBD_DEFINE_MSC_LUN(NAND, "Zephyr", "FlashDisk", "0.00");
+ USBD_DEFINE_MSC_LUN(NAND, "Zephyr", "FlashDisk", "0.00");
 
 
-// int msc_read(uint32_t lba, uint32_t blk_cnt, uint8_t *buf)
+// static struct usbd_contex *sample_usbd;
+
+// static int enable_usb_device_next(void)
 // {
-//     struct fs_file_t file;
-//     fs_file_t_init(&file);
+// 	int err;
 
-//     int rc = fs_open(&file, nand_mount_fat.mnt_point, FS_O_READ);
-//     if (rc < 0) {
-//         LOG_ERR("Failed to open NAND flash: %d", rc);
-//         return -EIO;
-//     }
+// 	// sample_usbd = sample_usbd_init_device(NULL);
+// 	// if (sample_usbd == NULL) {
+// 	// 	LOG_ERR("Failed to initialize USB device");
+// 	// 	return -ENODEV;
+// 	// }
 
-//     rc = fs_seek(&file, lba * CONFIG_USB_MASS_STORAGE_BULK_EP_MPS, FS_SEEK_SET);
-//     if (rc < 0) {
-//         LOG_ERR("Failed to seek NAND flash: %d", rc);
-//         fs_close(&file);
-//         return -EIO;
-//     }
+// 	err = usbd_enable(sample_usbd);
+// 	if (err) {
+// 		LOG_ERR("Failed to enable device support");
+// 		return err;
+// 	}
 
-//     rc = fs_read(&file, buf, blk_cnt * CONFIG_USB_MASS_STORAGE_BULK_EP_MPS);
-//     if (rc < 0) {
-//         LOG_ERR("Failed to read NAND flash: %d", rc);
-//         fs_close(&file);
-//         return -EIO;
-//     }
+// 	LOG_DBG("USB device support enabled");
 
-//     fs_close(&file);
-//     return 0;
+// 	return 0;
 // }
 
-// int msc_write(uint32_t lba, uint32_t blk_cnt, const uint8_t *buf)
-// {
-//     struct fs_file_t file;
-//     fs_file_t_init(&file);
 
-//     int rc = fs_open(&file, nand_mount_fat.mnt_point, FS_O_WRITE);
-//     if (rc < 0) {
-//         LOG_ERR("Failed to open NAND flash: %d", rc);
-//         return -EIO;
-//     }
 
-//     rc = fs_seek(&file, lba * CONFIG_USB_MASS_STORAGE_BULK_EP_MPS, FS_SEEK_SET);
-//     if (rc < 0) {
-//         LOG_ERR("Failed to seek NAND flash: %d", rc);
-//         fs_close(&file);
-//         return -EIO;
-//     }
+#include <stdint.h>
 
-//     rc = fs_write(&file, buf, blk_cnt * CONFIG_USB_MASS_STORAGE_BULK_EP_MPS);
-//     if (rc < 0) {
-//         LOG_ERR("Failed to write NAND flash: %d", rc);
-//         fs_close(&file);
-//         return -EIO;
-//     }
+#include <zephyr/device.h>
+#include <zephyr/usb/usbd.h>
+#include <zephyr/sys/iterable_sections.h>
 
-//     fs_close(&file);
-//     return 0;
-// }
 
-// static const struct mscd_cb msc_callbacks = {
-//     .read = msc_read,
-//     .write = msc_write,
-// };
+
+#define ZEPHYR_PROJECT_USB_VID		0x2fe3
+
+
 
 
 int initialize_mass_storage_nand(void)
 {
 
-    int rc;
-
+    int ret;
+    k_msleep(100);
     LOG_INF("USB Mass Storage on NAND Flash");
-
-    rc = usb_enable(NULL);
-    if (rc != 0) {
+    //rc = enable_usb_device_next();
+    ret = usb_enable(NULL);
+    if (ret != 0) {
         LOG_ERR("Failed to enable USB");
         return -1;
     }
+
+    // /* Set the USB Mass Storage parameters */
+    // ret = usbd_msc_register("NAND", NULL);
+    // if (ret) {
+    //     printk("Failed to register USB MSC\n");
+    //     return -1;
+    // }
+
 
     // rc = msc_register_cb(&msc_callbacks);
     // if (rc != 0) {
