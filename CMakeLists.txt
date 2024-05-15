@@ -17,6 +17,7 @@ file(GLOB APP_SOURCES
             "src/tests/test_disk_access.c"
             "src/tests/vfs_test.c"
             "src/tests/main_nand_tests.c"
+            "src/SPI_NAND_DHARA/USB_mass_storage.c"
            
 )
 

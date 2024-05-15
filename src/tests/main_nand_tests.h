@@ -81,12 +81,6 @@ int test_delete_file(void);
  */
 int test_write_one_eighth_flash(void);
 
-/**
- * @brief Test how multiple small files are stored in the Dhara mapping layer.
- * 
- * @return 0 if successful, -1 otherwise.
- */
-int test_store_multiple_small_files(void);
 
 /**
  * @brief Main function that calls all other test functions.

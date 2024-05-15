@@ -20,7 +20,8 @@
         "concepts": "c",
         "cstdio": "c",
         "new": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "vfs_nand_flash.h": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
