@@ -1,7 +1,5 @@
 #include <zephyr/usb/usb_device.h>
-#include <zephyr/fs/fs.h>
 #include <zephyr/fs/fcb.h>
-#include <zephyr/storage/flash_map.h>
 #include <zephyr/usb/class/usbd_msc.h>
 #include <zephyr/usb/usbd.h>
 #include "zephyr/storage/disk_access.h"
@@ -14,6 +12,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
+
 #include <assert.h>
 
 #include    "nand_top_layer.h"
@@ -24,52 +23,82 @@
 
 #include "USB_mass_storage.h"
 
-#define CONFIG_USB_MASS_STORAGE_BULK_EP_MPS 512
-
 
 LOG_MODULE_REGISTER(usb_mass, CONFIG_LOG_DEFAULT_LEVEL);
 
 
- USBD_DEFINE_MSC_LUN(NAND, "Zephyr", "FlashDisk", "0.00");
+
+USBD_CONFIGURATION_DEFINE(config_1,
+			  USB_SCD_SELF_POWERED,
+			  200);
+USBD_DESC_LANG_DEFINE(sample_lang);
+USBD_DESC_MANUFACTURER_DEFINE(sample_mfr, "ZEPHYR");
+USBD_DESC_PRODUCT_DEFINE(sample_product, "Zephyr USBD MSC");
+USBD_DESC_SERIAL_NUMBER_DEFINE(sample_sn, "0123456789abcdef");
+
+USBD_DEVICE_DEFINE(sample_usbd,
+		   DEVICE_DT_GET(DT_NODELABEL(zephyr_udc0)),
+		   0x2fe3, 0x0008);
 
 
-// static struct usbd_contex *sample_usbd;
+USBD_DEFINE_MSC_LUN(NAND, "Zephyr", "FlashDisk", "0.00");
 
-// static int enable_usb_device_next(void)
-// {
-// 	int err;
+static int enable_usb_device_next(void)
+{
+	int err;
 
-// 	// sample_usbd = sample_usbd_init_device(NULL);
-// 	// if (sample_usbd == NULL) {
-// 	// 	LOG_ERR("Failed to initialize USB device");
-// 	// 	return -ENODEV;
-// 	// }
+	err = usbd_add_descriptor(&sample_usbd, &sample_lang);
+	if (err) {
+		LOG_ERR("Failed to initialize language descriptor (%d)", err);
+		return err;
+	}
 
-// 	err = usbd_enable(sample_usbd);
-// 	if (err) {
-// 		LOG_ERR("Failed to enable device support");
-// 		return err;
-// 	}
+	err = usbd_add_descriptor(&sample_usbd, &sample_mfr);
+	if (err) {
+		LOG_ERR("Failed to initialize manufacturer descriptor (%d)", err);
+		return err;
+	}
 
-// 	LOG_DBG("USB device support enabled");
+	err = usbd_add_descriptor(&sample_usbd, &sample_product);
+	if (err) {
+		LOG_ERR("Failed to initialize product descriptor (%d)", err);
+		return err;
+	}
 
-// 	return 0;
-// }
+	err = usbd_add_descriptor(&sample_usbd, &sample_sn);
+	if (err) {
+		LOG_ERR("Failed to initialize SN descriptor (%d)", err);
+		return err;
+	}
 
+	err = usbd_add_configuration(&sample_usbd, &config_1);
+	if (err) {
+		LOG_ERR("Failed to add configuration (%d)", err);
+		return err;
+	}
 
+	err = usbd_register_class(&sample_usbd, "msc_0", 1);
+	if (err) {
+		LOG_ERR("Failed to register MSC class (%d)", err);
+		return err;
+	}
 
-#include <stdint.h>
+	err = usbd_init(&sample_usbd);
+	if (err) {
+		LOG_ERR("Failed to initialize device support");
+		return err;
+	}
 
-#include <zephyr/device.h>
-#include <zephyr/usb/usbd.h>
-#include <zephyr/sys/iterable_sections.h>
+	err = usbd_enable(&sample_usbd);
+	if (err) {
+		LOG_ERR("Failed to enable device support");
+		return err;
+	}
 
+	LOG_DBG("USB device support enabled");
 
-
-#define ZEPHYR_PROJECT_USB_VID		0x2fe3
-
-
-
+	return 0;
+}
 
 int initialize_mass_storage_nand(void)
 {
@@ -77,27 +106,13 @@ int initialize_mass_storage_nand(void)
     int ret;
     k_msleep(100);
     LOG_INF("USB Mass Storage on NAND Flash");
-    //rc = enable_usb_device_next();
-    ret = usb_enable(NULL);
+    ret = enable_usb_device_next();
+    
     if (ret != 0) {
         LOG_ERR("Failed to enable USB");
         return -1;
     }
-
-    // /* Set the USB Mass Storage parameters */
-    // ret = usbd_msc_register("NAND", NULL);
-    // if (ret) {
-    //     printk("Failed to register USB MSC\n");
-    //     return -1;
-    // }
-
-
-    // rc = msc_register_cb(&msc_callbacks);
-    // if (rc != 0) {
-    //     LOG_ERR("Failed to register MSC callbacks");
-    //     return -1;
-    // }
-    return 0;
-
     LOG_INF("USB Mass Storage initialized");
+
+    return 0;
 }
