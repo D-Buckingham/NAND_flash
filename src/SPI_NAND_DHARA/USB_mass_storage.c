@@ -31,9 +31,9 @@ LOG_MODULE_REGISTER(usb_mass, CONFIG_LOG_DEFAULT_LEVEL);
 USBD_CONFIGURATION_DEFINE(config_1,
 			  USB_SCD_SELF_POWERED,
 			  200);
-USBD_DESC_LANG_DEFINE(sample_lang);
-USBD_DESC_MANUFACTURER_DEFINE(sample_mfr, "ZEPHYR");
-USBD_DESC_PRODUCT_DEFINE(sample_product, "Zephyr USBD MSC");
+USBD_DESC_LANG_DEFINE(sample_lang);//set to english
+USBD_DESC_MANUFACTURER_DEFINE(sample_mfr, "Relab");
+USBD_DESC_PRODUCT_DEFINE(sample_product, "NAND");
 USBD_DESC_SERIAL_NUMBER_DEFINE(sample_sn, "0123456789abcdef");
 
 USBD_DEVICE_DEFINE(sample_usbd,
@@ -41,7 +41,7 @@ USBD_DEVICE_DEFINE(sample_usbd,
 		   0x2fe3, 0x0008);
 
 
-USBD_DEFINE_MSC_LUN(NAND, "Zephyr", "FlashDisk", "0.00");
+USBD_DEFINE_MSC_LUN(NAND, "Relab", "NAND", "0.00");
 
 static int enable_usb_device_next(void)
 {
