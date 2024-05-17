@@ -81,6 +81,18 @@ int test_delete_file(void);
  */
 int test_write_one_eighth_flash(void);
 
+/**
+ * @brief Measure the time taken to store 1 KB of data on the NAND filesystem.
+ * 
+ * This function creates a 1 KB file by repeating a predefined content multiple times.
+ * It measures and logs the time taken to write this file to the NAND flash storage.
+ * After writing, it reads the file back, measures and logs the time taken for the read operation,
+ * and verifies the content to ensure data integrity.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_store_1kb_file(void);
+
 
 /**
  * @brief Main function that calls all other test functions.

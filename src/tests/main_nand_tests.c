@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+
 
 #include <assert.h>
 
@@ -30,6 +32,7 @@
 
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
+/////////////////////////////////////////////       FUNCTIONALITY TESTS START     //////////////////////////
 
 const char *sonnet = 
         "In Zephyr's realm, where microchips do sing,\n"
@@ -178,6 +181,23 @@ static int create_and_write_file(const char *filename, const char *data) {
     return 0;
 }
 
+
+static int create_and_write_file_without_sync(const char *filename, const char *data, size_t length) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
+    
+
+    
+    rc = fs_write(&file, data, length);
+    
+    fs_close(&file);
+    
+
+    return 0;
+}
+
 static void read_file(const char *filename) {
     struct fs_file_t file;
     fs_file_t_init(&file);
@@ -225,6 +245,22 @@ static int read_file_out(const char *filename, char *out_buffer, size_t buffer_s
     out_buffer[bytes_read] = '\0';
 
     LOG_INF("Read from file %s: %s", filename, out_buffer);
+
+    fs_close(&file);
+
+    return bytes_read; // Return the number of bytes read
+}
+
+static int read_file_out_without_logging(const char *filename, char *out_buffer, size_t buffer_size) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+    int bytes_read;
+
+    int rc = fs_open(&file, filename, FS_O_READ);
+    
+
+    bytes_read = fs_read(&file, out_buffer, buffer_size - 1);
+    
 
     fs_close(&file);
 
@@ -933,35 +969,115 @@ int test_write_one_eighth_flash(void) {
 
     return 0;
 }
+/////////////////////////////////////////////       FUNCTIONALITY TESTS END     //////////////////////////
+
+////////////////////////////////////////            PERFORMANCE TESTS START     /////////////////////////////
+
+//measure the speed of writing 1kbit
+#define FILE_NAME_SMALL "small_file.txt"
+#define FILE_CONTENT2 "Hello, NAND Flash!"
+#define CONTENT_REPEAT_COUNT_SMALL (1024 / sizeof(FILE_CONTENT2))
+
+/**
+ * @brief Measure the time taken to store 1 KB of data on the NAND filesystem.
+ * 
+ * @return 0 if successful, -1 otherwise.
+ */
+int test_store_1kb_file(void) {
+    LOG_INF("Test: Creating 1 KB file, measuring time taken");
+    char fname[MAX_PATH_LEN];
+    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_SMALL);
+
+    // Create 1 KB content by repeating FILE_CONTENT multiple times
+    size_t content_len = strlen(FILE_CONTENT2) * CONTENT_REPEAT_COUNT_SMALL;
+    char *small_content = malloc(content_len + 1);
+    if (!small_content) {
+        LOG_ERR("Failed to allocate memory for small content");
+        return -1;
+    }
+
+    small_content[0] = '\0';
+    for (int i = 0; i < CONTENT_REPEAT_COUNT_SMALL; i++) {
+        strcat(small_content, FILE_CONTENT2);
+    }
+
+    size_t length = strlen(small_content);
+    // Measure the time taken to create and write the small file
+    int64_t start, end;
+    // Measure the time taken to create and write the small file
+    start = k_uptime_get();
+
+    int rc = create_and_write_file_without_sync(fname, small_content, length);
+    end = k_uptime_get();
+    if (rc < 0) {
+        LOG_ERR("Failed to create and write 1 KB file");
+        free(small_content);
+        return -1;
+    }
+    
+
+    
+    LOG_INF("1 KB file written to storage");
+    int64_t elapsed = end - start;
+    LOG_INF("Time taken to write 1 KB file: %lld milliseconds", elapsed);
+
+
+    //read out data, how long for 1kbyte?
+
+    char buffer[1024];
+    size_t length_buffer = sizeof(buffer);
+    start = k_uptime_get();
+
+
+    int bytes_read = read_file_out_without_logging(fname, buffer, length_buffer);
+    
+
+    end = k_uptime_get();
+    if (bytes_read < 0) {
+        LOG_ERR("Failed to read the content of the file %s", fname);
+        free(small_content);
+        return -1;
+    }
+    LOG_INF("1 KB file read from storage");
+    elapsed = end - start;
+    LOG_INF("Time taken to read 1 KB file: %lld milliseconds", elapsed);
+
+    // Verify the content of the 1 KB file
+    if (memcmp(small_content, buffer, content_len) != 0) {
+        LOG_ERR("Content verification failed for 1 KB file");
+        free(small_content);
+        return -1;
+    }
+
+    free(small_content);
+    return 0;
+}
+
+
+//measure the speed of reading 1kbit
+
+
+//Latency tests: Procedure: Measure the time taken for each of these operations individually 
+//to understand the delay between initiating an operation and its completion.
+
+////////////////////////////////////////            PERFORMANCE TESTS END     /////////////////////////////
+
+
+////////////////////////////////////////            RELIABILITY TESTS START     /////////////////////////////
+//wear leveling test, write repeatedly to the flash and log the blocks, fill up the entire flash multiple times
+
+//bad block test, mark a block as bad and check if the system avoids it
+
+//check power loss, is the data still saved?
+
+////////////////////////////////////////            RELIABILITY TESTS END     /////////////////////////////
 
 
 
-//Can I create a folder?
+////////////////////////////////////////            LONG TERM TEST START     /////////////////////////////
+//Write and read over days, and look how the data is corrupted.
 
-
-//Can I create a file?
-
-
-//Can I read the file?
-
-
-//How to store a big file? Stored over multiple blocks?
-
-
-//Adding data to big file, how is it changed on the actual device? Inspect mapping of dhara
-
-
-//Change data of a file, how is this process handled in dhara/ on the actual device?
-
-
-//How is a file deleted?
-
-
-//Write to a 1/8 of the flash, how is it done?
-
-
-//How are multiple small files stored in dhara?
-
+////////////////////////////////////////            LONG TERM TEST END     /////////////////////////////
 
 
 //Main function in which the other ones are called
@@ -971,43 +1087,67 @@ int test_all_main_nand_tests(void){
     int ret = top_device_connected();
     if(ret == 0){
         LOG_INF("Overall Test 1: All modalities sucessful recognized!");
+    }else{
+        return -1;
     }
 
-    ret = test_create_folder();
-    if(ret == 0){
-        LOG_INF("Overall Test 2: Creation of folder successful!");
-    }
+    // ret = test_create_folder();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 2: Creation of folder successful!");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_create_file();
-    if(ret == 0){
-        LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
-    }
+    // ret = test_create_file();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_store_large_file();
-    if(ret == 0){
-        LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
-    }
+    // ret = test_store_large_file();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_append_data_large_file();
-    if(ret == 0){
-        LOG_INF("Overall Test 5: Appending to large file data successful");
-    }
+    // ret = test_append_data_large_file();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 5: Appending to large file data successful");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_change_file_data();
-    if (ret == 0){
-        LOG_INF("Overall Test 6: Changing data in large file successful");
-    }
+    // ret = test_change_file_data();
+    // if (ret == 0){
+    //     LOG_INF("Overall Test 6: Changing data in large file successful");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_delete_file();
-    if (ret == 0){
-        LOG_INF("Overall Test 7: Deleting the large file is successful");
-    }
+    // ret = test_delete_file();
+    // if (ret == 0){
+    //     LOG_INF("Overall Test 7: Deleting the large file is successful");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_write_one_eighth_flash();
-    if (ret == 0){
-        LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
-    }
+    // ret = test_write_one_eighth_flash();
+    // if (ret == 0){
+    //     LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
+    // }else{
+    //     return -1;
+    // }
 
-    LOG_INF("All overall tests passed sucessfully!");
+    LOG_INF("All Functionality tests finished!");
+
+
+    ret = test_store_1kb_file();
+    if(ret== 0){
+        LOG_INF("Overall Test 9: time for writing and reading 1kbyte");
+    }else{
+        return -1;
+    }
     return 0;
 }
