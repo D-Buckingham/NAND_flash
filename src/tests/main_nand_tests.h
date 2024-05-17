@@ -91,7 +91,7 @@ int test_write_one_eighth_flash(void);
  * 
  * @return 0 if successful, -1 otherwise.
  */
-int test_store_1kb_file(void);
+int test_write_read_speed(void);
 
 
 /**

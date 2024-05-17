@@ -188,9 +188,19 @@ static int create_and_write_file_without_sync(const char *filename, const char *
 
     int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
     
+    size_t total_bytes_written = 0;
 
+    while (total_bytes_written < length) {
+        size_t bytes_to_write = MIN(WRITE_CHUNK_SIZE, length - total_bytes_written);
+        rc = fs_write(&file, data + total_bytes_written, bytes_to_write);
+        if (rc < 0) {
+            fs_close(&file);
+            return -1;
+        }
+        total_bytes_written += bytes_to_write;
+    }
     
-    rc = fs_write(&file, data, length);
+    
     
     fs_close(&file);
     
@@ -250,21 +260,31 @@ static int read_file_out(const char *filename, char *out_buffer, size_t buffer_s
 
     return bytes_read; // Return the number of bytes read
 }
-
+#define READ_CHUNK_SIZE 1024 // Define the chunk size as needed
 static int read_file_out_without_logging(const char *filename, char *out_buffer, size_t buffer_size) {
     struct fs_file_t file;
     fs_file_t_init(&file);
-    int bytes_read;
 
     int rc = fs_open(&file, filename, FS_O_READ);
-    
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
 
-    bytes_read = fs_read(&file, out_buffer, buffer_size - 1);
-    
+    size_t total_bytes_read = 0;
+    while (total_bytes_read < buffer_size) {
+        size_t bytes_to_read = MIN(READ_CHUNK_SIZE, buffer_size - total_bytes_read);
+        rc = fs_read(&file, out_buffer + total_bytes_read, bytes_to_read);
+        if (rc < 0) {
+            printk("Failed to read from file %s: %d\n", filename, rc);
+            fs_close(&file);
+            return -1;
+        }
+        total_bytes_read += bytes_to_read;
+    }
 
     fs_close(&file);
-
-    return bytes_read; // Return the number of bytes read
+    return total_bytes_read; // Return the number of bytes read
 }
 
 static int verify_file_content(const char *fname, const char *expected_content, size_t expected_len) {
@@ -982,76 +1002,84 @@ int test_write_one_eighth_flash(void) {
  * @brief Measure the time taken to store 1 KB of data on the NAND filesystem.
  * 
  * @return 0 if successful, -1 otherwise.
- */
-int test_store_1kb_file(void) {
-    LOG_INF("Test: Creating 1 KB file, measuring time taken");
-    char fname[MAX_PATH_LEN];
-    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_SMALL);
+ */int test_write_read_speed(void) {
+    LOG_INF("Test: Creating files of various sizes, measuring time taken for write and read operations");
 
-    // Create 1 KB content by repeating FILE_CONTENT multiple times
-    size_t content_len = strlen(FILE_CONTENT2) * CONTENT_REPEAT_COUNT_SMALL;
-    char *small_content = malloc(content_len + 1);
-    if (!small_content) {
-        LOG_ERR("Failed to allocate memory for small content");
-        return -1;
+    // Array of sizes to test
+    size_t sizes[] = {1, 10, 100, 1024, 10240, 102400};
+    const char *size_labels[] = {"1 byte", "10 bytes", "100 bytes", "1 KB", "10 KB", "100 KB"};
+    size_t num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+    // Loop through each size and perform the test
+    for (size_t i = 0; i < num_sizes; i++) {
+        size_t content_len = sizes[i];
+        char *content = malloc(content_len + 1);
+        if (!content) {
+            LOG_ERR("Failed to allocate memory for content of size %zu", content_len);
+            return -1;
+        }
+
+        // Fill the content with a repeating pattern
+        for (size_t j = 0; j < content_len; j++) {
+            content[j] = 'A' + (j % 26); // A simple repeating pattern
+        }
+        content[content_len] = '\0';
+
+        char fname[MAX_PATH_LEN];
+        snprintf(fname, sizeof(fname), "%s/%zu_%s", nand_mount_fat.mnt_point, content_len, FILE_NAME_SMALL);
+        
+        // Measure the time taken to write the file
+        int64_t start, end;
+        start = k_uptime_get();
+
+        int rc = create_and_write_file_without_sync(fname, content, content_len);
+        end = k_uptime_get();
+        if (rc < 0) {
+            LOG_ERR("Failed to create and write file of size %zu", content_len);
+            free(content);
+            return -1;
+        }
+
+        int64_t write_time = end - start;
+        LOG_INF("Time taken to write %s file: %lld milliseconds", size_labels[i], write_time);
+
+        // Measure the time taken to read the file
+        char *buffer = malloc(content_len + 1);
+        if (!buffer) {
+            LOG_ERR("Failed to allocate memory for buffer of size %zu", content_len);
+            free(content);
+            return -1;
+        }
+
+        start = k_uptime_get();
+
+        int bytes_read = read_file_out_without_logging(fname, buffer, content_len);
+        end = k_uptime_get();
+        if (bytes_read < 0) {
+            LOG_ERR("Failed to read the content of the file %s", fname);
+            free(content);
+            free(buffer);
+            fs_unlink(fname);
+            return -1;
+        }
+
+        int64_t read_time = end - start;
+        LOG_INF("Time taken to read %s file: %lld milliseconds", size_labels[i], read_time);
+
+        fs_unlink(fname);
+
+        free(content);
+        free(buffer);
     }
-
-    small_content[0] = '\0';
-    for (int i = 0; i < CONTENT_REPEAT_COUNT_SMALL; i++) {
-        strcat(small_content, FILE_CONTENT2);
-    }
-
-    size_t length = strlen(small_content);
-    // Measure the time taken to create and write the small file
-    int64_t start, end;
-    // Measure the time taken to create and write the small file
-    start = k_uptime_get();
-
-    int rc = create_and_write_file_without_sync(fname, small_content, length);
-    end = k_uptime_get();
+    int rc = lsdir(nand_mount_fat.mnt_point);
     if (rc < 0) {
-        LOG_ERR("Failed to create and write 1 KB file");
-        free(small_content);
-        return -1;
-    }
-    
-
-    
-    LOG_INF("1 KB file written to storage");
-    int64_t elapsed = end - start;
-    LOG_INF("Time taken to write 1 KB file: %lld milliseconds", elapsed);
-
-
-    //read out data, how long for 1kbyte?
-
-    char buffer[1024];
-    size_t length_buffer = sizeof(buffer);
-    start = k_uptime_get();
-
-
-    int bytes_read = read_file_out_without_logging(fname, buffer, length_buffer);
-    
-
-    end = k_uptime_get();
-    if (bytes_read < 0) {
-        LOG_ERR("Failed to read the content of the file %s", fname);
-        free(small_content);
-        return -1;
-    }
-    LOG_INF("1 KB file read from storage");
-    elapsed = end - start;
-    LOG_INF("Time taken to read 1 KB file: %lld milliseconds", elapsed);
-
-    // Verify the content of the 1 KB file
-    if (memcmp(small_content, buffer, content_len) != 0) {
-        LOG_ERR("Content verification failed for 1 KB file");
-        free(small_content);
+        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
         return -1;
     }
 
-    free(small_content);
     return 0;
 }
+
 
 
 //measure the speed of reading 1kbit
@@ -1143,9 +1171,9 @@ int test_all_main_nand_tests(void){
     LOG_INF("All Functionality tests finished!");
 
 
-    ret = test_store_1kb_file();
+    ret = test_write_read_speed();
     if(ret== 0){
-        LOG_INF("Overall Test 9: time for writing and reading 1kbyte");
+        LOG_INF("Overall Test 9: time for writing and reading 1 byte, 10 byte, 100 byte, 1 kbyte, 10 kbyte, 100 kbyte");
     }else{
         return -1;
     }
