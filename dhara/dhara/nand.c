@@ -172,7 +172,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
     }
 
     LOG_DBG("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, bad_block_indicator);
-
+    if(bad_block_indicator == 0x0000){LOG_INF("Bad_Block on Block=%u, Page=%u", b, first_block_page);}
     return bad_block_indicator == 0x0000;//!= 0xFFFF;//changed because of accidental changes
 }
 
