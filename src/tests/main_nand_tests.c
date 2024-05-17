@@ -151,6 +151,75 @@ static int lsdir(const char *path)
 }
 
 
+#define WRITE_CHUNK_SIZE2 2048 // Define the chunk size as needed
+
+static int create_and_write_file_in_chunks_speed(const char *filename, size_t total_size) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
+
+    size_t total_bytes_written = 0;
+    size_t content_len = strlen(FILE_CONTENT);
+
+    while (total_bytes_written < total_size) {
+        size_t bytes_to_write = MIN(WRITE_CHUNK_SIZE2, total_size - total_bytes_written);
+        size_t bytes_written_this_time = 0;
+
+        while (bytes_written_this_time < bytes_to_write) {
+            size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
+            rc = fs_write(&file, FILE_CONTENT, remaining_bytes_to_write);
+            if (rc < 0) {
+                printk("Failed to write to file %s: %d\n", filename, rc);
+                fs_close(&file);
+                return -1;
+            }
+            bytes_written_this_time += remaining_bytes_to_write;
+        }
+
+        total_bytes_written += bytes_to_write;
+    }
+
+    fs_close(&file);
+    return 0;
+}
+
+#define READ_CHUNK_SIZE2 2048 // Define the chunk size as needed
+
+static int read_file_in_chunks(const char *filename, size_t total_size) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_READ);
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
+
+    size_t total_bytes_read = 0;
+    char buffer[READ_CHUNK_SIZE2];
+
+    while (total_bytes_read < total_size) {
+        size_t bytes_to_read = MIN(READ_CHUNK_SIZE2, total_size - total_bytes_read);
+        rc = fs_read(&file, buffer, bytes_to_read);
+        if (rc < 0) {
+            printk("Failed to read from file %s: %d\n", filename, rc);
+            fs_close(&file);
+            return -1;
+        }
+        total_bytes_read += bytes_to_read;
+    }
+
+    fs_close(&file);
+    return total_bytes_read; // Return the number of bytes read
+}
+
+
+
 static int create_and_write_file(const char *filename, const char *data) {
     struct fs_file_t file;
     fs_file_t_init(&file);
@@ -199,12 +268,8 @@ static int create_and_write_file_without_sync(const char *filename, const char *
         }
         total_bytes_written += bytes_to_write;
     }
-    
-    
-    
+        
     fs_close(&file);
-    
-
     return 0;
 }
 
@@ -260,7 +325,9 @@ static int read_file_out(const char *filename, char *out_buffer, size_t buffer_s
 
     return bytes_read; // Return the number of bytes read
 }
-#define READ_CHUNK_SIZE 1024 // Define the chunk size as needed
+
+
+//#define READ_CHUNK_SIZE 1024 // Define the chunk size as needed
 static int read_file_out_without_logging(const char *filename, char *out_buffer, size_t buffer_size) {
     struct fs_file_t file;
     fs_file_t_init(&file);
@@ -1006,8 +1073,9 @@ int test_write_one_eighth_flash(void) {
     LOG_INF("Test: Creating files of various sizes, measuring time taken for write and read operations");
 
     // Array of sizes to test
-    size_t sizes[] = {1, 10, 100, 1024, 10240, 102400};
-    const char *size_labels[] = {"1 byte", "10 bytes", "100 bytes", "1 KB", "10 KB", "100 KB"};
+    
+    size_t sizes[] = {1, 12, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288};
+    const char *size_labels[] = {"1 byte", "12 bytes", "128 bytes", "256 bytes", "512 bytes", "1 KB", "2 KB", "4 KB", "8 KB", "16 KB", "32 KB", "64 KB", "128 KB", "256 KB", "512 KB"};
     size_t num_sizes = sizeof(sizes) / sizeof(sizes[0]);
 
     // Loop through each size and perform the test
@@ -1034,9 +1102,10 @@ int test_write_one_eighth_flash(void) {
 
         int rc = create_and_write_file_without_sync(fname, content, content_len);
         end = k_uptime_get();
+        free(content);
         if (rc < 0) {
             LOG_ERR("Failed to create and write file of size %zu", content_len);
-            free(content);
+            
             return -1;
         }
 
@@ -1047,7 +1116,7 @@ int test_write_one_eighth_flash(void) {
         char *buffer = malloc(content_len + 1);
         if (!buffer) {
             LOG_ERR("Failed to allocate memory for buffer of size %zu", content_len);
-            free(content);
+          
             return -1;
         }
 
@@ -1057,7 +1126,7 @@ int test_write_one_eighth_flash(void) {
         end = k_uptime_get();
         if (bytes_read < 0) {
             LOG_ERR("Failed to read the content of the file %s", fname);
-            free(content);
+            
             free(buffer);
             fs_unlink(fname);
             return -1;
@@ -1068,7 +1137,6 @@ int test_write_one_eighth_flash(void) {
 
         fs_unlink(fname);
 
-        free(content);
         free(buffer);
     }
     int rc = lsdir(nand_mount_fat.mnt_point);
@@ -1080,13 +1148,87 @@ int test_write_one_eighth_flash(void) {
     return 0;
 }
 
+int test_write_read_speed_chunks(void) {
+    LOG_INF("Test: Creating files of various sizes, measuring time taken for write and read operations");
+
+    // Array of sizes to test
+    size_t sizes[] = {
+        1, 12, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288,
+        1048576, 2097152, 4194304
+    };
+
+    const char *size_labels[] = {
+        "1 byte", "12 bytes", "128 bytes", "256 bytes", "512 bytes", "1 KB", "2 KB", "4 KB", "8 KB", 
+        "16 KB", "32 KB", "64 KB", "128 KB", "256 KB", "512 KB", "1 MB", "2 MB", "4 MB"
+    };
+    size_t num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+    int64_t write_times[num_sizes];
+    int64_t read_times[num_sizes];
+
+    // Loop through each size and perform the test
+    for (size_t i = 0; i < num_sizes; i++) {
+        size_t content_len = sizes[i];
+
+        char fname[MAX_PATH_LEN];
+        snprintf(fname, sizeof(fname), "%s/%zu_%s", nand_mount_fat.mnt_point, content_len, FILE_NAME_SMALL);
+
+        // Measure the time taken to write the file
+        int64_t start, end;
+        start = k_uptime_get();
+
+        int rc = create_and_write_file_in_chunks_speed(fname, content_len);
+        end = k_uptime_get();
+        if (rc < 0) {
+            LOG_ERR("Failed to create and write file of size %zu", content_len);
+            return -1;
+        }
+
+        write_times[i] = end - start;
+        LOG_INF("Time taken to write %s file: %lld milliseconds", size_labels[i], write_times[i]);
+
+        // Measure the time taken to read the file
+        start = k_uptime_get();
+
+        rc = read_file_in_chunks(fname, content_len);
+        end = k_uptime_get();
+        if (rc < 0) {
+            LOG_ERR("Failed to read the content of the file %s", fname);
+            fs_unlink(fname);
+            return -1;
+        }
+
+        read_times[i] = end - start;
+        LOG_INF("Time taken to read %s file: %lld milliseconds", size_labels[i], read_times[i]);
+
+        fs_unlink(fname);
+    }
+
+    int rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+        return -1;
+    }
+    // Print all results after the tests
+    printf("Size,Write Time (ms),Write Data Rate (bytes/s),Read Time (ms),Read Data Rate (bytes/s)\n");
+    for (size_t i = 0; i < num_sizes; i++) {
+        double write_time_s = write_times[i] / 1000.0; // Convert to seconds
+        double read_time_s = read_times[i] / 1000.0; // Convert to seconds
+        double write_data_rate = sizes[i] / write_time_s;
+        double read_data_rate = sizes[i] / read_time_s;
+        printf("%s,%lld,%.2f,%lld,%.2f\n", size_labels[i], write_times[i], write_data_rate, read_times[i], read_data_rate);
+    }
+
+    return 0;
+}
 
 
-//measure the speed of reading 1kbit
+
 
 
 //Latency tests: Procedure: Measure the time taken for each of these operations individually 
 //to understand the delay between initiating an operation and its completion.
+//This value can be taken from the previous test, for the speed we need to 
 
 ////////////////////////////////////////            PERFORMANCE TESTS END     /////////////////////////////
 
@@ -1171,7 +1313,7 @@ int test_all_main_nand_tests(void){
     LOG_INF("All Functionality tests finished!");
 
 
-    ret = test_write_read_speed();
+    ret = test_write_read_speed_chunks();//test_write_read_speed();
     if(ret== 0){
         LOG_INF("Overall Test 9: time for writing and reading 1 byte, 10 byte, 100 byte, 1 kbyte, 10 kbyte, 100 kbyte");
     }else{
