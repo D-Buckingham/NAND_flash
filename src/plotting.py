@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 
 # Read the CSV file
-file_path = 'output.csv'
+file_path = 'output100MHz.csv'
 data = pd.read_csv(file_path)
 
 # Display the data to ensure it was read correctly
@@ -25,6 +25,9 @@ plt.ylabel('Time (seconds)')
 plt.title('Write Time vs File Size')
 plt.legend()
 plt.grid(True)
+plt.text(0.95, 0.05, 'SPI frequency: 100 MHz', fontsize=10, color='black', transform=plt.gca().transAxes, horizontalalignment='right')
+
+
 
 
 # Plot Write Data Rate
@@ -38,6 +41,7 @@ plt.ylabel('Data Rate (bytes/s)')
 plt.title('Write Data Rate vs File Size')
 plt.legend()
 plt.grid(True)
+plt.text(0.95, 0.05, 'SPI frequency: 100 MHz', fontsize=10, color='black', transform=plt.gca().transAxes, horizontalalignment='right')
 
 # Plot Read Time
 plt.subplot(2, 2, 2)
@@ -50,6 +54,7 @@ plt.ylabel('Time (seconds)')
 plt.title('Read Time vs File Size')
 plt.legend()
 plt.grid(True)
+plt.text(0.95, 0.05, 'SPI frequency: 100 MHz', fontsize=10, color='black', transform=plt.gca().transAxes, horizontalalignment='right')
 
 
 # Plot Read Data Rate
@@ -63,6 +68,7 @@ plt.ylabel('Data Rate (bytes/s)')
 plt.title('Read Data Rate vs File Size')
 plt.legend()
 plt.grid(True)
+plt.text(0.95, 0.05, 'SPI frequency: 100 MHz', fontsize=10, color='black', transform=plt.gca().transAxes, horizontalalignment='right')
 
 
 
@@ -85,6 +91,7 @@ plt.ylabel('Time (seconds)')
 plt.title('Write and Read Time vs File Size')
 plt.legend()
 plt.grid(True)
+plt.text(0.95, 0.05, 'SPI frequency: 100 MHz', fontsize=10, color='black', transform=plt.gca().transAxes, horizontalalignment='right')
 
 # Plot Write and Read Data Rate in another plot
 plt.subplot(2, 1, 2)
@@ -98,6 +105,7 @@ plt.ylabel('Data Rate (bytes/s)')
 plt.title('Write and Read Data Rate vs File Size')
 plt.legend()
 plt.grid(True)
+plt.text(0.95, 0.05, 'SPI frequency: 100 MHz', fontsize=10, color='black', transform=plt.gca().transAxes, horizontalalignment='right')
 
 plt.tight_layout()
 plt.show()

@@ -561,6 +561,11 @@ int top_device_connected(void){
 		   sbuf.f_bsize, sbuf.f_frsize,
 		   sbuf.f_blocks, sbuf.f_bfree);
     }
+    res = lsdir(nand_mount_fat.mnt_point);
+    if (res < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, res);
+		return -1;
+	}
 
     
     return 0;
@@ -1154,12 +1159,12 @@ int test_write_read_speed_chunks(void) {
     // Array of sizes to test
     size_t sizes[] = {
         1, 12, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288,
-        1048576, 2097152, 4194304
+        1048576, 2097152, 4194304, 8388608
     };
 
     const char *size_labels[] = {
         "1 byte", "12 bytes", "128 bytes", "256 bytes", "512 bytes", "1 KB", "2 KB", "4 KB", "8 KB", 
-        "16 KB", "32 KB", "64 KB", "128 KB", "256 KB", "512 KB", "1 MB", "2 MB", "4 MB"
+        "16 KB", "32 KB", "64 KB", "128 KB", "256 KB", "512 KB", "1 MB", "2 MB", "4 MB", "8 MB"
     };
     size_t num_sizes = sizeof(sizes) / sizeof(sizes[0]);
 
@@ -1235,8 +1240,12 @@ int test_write_read_speed_chunks(void) {
 
 ////////////////////////////////////////            RELIABILITY TESTS START     /////////////////////////////
 //wear leveling test, write repeatedly to the flash and log the blocks, fill up the entire flash multiple times
+//do this test with logging the output around three hours, use the function test_write_read_speed_chunks and go up to 1024 MB
+
+
 
 //bad block test, mark a block as bad and check if the system avoids it
+//
 
 //check power loss, is the data still saved?
 

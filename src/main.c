@@ -49,7 +49,7 @@ int  main(void)
 
 	//test_vfs_NAND_flash();
 	
-	//initialize_mass_storage_nand(); 
+	initialize_mass_storage_nand(); 
 	test_all_main_nand_tests();
 //	mount_nand_fs();
 

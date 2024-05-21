@@ -53,7 +53,7 @@ my_spi_master:&spi4 {
         status = "okay";
         compatible = "vnd,spi-device";
         reg = <0>;
-        spi-max-frequency = <126000>;
+        spi-max-frequency = <100000000>;//126000
         label = "spidev";
         // nandflash: nandflash{
         //     compatible = "custom,nand-disk";
