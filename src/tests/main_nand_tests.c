@@ -6,6 +6,7 @@
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/drivers/gpio.h>
 
 
 #include <assert.h>
@@ -149,6 +150,64 @@ static int lsdir(const char *path)
 
 	return res;
 }
+#define MAX_PATH_LEN 256
+
+void delete_all_files(const char *path)
+{
+    struct fs_dir_t dir;
+    struct fs_dirent entry;
+    int ret;
+
+    fs_dir_t_init(&dir);
+    ret = fs_opendir(&dir, path);
+    if (ret) {
+        LOG_ERR("Error opening directory %s: %d", path, ret);
+        return;
+    }
+
+    while (true) {
+        ret = fs_readdir(&dir, &entry);
+        if (ret) {
+            LOG_ERR("Error reading directory %s: %d", path, ret);
+            break;
+        }
+
+        // If the name is empty, we've reached the end of the directory
+        if (entry.name[0] == '\0') {
+            break;
+        }
+
+        // Construct the full path to the entry
+        char full_path[MAX_PATH_LEN];
+        snprintf(full_path, sizeof(full_path), "%s/%s", path, entry.name);
+
+        if (entry.type == FS_DIR_ENTRY_DIR) {
+            // Recursively delete files in the subdirectory
+            delete_all_files(full_path);
+
+            // Delete the directory itself
+            ret = fs_unlink(full_path);
+            if (ret) {
+                LOG_ERR("Error deleting directory %s: %d", full_path, ret);
+            } else {
+                LOG_INF("Deleted directory: %s", full_path);
+            }
+        } else {
+            // Delete the file
+            ret = fs_unlink(full_path);
+            if (ret) {
+                LOG_ERR("Error deleting file %s: %d", full_path, ret);
+            } else {
+                LOG_INF("Deleted file: %s", full_path);
+            }
+        }
+    }
+
+    ret = fs_closedir(&dir);
+    if (ret) {
+        LOG_ERR("Error closing directory %s: %d", path, ret);
+    }
+}
 
 
 #define WRITE_CHUNK_SIZE2 2048 // Define the chunk size as needed
@@ -239,11 +298,11 @@ static int create_and_write_file(const char *filename, const char *data) {
     }
 
     // Ensure data is flushed to the file
-    rc = fs_sync(&file);
-    if (rc < 0) {
-        LOG_ERR("Failed to sync file %s: %d", filename, rc);
-        return -1;
-    }
+    // rc = fs_sync(&file);
+    // if (rc < 0) {
+    //     LOG_ERR("Failed to sync file %s: %d", filename, rc);
+    //     return -1;
+    // }
     fs_close(&file);
     
 
@@ -415,12 +474,12 @@ static int append_to_file(const char *filename, const char *data) {
         return -1;
     }
 
-    rc = fs_sync(&file);
-    if (rc < 0) {
-        printk("Failed to sync file %s: %d\n", filename, rc);
-        fs_close(&file);
-        return -1;
-    }
+    // rc = fs_sync(&file);
+    // if (rc < 0) {
+    //     printk("Failed to sync file %s: %d\n", filename, rc);
+    //     fs_close(&file);
+    //     return -1;
+    // }
 
     fs_close(&file);
     return 0;
@@ -445,12 +504,12 @@ static int overwrite_file_start(const char *filename, const char *data) {
         return -1;
     }
 
-    rc = fs_sync(&file);
-    if (rc < 0) {
-        printk("Failed to sync file %s: %d\n", filename, rc);
-        fs_close(&file);
-        return -1;
-    }
+    // rc = fs_sync(&file);
+    // if (rc < 0) {
+    //     printk("Failed to sync file %s: %d\n", filename, rc);
+    //     fs_close(&file);
+    //     return -1;
+    // }
 
     fs_close(&file);
     return 0;
@@ -488,12 +547,12 @@ static int create_and_write_file_in_chunks(const char *filename, size_t total_si
         total_bytes_written += bytes_to_write;
     }
 
-    rc = fs_sync(&file);
-    if (rc < 0) {
-        printk("Failed to sync file %s: %d\n", filename, rc);
-        fs_close(&file);
-        return -1;
-    }
+    // rc = fs_sync(&file);
+    // if (rc < 0) {
+    //     printk("Failed to sync file %s: %d\n", filename, rc);
+    //     fs_close(&file);
+    //     return -1;
+    // }
 
     fs_close(&file);
     return 0;
@@ -1153,8 +1212,24 @@ int test_write_one_eighth_flash(void) {
     return 0;
 }
 
+//manual latency test
+#define LED0_NODE DT_ALIAS(led0)
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+
 int test_write_read_speed_chunks(void) {
     LOG_INF("Test: Creating files of various sizes, measuring time taken for write and read operations");
+    int ret;
+	bool led_state = true;
+
+	if (!gpio_is_ready_dt(&led)) {
+		return 0;
+	}
+
+	ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
+	if (ret < 0) {
+		return 0;
+	}
+
 
     // Array of sizes to test
     size_t sizes[] = {
@@ -1181,8 +1256,9 @@ int test_write_read_speed_chunks(void) {
         // Measure the time taken to write the file
         int64_t start, end;
         start = k_uptime_get();
-
+        ret = gpio_pin_toggle_dt(&led);
         int rc = create_and_write_file_in_chunks_speed(fname, content_len);
+        ret = gpio_pin_toggle_dt(&led);
         end = k_uptime_get();
         if (rc < 0) {
             LOG_ERR("Failed to create and write file of size %zu", content_len);
@@ -1217,11 +1293,7 @@ int test_write_read_speed_chunks(void) {
     // Print all results after the tests
     printf("Size,Write Time (ms),Write Data Rate (bytes/s),Read Time (ms),Read Data Rate (bytes/s)\n");
     for (size_t i = 0; i < num_sizes; i++) {
-        double write_time_s = write_times[i] / 1000.0; // Convert to seconds
-        double read_time_s = read_times[i] / 1000.0; // Convert to seconds
-        double write_data_rate = sizes[i] / write_time_s;
-        double read_data_rate = sizes[i] / read_time_s;
-        printf("%s,%lld,%.2f,%lld,%.2f\n", size_labels[i], write_times[i], write_data_rate, read_times[i], read_data_rate);
+        printf("%s,%lld,%lld\n", size_labels[i], write_times[i], read_times[i]);
     }
 
     return 0;
@@ -1270,6 +1342,8 @@ int test_all_main_nand_tests(void){
         return -1;
     }
 
+   
+
     // ret = test_create_folder();
     // if(ret == 0){
     //     LOG_INF("Overall Test 2: Creation of folder successful!");
@@ -1277,7 +1351,7 @@ int test_all_main_nand_tests(void){
     //     return -1;
     // }
 
-    // ret = test_create_file();
+    //  ret = test_create_file();
     // if(ret == 0){
     //     LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
     // }else{
