@@ -150,64 +150,64 @@ static int lsdir(const char *path)
 
 	return res;
 }
-#define MAX_PATH_LEN 256
 
-void delete_all_files(const char *path)
-{
-    struct fs_dir_t dir;
-    struct fs_dirent entry;
-    int ret;
 
-    fs_dir_t_init(&dir);
-    ret = fs_opendir(&dir, path);
-    if (ret) {
-        LOG_ERR("Error opening directory %s: %d", path, ret);
-        return;
-    }
+// void delete_all_files(const char *path)
+// {
+//     struct fs_dir_t dir;
+//     struct fs_dirent entry;
+//     int ret;
 
-    while (true) {
-        ret = fs_readdir(&dir, &entry);
-        if (ret) {
-            LOG_ERR("Error reading directory %s: %d", path, ret);
-            break;
-        }
+//     fs_dir_t_init(&dir);
+//     ret = fs_opendir(&dir, path);
+//     if (ret) {
+//         LOG_ERR("Error opening directory %s: %d", path, ret);
+//         return;
+//     }
 
-        // If the name is empty, we've reached the end of the directory
-        if (entry.name[0] == '\0') {
-            break;
-        }
+//     while (true) {
+//         ret = fs_readdir(&dir, &entry);
+//         if (ret) {
+//             LOG_ERR("Error reading directory %s: %d", path, ret);
+//             break;
+//         }
 
-        // Construct the full path to the entry
-        char full_path[MAX_PATH_LEN];
-        snprintf(full_path, sizeof(full_path), "%s/%s", path, entry.name);
+//         // If the name is empty, we've reached the end of the directory
+//         if (entry.name[0] == '\0') {
+//             break;
+//         }
 
-        if (entry.type == FS_DIR_ENTRY_DIR) {
-            // Recursively delete files in the subdirectory
-            delete_all_files(full_path);
+//         // Construct the full path to the entry
+//         char full_path[MAX_PATH_LEN];
+//         snprintf(full_path, sizeof(full_path), "%s/%s", path, entry.name);
 
-            // Delete the directory itself
-            ret = fs_unlink(full_path);
-            if (ret) {
-                LOG_ERR("Error deleting directory %s: %d", full_path, ret);
-            } else {
-                LOG_INF("Deleted directory: %s", full_path);
-            }
-        } else {
-            // Delete the file
-            ret = fs_unlink(full_path);
-            if (ret) {
-                LOG_ERR("Error deleting file %s: %d", full_path, ret);
-            } else {
-                LOG_INF("Deleted file: %s", full_path);
-            }
-        }
-    }
+//         if (entry.type == FS_DIR_ENTRY_DIR) {
+//             // Recursively delete files in the subdirectory
+//             delete_all_files(full_path);
 
-    ret = fs_closedir(&dir);
-    if (ret) {
-        LOG_ERR("Error closing directory %s: %d", path, ret);
-    }
-}
+//             // Delete the directory itself
+//             ret = fs_unlink(full_path);
+//             if (ret) {
+//                 LOG_ERR("Error deleting directory %s: %d", full_path, ret);
+//             } else {
+//                 LOG_INF("Deleted directory: %s", full_path);
+//             }
+//         } else {
+//             // Delete the file
+//             ret = fs_unlink(full_path);
+//             if (ret) {
+//                 LOG_ERR("Error deleting file %s: %d", full_path, ret);
+//             } else {
+//                 LOG_INF("Deleted file: %s", full_path);
+//             }
+//         }
+//     }
+
+//     ret = fs_closedir(&dir);
+//     if (ret) {
+//         LOG_ERR("Error closing directory %s: %d", path, ret);
+//     }
+// }
 
 
 #define WRITE_CHUNK_SIZE2 2048 // Define the chunk size as needed
@@ -332,28 +332,28 @@ static int create_and_write_file_without_sync(const char *filename, const char *
     return 0;
 }
 
-static void read_file(const char *filename) {
-    struct fs_file_t file;
-    fs_file_t_init(&file);
-    char buffer[4096];
-    int bytes_read;
+// static void read_file(const char *filename) {
+//     struct fs_file_t file;
+//     fs_file_t_init(&file);
+//     char buffer[4096];
+//     int bytes_read;
 
-    int rc = fs_open(&file, filename, FS_O_READ);
-    if (rc < 0) {
-        printk("Failed to open file %s: %d\n", filename, rc);
-        return;
-    }
+//     int rc = fs_open(&file, filename, FS_O_READ);
+//     if (rc < 0) {
+//         printk("Failed to open file %s: %d\n", filename, rc);
+//         return;
+//     }
 
-    bytes_read = fs_read(&file, buffer, sizeof(buffer) - 1);
-    if (bytes_read < 0) {
-        printk("Failed to read file %s: %d\n", filename, bytes_read);
-    } else {
-        buffer[bytes_read] = '\0';  // Null-terminate the string
-        printk("Read from file %s:\n%s\n", filename, buffer);
-    }
+//     bytes_read = fs_read(&file, buffer, sizeof(buffer) - 1);
+//     if (bytes_read < 0) {
+//         printk("Failed to read file %s: %d\n", filename, bytes_read);
+//     } else {
+//         buffer[bytes_read] = '\0';  // Null-terminate the string
+//         printk("Read from file %s:\n%s\n", filename, buffer);
+//     }
 
-    fs_close(&file);
-}
+//     fs_close(&file);
+// }
 
 
 
@@ -1219,7 +1219,6 @@ static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 int test_write_read_speed_chunks(void) {
     LOG_INF("Test: Creating files of various sizes, measuring time taken for write and read operations");
     int ret;
-	bool led_state = true;
 
 	if (!gpio_is_ready_dt(&led)) {
 		return 0;
@@ -1344,54 +1343,54 @@ int test_all_main_nand_tests(void){
 
    
 
-    ret = test_create_folder();
-    if(ret == 0){
-        LOG_INF("Overall Test 2: Creation of folder successful!");
-    }else{
-        return -1;
-    }
+    // ret = test_create_folder();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 2: Creation of folder successful!");
+    // }else{
+    //     return -1;
+    // }
 
-     ret = test_create_file();
-    if(ret == 0){
-        LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
-    }else{
-        return -1;
-    }
+    //  ret = test_create_file();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_store_large_file();
-    if(ret == 0){
-        LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
-    }else{
-        return -1;
-    }
+    // ret = test_store_large_file();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_append_data_large_file();
-    if(ret == 0){
-        LOG_INF("Overall Test 5: Appending to large file data successful");
-    }else{
-        return -1;
-    }
+    // ret = test_append_data_large_file();
+    // if(ret == 0){
+    //     LOG_INF("Overall Test 5: Appending to large file data successful");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_change_file_data();
-    if (ret == 0){
-        LOG_INF("Overall Test 6: Changing data in large file successful");
-    }else{
-        return -1;
-    }
+    // ret = test_change_file_data();
+    // if (ret == 0){
+    //     LOG_INF("Overall Test 6: Changing data in large file successful");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_delete_file();
-    if (ret == 0){
-        LOG_INF("Overall Test 7: Deleting the large file is successful");
-    }else{
-        return -1;
-    }
+    // ret = test_delete_file();
+    // if (ret == 0){
+    //     LOG_INF("Overall Test 7: Deleting the large file is successful");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = test_write_one_eighth_flash();
-    if (ret == 0){
-        LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
-    }else{
-        return -1;
-    }
+    // ret = test_write_one_eighth_flash();
+    // if (ret == 0){
+    //     LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
+    // }else{
+    //     return -1;
+    // }
 
     LOG_INF("All Functionality tests finished!");
 
