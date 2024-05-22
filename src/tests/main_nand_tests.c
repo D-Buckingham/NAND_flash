@@ -1344,54 +1344,54 @@ int test_all_main_nand_tests(void){
 
    
 
-    // ret = test_create_folder();
-    // if(ret == 0){
-    //     LOG_INF("Overall Test 2: Creation of folder successful!");
-    // }else{
-    //     return -1;
-    // }
+    ret = test_create_folder();
+    if(ret == 0){
+        LOG_INF("Overall Test 2: Creation of folder successful!");
+    }else{
+        return -1;
+    }
 
-    //  ret = test_create_file();
-    // if(ret == 0){
-    //     LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
-    // }else{
-    //     return -1;
-    // }
+     ret = test_create_file();
+    if(ret == 0){
+        LOG_INF("Overall Test 3: Creation of file, writing and reading successful!");
+    }else{
+        return -1;
+    }
 
-    // ret = test_store_large_file();
-    // if(ret == 0){
-    //     LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
-    // }else{
-    //     return -1;
-    // }
+    ret = test_store_large_file();
+    if(ret == 0){
+        LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
+    }else{
+        return -1;
+    }
 
-    // ret = test_append_data_large_file();
-    // if(ret == 0){
-    //     LOG_INF("Overall Test 5: Appending to large file data successful");
-    // }else{
-    //     return -1;
-    // }
+    ret = test_append_data_large_file();
+    if(ret == 0){
+        LOG_INF("Overall Test 5: Appending to large file data successful");
+    }else{
+        return -1;
+    }
 
-    // ret = test_change_file_data();
-    // if (ret == 0){
-    //     LOG_INF("Overall Test 6: Changing data in large file successful");
-    // }else{
-    //     return -1;
-    // }
+    ret = test_change_file_data();
+    if (ret == 0){
+        LOG_INF("Overall Test 6: Changing data in large file successful");
+    }else{
+        return -1;
+    }
 
-    // ret = test_delete_file();
-    // if (ret == 0){
-    //     LOG_INF("Overall Test 7: Deleting the large file is successful");
-    // }else{
-    //     return -1;
-    // }
+    ret = test_delete_file();
+    if (ret == 0){
+        LOG_INF("Overall Test 7: Deleting the large file is successful");
+    }else{
+        return -1;
+    }
 
-    // ret = test_write_one_eighth_flash();
-    // if (ret == 0){
-    //     LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
-    // }else{
-    //     return -1;
-    // }
+    ret = test_write_one_eighth_flash();
+    if (ret == 0){
+        LOG_INF("Overall Test 8: Writing and deleting to 1/8th of storage");
+    }else{
+        return -1;
+    }
 
     LOG_INF("All Functionality tests finished!");
 
