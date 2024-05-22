@@ -29,15 +29,15 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 int  main(void)
 {
 	LOG_INF("My first breath as an IoT device");
-	// const struct spi_dt_spec spidev_dt = spi_nand_init();
+	const struct spi_dt_spec spidev_dt = spi_nand_init();
 	// //  static struct disk_info nand_disk;
-	// int ret;
+	int ret;
 
 	//Test the SPI communication
-	// ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
-	// if (ret != 0) {
-    //     LOG_ERR("Communication tests failed, err: %d", ret);
-    // }
+	ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
+	if (ret != 0) {
+        LOG_ERR("Communication tests failed, err: %d", ret);
+    }
 
 	//ret = test_nand_top_layer(&spidev_dt);
 	// if (ret != 0) {
@@ -49,7 +49,7 @@ int  main(void)
 	//test_vfs_NAND_flash();
 	
 	//initialize_mass_storage_nand(); 
-	test_all_main_nand_tests();
+	//test_all_main_nand_tests();
 //	mount_nand_fs();
 
 	return 0;
