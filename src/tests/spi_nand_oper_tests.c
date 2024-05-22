@@ -302,7 +302,7 @@ static int check_buffer(uint32_t seed, const uint8_t *src, size_t count)
         uint8_t val = src[i];
         uint8_t expected = rand() & 0xFF; 
         if (val != expected) {
-            //LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
+            LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", i, expected, val);
             ret = -1;
         }
     }
@@ -381,8 +381,8 @@ static uint8_t temp_buf[2175];
 //final test, write and read it
 int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     LOG_INF("Test 7: testing SPI NAND sector write and read register");
-    uint32_t block = 0;
-    spi_nand_erase_block(dev, block);
+
+    spi_nand_erase_block(dev, 1);
 
     memset(pattern_buf, 0xFF, 2048);
     memset(temp_buf, 0xFF, 2175);
@@ -391,7 +391,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
     //we assume a sector size of 2048 (smaller than page size of 2175)
     uint16_t sector_size = 2048;
-    uint32_t page = 128;
+    uint32_t page = 64;
     uint16_t column_address = 0;//starting point to read from in page in cache
     int ret;
 
@@ -418,14 +418,14 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
         return -1;
     }
-    log_registers(dev, "After Write Enable");
+    //log_registers(dev, "After Write Enable");
     
     
     //We just overwrite existing data in NAND array
     //load data into cache
     if(spi_nand_program_load(dev, pattern_buf, column_address, 2048) == 0){
         wait_and_chill(dev);
-        log_registers(dev, "After Program Load");
+        //log_registers(dev, "After Program Load");
         if(spi_nand_program_execute(dev, page) != 0){
             LOG_ERR("Test7: Failed to write sector at index %d", 1);
             return -1;
@@ -438,7 +438,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
         return -1;
     }
 
-    log_registers(dev, "After Program Execute");
+    //log_registers(dev, "After Program Execute");
 
 
     //read sector into buffer
@@ -460,7 +460,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     
 
 
-    log_registers(dev, "After Page Read in cash");
+    //log_registers(dev, "After Page Read in cash");
     //read from cache
     ret = spi_nand_read(dev, temp_buf, 0, 2175);
     if (ret != 0) {
@@ -477,8 +477,6 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
     if(ret == 0){
         LOG_INF("TEST 7: PASSED!!!");
-    }else{
-        LOG_INF("Mismatches found");
     }
 
 
