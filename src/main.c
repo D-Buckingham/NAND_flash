@@ -21,6 +21,7 @@
 #include "tests/vfs_test.h"
 #include "tests/main_nand_tests.h"
 #include "USB_mass_storage.h"
+#include "simulation_test.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
@@ -50,8 +51,11 @@ int  main(void)
 	//test_vfs_NAND_flash();
 	
 	//initialize_mass_storage_nand(); 
-	test_all_main_nand_tests();
-//	mount_nand_fs();
+	//test_all_main_nand_tests();
+	//	mount_nand_fs();
+	//spi_nand_erase_chip(device_handle);
+
+	simulate_incoming_data();
 
 	return 0;
 

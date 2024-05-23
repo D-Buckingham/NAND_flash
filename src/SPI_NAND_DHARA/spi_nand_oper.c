@@ -180,7 +180,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
             combined_buf[0] = transaction->command;
             combined_buf[1] = address_bytes[0]; // A23-A16
             combined_buf[2] = address_bytes[1]; // A15-A8
-            combined_buf[3] = &dummy_byte_value;
+            combined_buf[3] = dummy_byte_value;
 
             struct spi_buf tx_bufs_four_bytes_miso;
             tx_bufs_four_bytes_miso.buf = combined_buf;

@@ -575,7 +575,7 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     ret = spi_nand_read_register(dev, REG_PROTECT, &status);
     if (ret != 0) {
         LOG_ERR("Failed to read REG_PROTECT, error: %d", ret);
-    }
+    }LOG_INF("Status Protection Register = %u", status);
 
 
 
