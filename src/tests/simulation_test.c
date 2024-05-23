@@ -18,6 +18,8 @@
 #include "../SPI_NAND_DHARA/spi_nand_oper.h"
 #include "../SPI_NAND_DHARA/nand_top_layer.h"
 
+#include "simulation_test.h"
+
 #define STACK_SIZE 2048
 #define PRIORITY 5
 #define FILE_NAME "/test_simulation.txt"
