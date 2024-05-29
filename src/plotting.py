@@ -249,3 +249,48 @@ plt.grid(True)
 
 plt.tight_layout()
 plt.show()
+
+
+
+# Define the layers and their corresponding test pass percentages
+layers = [
+    "Overall Longterm Tests",
+    "Overall Reliability Tests",
+    "Overall Performance Tests",
+    "Overall Functional Tests",
+    "File System Tests",
+    "Disk Layer Tests",
+    "Mapping Layer Tests",
+    "Flash Translation Layer Tests",
+    "Flash Abstraction Layer Tests",
+    "NAND Flash Driver Tests",
+]
+test_pass_percentages = [0, 0, 80, 100, 100, 100, 100, 100, 100, 100]
+
+# Plotting the data
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Plot horizontal bars
+bars = ax.barh(layers, test_pass_percentages, color='green')
+
+# Set labels and title
+ax.set_xlabel('Test Pass Percentage')
+ax.set_ylabel('Type of Test')
+ax.set_title('Completeness of Tests')
+
+# Set x-axis limits
+ax.set_xlim(0, 110)
+
+# Adding text labels to the bars
+for bar in bars:
+    width = bar.get_width()
+    label_y_pos = bar.get_y() + bar.get_height() / 2
+    ax.text(width + 1, label_y_pos, f'{width}%', va='center', ha='left', color='black')
+
+# Save the plot as an image file
+output_path = "flash_stack_test_pass_percentage.png"
+plt.tight_layout()
+plt.savefig(output_path)
+
+# Display the plot
+plt.show()
