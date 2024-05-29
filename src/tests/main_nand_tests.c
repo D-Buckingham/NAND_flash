@@ -1312,7 +1312,7 @@ int test_write_read_speed_chunks(void) {
 ////////////////////////////////////////            RELIABILITY TESTS START     /////////////////////////////
 //wear leveling test, write repeatedly to the flash and log the blocks, fill up the entire flash multiple times
 //do this test with logging the output around three hours, use the function test_write_read_speed_chunks and go up to 1024 MB
-
+// ==> basically look at wear leveling in the longterm test
 
 
 //bad block test, mark a block as bad and check if the system avoids it
@@ -1326,6 +1326,15 @@ int test_write_read_speed_chunks(void) {
 
 ////////////////////////////////////////            LONG TERM TEST START     /////////////////////////////
 //Write and read over days, and look how the data is corrupted.
+
+/**
+ * The following tests are performed simultaneously
+ * Wear leveling: log which block and page is written to, retrieve data
+ * Log if the expected content is different than the written content, how many times? How many bytes differ?
+ * Log how many times there is an ECC
+ * Log how many times there is a bad block
+
+*/
 
 ////////////////////////////////////////            LONG TERM TEST END     /////////////////////////////
 
