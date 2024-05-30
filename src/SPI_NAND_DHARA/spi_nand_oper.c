@@ -55,223 +55,74 @@ uint8_t var;
 
 int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
 {
+    //TODO write functionalities that write and read
+    int ret;
+    int buf_index = 1;
+
+    struct spi_buf tx_bufs[4] ={0};
+    
     //transmitter preparation before sending
     //address bytes + data bytes + the command byte + dummy byte
 	
 
-    //handle transmissions of 1 byte (CMD_WRITE_ENABLE and CMD_WRITE_DISABLE)
-    if (transaction->address_bytes == 0 && transaction->mosi_len == 0 && transaction->dummy_bytes == 0) {
-        struct spi_buf tx_bufs_one_byte;
-        tx_bufs_one_byte.buf = &transaction->command;
-        tx_bufs_one_byte.len = 1;
-
-        const struct spi_buf_set tx = {
-            .buffers = &tx_bufs_one_byte,
-            .count = 1
-        };
-
-        return spi_write_dt(spidev_dt, &tx);
+	tx_bufs[0].buf = &transaction->command;
+	tx_bufs[0].len = 1;
+    
+    //add address
+    if(transaction -> address_bytes > 0){
+        tx_bufs[1].buf = &transaction->address;
+        tx_bufs[1].len = transaction -> address_bytes;
+        buf_index++;
     }
 
-
-
-    //handle transmissions of 3 bytes
-    if (transaction->address_bytes == 1) {
-
-        //differentiate between only writing and or transceiving
-        if(transaction->miso_len == 0){
-            uint8_t combined_buf[3]; 
-
-            combined_buf[0] = transaction->command;
-            combined_buf[1] = transaction->address;
-            combined_buf[2] = *(uint8_t *)transaction->mosi_data;//it's only 1 byte
-
-            struct spi_buf tx_bufs_three_bytes;
-            tx_bufs_three_bytes.buf = combined_buf;
-            tx_bufs_three_bytes.len = 3;
-
-            const struct spi_buf_set tx = {
-                .buffers = &tx_bufs_three_bytes,
-                .count = 1
-            };
-
-            return spi_write_dt(spidev_dt, &tx);
-        }else{
-            uint8_t combined_buf[2];
-            combined_buf[0] = transaction->command;
-            combined_buf[1] = transaction->address;
-
-            struct spi_buf tx_bufs_two_bytes;
-            tx_bufs_two_bytes.buf = combined_buf;
-            tx_bufs_two_bytes.len = 2;
-
-            const struct spi_buf_set tx = {
-                .buffers = &tx_bufs_two_bytes,
-                .count = 1
-            };
-
-            struct spi_buf rx_bufs;
-
-            rx_bufs.buf = transaction->miso_data - 2;//shifting the pointer      
-            rx_bufs.len = 3;
-
-            const struct spi_buf_set rx = {
-                .buffers = &rx_bufs,
-                .count = 1
-            };
-            
-            return spi_transceive_dt(spidev_dt, &tx, &rx);
-        }
+    //add data
+    if(transaction -> mosi_len > 0){
+        tx_bufs[2].buf = (uint8_t *)transaction -> mosi_data;
+        tx_bufs[2].len = transaction -> mosi_len;
+        buf_index++;
     }
 
-    //handle transmissions of 4 bytes and more
-    if (transaction->address_bytes >= 2) {
-        //differentiate between only writing and or transceiving
-        if(transaction->miso_len == 0){
-            //3 byte address
-            if(transaction -> mosi_len == 0){
-                uint8_t combined_buf[4]; 
-
-                combined_buf[0] = transaction->command;
-                uint8_t *address_bytes = (uint8_t *)&transaction->address;
-                combined_buf[1] = address_bytes[0]; // A23-A16
-                combined_buf[2] = address_bytes[1]; // A15-A8
-                combined_buf[3] = address_bytes[2]; // A7-A0
-
-                struct spi_buf tx_bufs_four_bytes[2] = {0};
-                tx_bufs_four_bytes[0].buf = combined_buf;
-                tx_bufs_four_bytes[0].len = 4;
-
-                tx_bufs_four_bytes[1].buf = (uint8_t *)transaction -> mosi_data;
-                tx_bufs_four_bytes[1].len = transaction -> mosi_len;
-
-                const struct spi_buf_set tx = {
-                    .buffers = tx_bufs_four_bytes,
-                    .count = 2
-                };
-
-                return spi_write_dt(spidev_dt, &tx);
-            }else{//2 byte address
-                uint8_t combined_buf[3]; 
-
-                combined_buf[0] = transaction->command;
-                uint8_t *address_bytes = (uint8_t *)&transaction->address;
-                combined_buf[1] = address_bytes[0]; // A23-A16
-                combined_buf[2] = address_bytes[1]; // A15-A8
-                
-
-                struct spi_buf tx_bufs_four_bytes[2] = {0};
-                tx_bufs_four_bytes[0].buf = combined_buf;
-                tx_bufs_four_bytes[0].len = 3;
-
-                tx_bufs_four_bytes[1].buf = (uint8_t *)transaction -> mosi_data;
-                tx_bufs_four_bytes[1].len = transaction -> mosi_len;
-
-                const struct spi_buf_set tx = {
-                    .buffers = tx_bufs_four_bytes,
-                    .count = 2
-                };
-
-                return spi_write_dt(spidev_dt, &tx);
-            }
-        }else{//transceive with four bytes
-            uint8_t combined_buf[4];
-            uint8_t *address_bytes = (uint8_t *)&transaction->address;
-            combined_buf[0] = transaction->command;
-            combined_buf[1] = address_bytes[0]; // A23-A16
-            combined_buf[2] = address_bytes[1]; // A15-A8
-            combined_buf[3] = dummy_byte_value;
-
-            struct spi_buf tx_bufs_four_bytes_miso;
-            tx_bufs_four_bytes_miso.buf = combined_buf;
-            tx_bufs_four_bytes_miso.len = 4;
-
-            const struct spi_buf_set tx = {
-                .buffers = &tx_bufs_four_bytes_miso,
-                .count = 1
-            };
-
-            struct spi_buf rx_bufs;
-
-            rx_bufs.buf = transaction->miso_data - 4;//shifting the pointer      
-            rx_bufs.len = transaction->miso_len + 4;
-
-            const struct spi_buf_set rx = {
-                .buffers = &rx_bufs,
-                .count = 1
-            };
-        
-            return spi_transceive_dt(spidev_dt, &tx, &rx);
-         }
+    //add dummy byte
+    if(transaction -> dummy_bytes > 0){
+        tx_bufs[3].buf = &dummy_byte_value;//dummy byte
+        tx_bufs[3].len = transaction -> dummy_bytes;
+        buf_index++;
     }
-    return -1;
-    
-    // int ret;
-    
-
-
-    // int buf_index = 1;
-
-    // struct spi_buf tx_bufs[4] ={0};
-
-	// tx_bufs[0].buf = &transaction->command;
-	// tx_bufs[0].len = 1;
-    
-    // //add address
-    // if(transaction -> address_bytes > 0){
-    //     tx_bufs[1].buf = &transaction->address;
-    //     tx_bufs[1].len = transaction -> address_bytes;
-    //     buf_index++;
-    // }
-
-    // //add data
-    // if(transaction -> mosi_len > 0){
-    //     tx_bufs[2].buf = (uint8_t *)transaction -> mosi_data;
-    //     tx_bufs[2].len = transaction -> mosi_len;
-    //     buf_index++;
-    // }
-
-    // //add dummy byte
-    // if(transaction -> dummy_bytes > 0){
-    //     tx_bufs[3].buf = &dummy_byte_value;//dummy byte
-    //     tx_bufs[3].len = transaction -> dummy_bytes;
-    //     buf_index++;
-    // }
-    // const struct spi_buf_set tx = {
-	// 	.buffers = tx_bufs,
-	// 	.count = buf_index
-	// };
+    const struct spi_buf_set tx = {
+		.buffers = tx_bufs,
+		.count = buf_index
+	};
 
 
 
     
 	
-    // //synchronous
-    //  if(transaction->miso_len == 0){
-    //     ret = spi_write_dt(spidev_dt, &tx);
-    //  }else{
-    //     //receiver preparation
-    //     struct spi_buf rx_bufs[1] = {0};
+    //synchronous
+     if(transaction->miso_len == 0){
+        ret = spi_write_dt(spidev_dt, &tx);
+     }else{
+        //receiver preparation
+        struct spi_buf rx_bufs[1] = {0};
 
         
-    //     rx_bufs[0].buf = 
-    //                     ((1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) > 1) 
-    //                     ? transaction->miso_data - (1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) 
-    //                     : transaction->miso_data;//shifting the pointer
+        rx_bufs[0].buf = 
+                        ((1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) > 1) 
+                        ? transaction->miso_data - (1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes) 
+                        : transaction->miso_data;//shifting the pointer
         
-    //     rx_bufs[0].len = transaction->miso_len + 1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes;//clocking the entire signal
+        rx_bufs[0].len = transaction->miso_len + 1 + transaction -> address_bytes + transaction -> mosi_len + transaction -> dummy_bytes;//clocking the entire signal
 
-    //     //rx_bufs[1].buf = NULL;
-    //     //rx_bufs[1].len = 0;
+        //rx_bufs[1].buf = NULL;
+        //rx_bufs[1].len = 0;
 
-    //     const struct spi_buf_set rx = {
-    //         .buffers = rx_bufs,
-    //         .count = 1
-    //     };
+        const struct spi_buf_set rx = {
+            .buffers = rx_bufs,
+            .count = 1
+        };
         
-    //     ret = spi_transceive_dt(spidev_dt, &tx, &rx);
-    //     }
-    // return ret;
+        ret = spi_transceive_dt(spidev_dt, &tx, &rx);
+        }
+    return ret;
 }
 
 
