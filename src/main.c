@@ -32,10 +32,10 @@ int  main(void)
 	LOG_INF("My first breath as an IoT device");
 	int ret;
 	const struct spi_dt_spec spidev_dt = spi_nand_init();
-	// //  static struct disk_info nand_disk;
+	//static struct disk_info nand_disk;
 	
 
-	//Test the SPI communication
+	// //Test the SPI communication
 	// ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
 	// if (ret != 0) {
     //     LOG_ERR("Communication tests failed, err: %d", ret);
@@ -59,7 +59,7 @@ int  main(void)
     // setup_nand_flash(&device_handle, &spidev_dt);
 	// spi_nand_erase_chip(device_handle);
 
-	simulate_incoming_data();
+	//simulate_incoming_data();
 
 	return 0;
 

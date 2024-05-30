@@ -43,23 +43,13 @@ my_spi_master:&spi4 {
 	pinctrl-1 = <&spi4m_sleep>;
 	pinctrl-names = "default", "sleep";
     cs-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
-    //label = "SPI_4";
     
-    // reg_my_spi_master:  spi-dev-a@0 {
-	// 	reg = <0>;
-	// };
-
     spidev: spi-device@0 {
         status = "okay";
         compatible = "vnd,spi-device";
         reg = <0>;
         spi-max-frequency = <5000000>;//126000
         label = "spidev";
-        // nandflash: nandflash{
-        //     compatible = "custom,nand-disk";
-        //     label = "NAND_DISK";
-        //     //partition = <&nand_partition>
-        // };
     };
 };
 
@@ -76,39 +66,3 @@ my_spi_master:&spi4 {
     };
    };
 
-// &flash0 {
-//     partitions {
-//         compatible = "fixed-partitions";
-//         #address-cells = <1>;
-//         #size-cells = <1>;
-
-//         storage_partition: partition@0 {
-//             label = "storage";
-//             reg = <0x00000000 0x010000000>; // Partition starts at 0, size 16MB
-//         };
-
-//         firmware_partition: partition@1 {
-//             label = "firmware";
-//             reg = <0x01000000 0x020000000>; // Partition starts at 16MB, size 32MB
-//         };
-//     };
-// };
-
-// / {
-//     nand_disk0 {
-//         compatible = "zephyr,flash-disk";
-//         partition = <&storage_partition>;
-//         sector-size = <2048>;
-//         disk-name = "NAND";
-//         cache-size = <500000000>;//4Gbits
-//     };
-// };
-
-// / {
-// 	nanddisk0 {
-// 		compatible = "zephyr,ram-disk";
-// 		disk-name = "NAND_DISK";
-// 		sector-size = <2048>;
-// 		sector-count = <257985>;
-// 	};
-// };
