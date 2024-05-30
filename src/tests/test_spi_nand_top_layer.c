@@ -66,7 +66,7 @@ int wait_and_chill(const struct spi_dt_spec *dev){
 
 int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 {
-    // spi_nand_flash_device_t *device_handle = NULL;
+    // spi_nand_flash_device_t *device_handle = NULL;//to manually erase
     // setup_nand_flash(&device_handle, spi);
     int err;
     err = spi_nand_erase_chip(device_handle);

@@ -38,4 +38,4 @@ int mount_nand_fs(void) {
     return ret;
 }
 
-SYS_INIT(mount_nand_fs, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEVICE);
+//SYS_INIT(mount_nand_fs, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEVICE);

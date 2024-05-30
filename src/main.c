@@ -36,10 +36,10 @@ int  main(void)
 	
 
 	//Test the SPI communication
-	// ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
-	// if (ret != 0) {
-    //     LOG_ERR("Communication tests failed, err: %d", ret);
-    // }
+	ret = test_SPI_NAND_Communicator_all_tests(&spidev_dt);
+	if (ret != 0) {
+        LOG_ERR("Communication tests failed, err: %d", ret);
+    }
 
 	// ret = test_nand_top_layer(&spidev_dt);
 	// if (ret != 0) {
@@ -53,9 +53,13 @@ int  main(void)
 	//initialize_mass_storage_nand(); 
 	//test_all_main_nand_tests();
 	//	mount_nand_fs();
+
+	//to manually erase chip, but first disable the disk initialization in the diskio_nand.c at the bottom
+	//spi_nand_flash_device_t *device_handle = NULL;//to manually erase
+    //setup_nand_flash(&device_handle, &spidev_dt);
 	//spi_nand_erase_chip(device_handle);
 
-	simulate_incoming_data();
+	//simulate_incoming_data();
 
 	return 0;
 

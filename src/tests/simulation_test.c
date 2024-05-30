@@ -24,14 +24,14 @@
 #define PRIORITY 5
 #define FILE_NAME "/test_simulation.txt"
 #define WRITE_INTERVAL K_SECONDS(1)
-#define DATA_SIZE 4096
+#define DATA_SIZE 2047
 #define MAX_PATH_LEN 255
 
 K_THREAD_STACK_DEFINE(write_stack_area, STACK_SIZE);
 struct k_thread write_thread_data;
 
 static struct fs_file_t file;
-static char data[DATA_SIZE] = {0};  // 4KB buffer
+static char data[DATA_SIZE] = {0};  // 2KB buffer
 const char *startoffile = "This is a header\n";
 
 LOG_MODULE_REGISTER(simulation_test, LOG_LEVEL_INF);

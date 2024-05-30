@@ -1316,7 +1316,12 @@ int test_write_read_speed_chunks(void) {
 
 
 //bad block test, mark a block as bad and check if the system avoids it
-//
+int bad_block_test(void){
+    int ret;
+    return 0;
+
+    //mark a block as a bad block with the 
+}
 
 //check power loss, is the data still saved?
 
