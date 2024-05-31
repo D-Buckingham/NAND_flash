@@ -27,7 +27,14 @@
 
 #define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 
+#define RA_TO_BLOCK(ra) ((ra >> 6) & 0xFFF)  // Extracts bits 17:6 (block)
+#define RA_TO_PAGE(ra)  (ra & 0x3F)         // Extracts bits 5:0 (page)
+
+
 LOG_MODULE_REGISTER(spi_nand_oper, LOG_LEVEL_INF);
+
+uint8_t dummy_byte_value = 0xFF;
+uint8_t var;
 
 
 const struct spi_dt_spec spi_nand_init(void) {
@@ -49,8 +56,6 @@ const struct spi_dt_spec spi_nand_init(void) {
  * 0 If successful in master mode.
 -errno Negative errno code on failure.
 */
-uint8_t dummy_byte_value = 0xFF;
-uint8_t var;
 
 
 int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
@@ -61,7 +66,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
     //handle transmissions of 1 byte 
     //(CMD_WRITE_ENABLE and CMD_WRITE_DISABLE)
-    if (transaction->address_bytes == 0 && transaction->mosi_len == 0 && transaction->dummy_bytes == 0) {
+    if (transaction->address_bytes == 0) {
         struct spi_buf tx_bufs_one_byte;
         tx_bufs_one_byte.buf = &transaction->command;
         tx_bufs_one_byte.len = 1;
@@ -130,27 +135,27 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
 
 
-    //handle transmissions of 4 bytes
-    if (transaction->address_bytes == 3){//block erase, program execute, page read to cache
-        uint8_t combined_buf[4]; 
-        uint8_t *address_bytes = (uint8_t *)&transaction->address;
+    // //handle transmissions of 4 bytes
+    // if (transaction->address_bytes == 3){//block erase, program execute, page read to cache
+    //     uint8_t combined_buf[4]; 
+    //     uint8_t *address_bytes = (uint8_t *)&transaction->address;
 
-        combined_buf[0] = transaction->command;
-        combined_buf[1] = address_bytes[0]; // A23-A16
-        combined_buf[2] = address_bytes[1]; // A15-A8
-        combined_buf[3] = address_bytes[2]; // A7-A0
+    //     combined_buf[0] = transaction->command;
+    //     combined_buf[1] = address_bytes[0]; // A23-A16
+    //     combined_buf[2] = address_bytes[1]; // A15-A8
+    //     combined_buf[3] = address_bytes[2]; // A7-A0
 
-        struct spi_buf tx_bufs_four_bytes;
-        tx_bufs_four_bytes.buf = combined_buf;
-        tx_bufs_four_bytes.len = 3;
+    //     struct spi_buf tx_bufs_four_bytes;
+    //     tx_bufs_four_bytes.buf = combined_buf;
+    //     tx_bufs_four_bytes.len = 3;
 
-        const struct spi_buf_set tx = {
-            .buffers = &tx_bufs_four_bytes,
-            .count = 1
-        };
+    //     const struct spi_buf_set tx = {
+    //         .buffers = &tx_bufs_four_bytes,
+    //         .count = 1
+    //     };
 
-        return spi_write_dt(spidev_dt, &tx);
-    }
+    //     return spi_write_dt(spidev_dt, &tx);
+    // }
 
     // //program load
     // if(transaction->mosi_len > 0){
@@ -332,6 +337,21 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 }
 
 
+
+//address_bytes = 0
+int spi_nand_write_enable(const struct spi_dt_spec *dev)
+{
+    spi_nand_transaction_t  t = {
+        .command = CMD_WRITE_ENABLE
+    };
+
+    return spi_nand_execute_transaction(dev, &t);
+}
+
+
+
+//address_bytes = 1
+
 int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *val)
 {
     spi_nand_transaction_t t = {
@@ -358,17 +378,54 @@ int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t 
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_write_enable(const struct spi_dt_spec *dev)
-{
+int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
+
     spi_nand_transaction_t  t = {
-        .command = CMD_WRITE_ENABLE
+        .command = CMD_READ_ID,
+        .address_bytes = 1,
+        .address = DEVICE_ADDR_READ,
+        .miso_len = 1,
+        .miso_data = device_id,
     };
 
     return spi_nand_execute_transaction(dev, &t);
 }
 
-#define RA_TO_BLOCK(ra) ((ra >> 6) & 0xFFF)  // Extracts bits 17:6 (block)
-#define RA_TO_PAGE(ra)  (ra & 0x3F)         // Extracts bits 5:0 (page)
+
+
+//address_bytes = 2
+
+int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
+{
+    spi_nand_transaction_t  t = {
+        .command = CMD_READ_FAST,
+        .address_bytes = 2,
+        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//big to small endian
+        .miso_len = length,//usually 2 bytes
+        .miso_data = data,
+        .dummy_bytes = 1
+    };
+    
+
+    return spi_nand_execute_transaction(dev, &t);
+}
+
+int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
+{
+    spi_nand_transaction_t  t = {
+        .command = CMD_PROGRAM_LOAD,
+        .address_bytes = 2,
+        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),
+        .mosi_len = length,//(N+1)*8+24
+        .mosi_data = data
+    };
+
+    return spi_nand_execute_transaction(dev, &t);
+}
+
+
+
+//address_bytes = 3
 
 int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
 {
@@ -384,21 +441,6 @@ int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
     // uint32_t page2 = RA_TO_PAGE(page);
     // LOG_INF("OPER LEVEL: Reading from Block: %d, Page: %d", block, page2);
 
-
-    return spi_nand_execute_transaction(dev, &t);
-}
-
-int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
-{
-    spi_nand_transaction_t  t = {
-        .command = CMD_READ_FAST,
-        .address_bytes = 2,
-        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//big to small endian
-        .miso_len = length,//usually 2 bytes
-        .miso_data = data,
-        .dummy_bytes = 1
-    };
-    
 
     return spi_nand_execute_transaction(dev, &t);
 }
@@ -420,19 +462,6 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
-{
-    spi_nand_transaction_t  t = {
-        .command = CMD_PROGRAM_LOAD,
-        .address_bytes = 2,
-        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),
-        .mosi_len = length,//(N+1)*8+24
-        .mosi_data = data
-    };
-
-    return spi_nand_execute_transaction(dev, &t);
-}
-
 int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page)
 {
     spi_nand_transaction_t  t = {
@@ -450,15 +479,6 @@ int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page)
     return spi_nand_execute_transaction(dev, &t);
 }
 
-int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
 
-    spi_nand_transaction_t  t = {
-        .command = CMD_READ_ID,
-        .address_bytes = 1,
-        .address = DEVICE_ADDR_READ,
-        .miso_len = 1,
-        .miso_data = device_id,
-    };
 
-    return spi_nand_execute_transaction(dev, &t);
-}
+
