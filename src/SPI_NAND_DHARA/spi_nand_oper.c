@@ -211,6 +211,7 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
         return spi_transceive_dt(spidev_dt, &tx, &rx);
     }
+    return 0;
 }
 
 
@@ -297,6 +298,7 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
         .mosi_data = data
     };
 
+    //LOG_INF("OPER LEVEL: length of written data %d", length);
     return spi_nand_execute_transaction(dev, &t);
 }
 
