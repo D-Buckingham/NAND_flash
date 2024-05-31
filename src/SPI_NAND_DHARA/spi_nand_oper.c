@@ -128,6 +128,8 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
         }
     }
 
+
+
     //handle transmissions of 4 bytes
     if (transaction->address_bytes == 3){//block erase, program execute, page read to cache
         uint8_t combined_buf[4]; 
@@ -150,31 +152,31 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
         return spi_write_dt(spidev_dt, &tx);
     }
 
-    //program load
-    if(transaction->mosi_len > 0){
-        uint8_t combined_buf[3]; 
-        uint8_t *address_bytes = (uint8_t *)&transaction->address;
+    // //program load
+    // if(transaction->mosi_len > 0){
+    //     uint8_t combined_buf[3]; 
+    //     uint8_t *address_bytes = (uint8_t *)&transaction->address;
 
-        combined_buf[0] = transaction->command;
-        combined_buf[1] = address_bytes[0]; // A23-A16
-        combined_buf[2] = address_bytes[1]; // A15-A8
+    //     combined_buf[0] = transaction->command;
+    //     combined_buf[1] = address_bytes[0]; // A23-A16
+    //     combined_buf[2] = address_bytes[1]; // A15-A8
         
 
-        struct spi_buf tx_bufs_many_bytes[2] = {0};
-        tx_bufs_many_bytes[0].buf = combined_buf;
-        tx_bufs_many_bytes[0].len = 3;
+    //     struct spi_buf tx_bufs_many_bytes[2] = {0};
+    //     tx_bufs_many_bytes[0].buf = combined_buf;
+    //     tx_bufs_many_bytes[0].len = 3;
 
-        tx_bufs_many_bytes[1].buf = (uint8_t *)transaction -> mosi_data;
-        tx_bufs_many_bytes[1].len = transaction -> mosi_len;
+    //     tx_bufs_many_bytes[1].buf = (uint8_t *)transaction -> mosi_data;
+    //     tx_bufs_many_bytes[1].len = transaction -> mosi_len;
 
-        const struct spi_buf_set tx = {
-            .buffers = tx_bufs_many_bytes,
-            .count = 2
-        };
+    //     const struct spi_buf_set tx = {
+    //         .buffers = tx_bufs_many_bytes,
+    //         .count = 2
+    //     };
 
-        return spi_write_dt(spidev_dt, &tx);
+    //     return spi_write_dt(spidev_dt, &tx);
 
-    }
+    // }
 
 
     // //handle transmissions of 4 bytes and more
@@ -261,12 +263,13 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
     
     //TODO for the moment reading out a lot of data is left over
     int ret;
-    
-
-
     int buf_index = 1;
 
     struct spi_buf tx_bufs[4] ={0};
+    
+    //transmitter preparation before sending
+    //address bytes + data bytes + the command byte + dummy byte
+	
 
 	tx_bufs[0].buf = &transaction->command;
 	tx_bufs[0].len = 1;
@@ -298,6 +301,8 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
 
 
 
+    
+	
     //synchronous
      if(transaction->miso_len == 0){
         ret = spi_write_dt(spidev_dt, &tx);
