@@ -59,7 +59,7 @@ int  main(void)
     // setup_nand_flash(&device_handle, &spidev_dt);
 	// spi_nand_erase_chip(device_handle);
 
-	//simulate_incoming_data();
+	simulate_incoming_data();
 
 	return 0;
 
