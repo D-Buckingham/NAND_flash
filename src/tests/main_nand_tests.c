@@ -1376,6 +1376,64 @@ static int mark_block_as_bad(void)
     return 0;
 }
 
+static int mark_block_as_good(void)
+{
+    int ret;
+    uint16_t bad_block_indicator = 0xFF;
+    uint32_t first_block_page = 0;
+
+    LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", 0, first_block_page, bad_block_indicator);
+    const struct spi_dt_spec spidev_dt = spi_nand_init();
+
+    ret = spi_nand_write_enable(&spidev_dt);
+    if (ret) {
+        LOG_ERR("Failed to enable write, error: %d", ret);
+        return -1;
+    }
+
+    ret = spi_nand_erase_block(&spidev_dt, first_block_page);
+    if (ret != 0) {
+        LOG_ERR("Failed to erase block, error: %d", ret);
+        return -1;
+    }
+
+    ret = spi_nand_write_enable(&spidev_dt);
+    if (ret != 0) {
+        LOG_ERR("Failed to enable write, error: %d", ret);
+        return -1;
+    }
+
+    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
+    if (ret != 0) {
+        LOG_ERR("Failed to program load, error: %d", ret);
+        return -1;
+    }
+
+
+    ret = spi_nand_program_execute(&spidev_dt, first_block_page);
+    if (ret != 0) {
+        LOG_ERR("Failed to execute program on page %u, error: %d", first_block_page, ret);
+        return -1;
+    }
+
+    while (true) {
+        uint8_t status;
+        int ret = spi_nand_read_register(&spidev_dt, REG_STATUS, &status);
+        if (ret != 0) {
+            LOG_ERR("Error reading NAND status register");
+            return -1; 
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); 
+        
+    }
+
+    return 0;
+}
+
 //bad block test, mark a block as bad and check if the system avoids it
 int bad_block_test(void){
     int ret;
@@ -1383,7 +1441,7 @@ int bad_block_test(void){
     //first erase chip ==> starting at block 1, dhara mapping remains
     ret = spi_nand_erase_chip(device_handle);
     if(ret != 0){
-        LOG_ERR("Erase chip of device on top layer, error: %d", ret);
+        LOG_ERR("Erase chip, error: %d", ret);
         return -1;
     }
 
@@ -1403,6 +1461,13 @@ int bad_block_test(void){
 
     //look at log if it recognized the bad block
 
+    ret = mark_block_as_good();
+    ret = spi_nand_erase_chip(device_handle);
+    if(ret != 0){
+        LOG_ERR("Erase chip, error: %d", ret);
+        return -1;
+    }
+    
     return ret;
 }
 
@@ -1656,6 +1721,13 @@ int test_all_main_nand_tests(void){
     ret = bad_block_test();
     if(ret== 0){
         LOG_INF("Overall Test 10: Bad block detections finished");
+    }else{
+        return -1;
+    }
+
+    ret = long_term_test();
+    if(ret== 0){
+        LOG_INF("Overall Test 11: Long term test finished???");
     }else{
         return -1;
     }
