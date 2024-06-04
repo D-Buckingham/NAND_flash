@@ -1315,12 +1315,95 @@ int test_write_read_speed_chunks(void) {
 // ==> basically look at wear leveling in the longterm test
 
 
+/**
+ * marks the block 0 as bad
+*/
+static int mark_block_as_bad(void)
+{
+    int ret;
+    uint16_t bad_block_indicator = 0;
+    uint32_t first_block_page = 0;
+
+    LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", b, first_block_page, bad_block_indicator);
+    const struct spi_dt_spec spidev_dt = spi_nand_init();
+
+    ret = spi_nand_write_enable(&spidev_dt);
+    if (ret) {
+        LOG_ERR("Failed to enable write, error: %d", ret);
+        return;
+    }
+
+    ret = spi_nand_erase_block(&spidev_dt, first_block_page);
+    if (ret != 0) {
+        LOG_ERR("Failed to erase block, error: %d", ret);
+        return;
+    }
+
+    ret = spi_nand_write_enable(&spidev_dt);
+    if (ret != 0) {
+        LOG_ERR("Failed to enable write, error: %d", ret);
+        return;
+    }
+
+    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
+    if (ret != 0) {
+        LOG_ERR("Failed to program load, error: %d", ret);
+        return;
+    }
+
+
+    ret = spi_nand_program_execute(&spidev_dt, first_block_page);
+    if (err != 0) {
+        LOG_ERR("Failed to execute program on page %u, error: %d", page, err);
+        return -1;
+    }
+
+    while (true) {
+        uint8_t status;
+        int err = spi_nand_read_register(&spidev_dt, REG_STATUS, &status);
+        if (err != 0) {
+            LOG_ERR("Error reading NAND status register");
+            return -1; 
+        }
+
+        if ((status & STAT_BUSY) == 0) {
+            break;
+        }
+        k_sleep(K_MSEC(1)); 
+        
+    }
+
+    return 0;
+}
+
 //bad block test, mark a block as bad and check if the system avoids it
 int bad_block_test(void){
     int ret;
-    return 0;
 
-    //mark a block as a bad block with the 
+    //first erase chip ==> starting at block 1, dhara mapping remains
+    ret = spi_nand_erase_chip(device_handle);
+    if(ret != 0){
+        LOG_ERR("Erase chip of device on top layer, error: %d", ret);
+        return -1;
+    }
+
+    //fill with 0, indicating bad block
+    ret = mark_block_as_bad();
+
+
+    //write data to the flash and check if it recognizes bad block
+
+    //check if dhara recognizes the block (either use first block and erase mapping or use the next one that comes)
+    ret = test_store_large_file();
+    if(ret == 0){
+        LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
+    }else{
+        return -1;
+    }
+
+    //look at log if it recognized the bad block
+
+    return ret;
 }
 
 //check power loss, is the data still saved?
