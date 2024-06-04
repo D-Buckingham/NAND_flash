@@ -520,7 +520,7 @@ static int create_and_write_file_in_chunks(const char *filename, size_t total_si
     struct fs_file_t file;
     fs_file_t_init(&file);
 
-    int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
+    int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR | FS_O_APPEND);
     if (rc < 0) {
         printk("Failed to open file %s: %d\n", filename, rc);
         return -1;
@@ -1490,10 +1490,10 @@ static int delete_file_if_exists(const char *path) {
     if (ret == 0 && entry.type == FS_DIR_ENTRY_FILE) {
         ret = fs_unlink(path);
         if (ret < 0) {
-            printk("Failed to delete file %s: %d\n", path, ret);
+            LOG_ERR("Failed to delete file %s: %d", path, ret);
             return -1;
         }
-        printk("File %s deleted successfully\n", path);
+        LOG_ERR("File %s deleted successfully", path);
     }
 
     return ret;
@@ -1516,11 +1516,14 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
 
     int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
     if (rc < 0) {
-        printk("Failed to open file %s: %d\n", filename, rc);
+        LOG_ERR("Failed to open file %s: %d", filename, rc);
         return -1;
     }
     memset(pattern_buf, 0xFF, 2048);
     fill_buffer_rand(PATTERN_SEED, pattern_buf, 2048);
+
+    LOG_INF("Pattern buffer: %s", (char*)pattern_buf);
+
 
     size_t total_bytes_written = 0;
     size_t content_len = 2048;
@@ -1533,7 +1536,7 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
             size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
             rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
             if (rc < 0) {
-                printk("Failed to write to file %s: %d\n", filename, rc);
+                LOG_ERR("Failed to write to file %s: %d", filename, rc);
                 fs_close(&file);
                 return -1;
             }
@@ -1543,73 +1546,83 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
         total_bytes_written += bytes_to_write;
     }
 
-    fs_close(&file);
+    rc = fs_close(&file);
+    if(rc <0){
+        LOG_ERR("fault during closing file");
+        return -1;
+    }
+    LOG_INF("File %s written successfully\n", filename);
     return 0;
 }
 
 
 static int write_entire_flash_rand_seed(size_t current_flash_size){
     int rc;    
-    size_t one_eight_flash = current_flash_size / 8;
+    //size_t one_eight_flash = current_flash_size ;
 
-    for(int i = 1; i <= 8; i++){
+    //for(int i = 1; i <= 8; i++){
         char fname2[MAX_PATH_LEN];
-        snprintf(fname2, sizeof(fname2), "%s/%d_%s", nand_mount_fat.mnt_point, i, FILE_NAME_ONE_EIGHTH);
-        delete_file_if_exists(fname2);
-        LOG_INF("Creating file %s", fname2);
+        snprintf(fname2, sizeof(fname2), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
+        //delete_file_if_exists(fname2);
+        //printk("Deleting existing file %s\n", fname2);
         // Write data to file in chunks
-        rc = create_and_write_file_in_chunks_rand(fname2, one_eight_flash);
+        rc = create_and_write_file_in_chunks_rand(fname2, current_flash_size);
         if (rc < 0) {
-            LOG_ERR("Failed to create and write to file");
+            LOG_ERR("Failed to create and write to file %s", fname2);
             return -1;
         }
-    }
+    //}
     return 0;
 }
 
 static int check_files(size_t flash_size) {
     int rc;
-    size_t one_eight_flash = flash_size / 8;
+    size_t one_eight_flash = flash_size;
+    LOG_INF("Starting to read file");
+    //for (int i = 1; i <= 8; i++) {
+    char fname[MAX_PATH_LEN];
+    snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
 
-    for (int i = 1; i <= 8; i++) {
-        char fname[MAX_PATH_LEN];
-        snprintf(fname, sizeof(fname), "%s/%d_%s", nand_mount_fat.mnt_point, i, FILE_NAME_ONE_EIGHTH);
+    // Open file
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+    rc = fs_open(&file, fname, FS_O_READ);
+    if (rc < 0) {
+        LOG_ERR("Failed to open file %s: %d", fname, rc);
+        return -1;
+    }
 
-        // Open file
-        struct fs_file_t file;
-        fs_file_t_init(&file);
-        rc = fs_open(&file, fname, FS_O_READ);
-        if (rc < 0) {
-            printk("Failed to open file %s: %d\n", fname, rc);
+    // Read content of the file
+    uint8_t buffer[2048];
+    size_t bytes_read = 0;
+    while (bytes_read < one_eight_flash) {
+        size_t chunk_size = MIN(sizeof(buffer), one_eight_flash - bytes_read);
+        ssize_t bytes = fs_read(&file, buffer, chunk_size);
+        if (bytes < 0) {
+            LOG_ERR("Failed to read file %s: %d\n", fname, rc);
+            fs_close(&file);
             return -1;
         }
+        bytes_read += bytes;
 
-        // Read content of the file
-        uint8_t buffer[2048];
-        size_t bytes_read = 0;
-        while (bytes_read < one_eight_flash) {
-            size_t chunk_size = MIN(sizeof(buffer), one_eight_flash - bytes_read);
-            ssize_t bytes = fs_read(&file, buffer, chunk_size);
-            if (bytes < 0) {
-                printk("Failed to read file %s: %d\n", fname, rc);
-                fs_close(&file);
-                return -1;
+        // Compare with the expected pattern
+        srand(PATTERN_SEED);
+        for (size_t j = 0; j < bytes; j++) {
+            uint8_t expected = rand() & 0xFF; 
+            if (buffer[j] != expected) {
+                LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", j, expected, buffer[j]);
+                faulty_read_write_incidences++;
             }
-            bytes_read += bytes;
-
-            // Compare with the expected pattern
-            for (size_t j = 0; j < bytes; j++) {
-                if (buffer[j] != (uint8_t)(PATTERN_SEED & 0xFF)) {
-                    printk("File %s has unexpected data at position %zu\n", fname, bytes_read - chunk_size + j);
-                    // Handle the unexpected data as required
-                    faulty_read_write_incidences++;
-                }
-            }
+            
         }
+        //}
+        //LOG_INF("Buffer read:\n%s", buffer);
 
         // Close the file
-        fs_close(&file);
+        
     }
+    fs_close(&file);
+    LOG_INF("finished reading files");
 
     return 0;
 }
@@ -1636,16 +1649,16 @@ int long_term_test(void){
     
     rc = lsdir(nand_mount_fat.mnt_point);
     if (rc < 0) {
-		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		LOG_ERR("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
 		return -1;
 	}
     rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
     if (rc < 0) {
-        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        LOG_ERR("FAIL: statvfs: %d\n", rc);
         return -1;
     }
 
-    size_t current_flash_size = 8*sbuf.f_bsize * sbuf.f_blocks;
+    size_t current_flash_size = sbuf.f_bsize * sbuf.f_blocks;
     while(true){
         //write entire flash full in 8 files
         rc = write_entire_flash_rand_seed(current_flash_size);
