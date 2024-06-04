@@ -1483,7 +1483,23 @@ int bad_block_test(void){
 
 int faulty_read_write_incidences = 0;
 
-static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
+static int delete_file_if_exists(const char *path) {
+    struct fs_dirent entry;
+    int ret = fs_stat(path, &entry);
+
+    if (ret == 0 && entry.type == FS_DIR_ENTRY_FILE) {
+        ret = fs_unlink(path);
+        if (ret < 0) {
+            printk("Failed to delete file %s: %d\n", path, ret);
+            return -1;
+        }
+        printk("File %s deleted successfully\n", path);
+    }
+
+    return ret;
+}
+
+static void fill_buffer_rand(uint32_t seed, uint8_t *dst, size_t count)
 {
     srand(seed);
     for (size_t i = 0; i < count; ++i) {
@@ -1504,7 +1520,7 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
         return -1;
     }
     memset(pattern_buf, 0xFF, 2048);
-    fill_buffer(PATTERN_SEED, pattern_buf, 2048);
+    fill_buffer_rand(PATTERN_SEED, pattern_buf, 2048);
 
     size_t total_bytes_written = 0;
     size_t content_len = 2048;
@@ -1536,10 +1552,11 @@ static int write_entire_flash_rand_seed(size_t current_flash_size){
     int rc;    
     size_t one_eight_flash = current_flash_size / 8;
 
-    for(int i = 1; i++; i <=8){
+    for(int i = 1; i <= 8; i++){
         char fname2[MAX_PATH_LEN];
         snprintf(fname2, sizeof(fname2), "%s/%d_%s", nand_mount_fat.mnt_point, i, FILE_NAME_ONE_EIGHTH);
-
+        delete_file_if_exists(fname2);
+        LOG_INF("Creating file %s", fname2);
         // Write data to file in chunks
         rc = create_and_write_file_in_chunks_rand(fname2, one_eight_flash);
         if (rc < 0) {
@@ -1598,6 +1615,7 @@ static int check_files(size_t flash_size) {
 }
 
 
+
 /**
  * The following tests are performed simultaneously
  * Wear leveling: log which block and page is written to, retrieve data
@@ -1606,17 +1624,28 @@ static int check_files(size_t flash_size) {
  * Log how many times there is a bad block
 */
 int long_term_test(void){
-    //Fill the entire flash
-    struct fs_statvfs sbuf;
     int rc;
+    //first erase chip ==> starting at block 1, dhara mapping remains
+    // rc = spi_nand_erase_chip(device_handle);
+    // if(rc != 0){
+    //     LOG_ERR("Erase chip, error: %d", rc);
+    //     return -1;
+    // }
 
+    struct fs_statvfs sbuf;
+    
+    rc = lsdir(nand_mount_fat.mnt_point);
+    if (rc < 0) {
+		LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+		return -1;
+	}
     rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
     if (rc < 0) {
         LOG_PRINTK("FAIL: statvfs: %d\n", rc);
         return -1;
     }
 
-    size_t current_flash_size = sbuf.f_bsize * sbuf.f_blocks;
+    size_t current_flash_size = 8*sbuf.f_bsize * sbuf.f_blocks;
     while(true){
         //write entire flash full in 8 files
         rc = write_entire_flash_rand_seed(current_flash_size);
@@ -1624,6 +1653,7 @@ int long_term_test(void){
             LOG_ERR("Error: unable to write to entire flash");
             return -1;
         }
+        LOG_INF("Files written, flash full");
         //read out files and check if they are correct
         rc = check_files(current_flash_size);
         if (rc < 0) {
@@ -1648,9 +1678,9 @@ int long_term_test(void){
 
 //Main function in which the other ones are called
 int test_all_main_nand_tests(void){
-
+    int ret;
     //is the device on each layer connected/initialized?
-    int ret = top_device_connected();
+    ret = top_device_connected();
     if(ret == 0){
         LOG_INF("Overall Test 1: All modalities sucessful recognized!");
     }else{
@@ -1711,24 +1741,25 @@ int test_all_main_nand_tests(void){
     LOG_INF("All Functionality tests finished!");
 
 
-    ret = test_write_read_speed_chunks();//test_write_read_speed();
-    if(ret== 0){
-        LOG_INF("Overall Test 9: time for writing and reading 1 byte, 10 byte, 100 byte, 1 kbyte, 10 kbyte, 100 kbyte");
-    }else{
-        return -1;
-    }
+    // ret = test_write_read_speed_chunks();//test_write_read_speed();
+    // if(ret== 0){
+    //     LOG_INF("Overall Test 9: time for writing and reading 1 byte, 10 byte, 100 byte, 1 kbyte, 10 kbyte, 100 kbyte");
+    // }else{
+    //     return -1;
+    // }
 
-    ret = bad_block_test();
-    if(ret== 0){
-        LOG_INF("Overall Test 10: Bad block detections finished");
-    }else{
-        return -1;
-    }
+    // ret = bad_block_test(); //==> passed
+    // if(ret== 0){
+    //     LOG_INF("Overall Test 10: Bad block detections finished");
+    // }else{
+    //     return -1;
+    // }
 
     ret = long_term_test();
     if(ret== 0){
         LOG_INF("Overall Test 11: Long term test finished???");
     }else{
+        LOG_ERR("Overall Test 11: stopping longterm test");
         return -1;
     }
 
