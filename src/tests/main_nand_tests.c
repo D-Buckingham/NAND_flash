@@ -30,7 +30,7 @@
 #define READ_CHUNK_SIZE 2048
 #define WRITE_CHUNK_SIZE 2048
 
-
+#define PATTERN_SEED    0x12345678
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
 /////////////////////////////////////////////       FUNCTIONALITY TESTS START     //////////////////////////
@@ -1324,44 +1324,44 @@ static int mark_block_as_bad(void)
     uint16_t bad_block_indicator = 0;
     uint32_t first_block_page = 0;
 
-    LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", b, first_block_page, bad_block_indicator);
+    LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", 0, first_block_page, bad_block_indicator);
     const struct spi_dt_spec spidev_dt = spi_nand_init();
 
     ret = spi_nand_write_enable(&spidev_dt);
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
-        return;
+        return -1;
     }
 
     ret = spi_nand_erase_block(&spidev_dt, first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
-        return;
+        return -1;
     }
 
     ret = spi_nand_write_enable(&spidev_dt);
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
-        return;
+        return -1;
     }
 
     ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
-        return;
+        return -1;
     }
 
 
     ret = spi_nand_program_execute(&spidev_dt, first_block_page);
-    if (err != 0) {
-        LOG_ERR("Failed to execute program on page %u, error: %d", page, err);
+    if (ret != 0) {
+        LOG_ERR("Failed to execute program on page %u, error: %d", first_block_page, ret);
         return -1;
     }
 
     while (true) {
         uint8_t status;
-        int err = spi_nand_read_register(&spidev_dt, REG_STATUS, &status);
-        if (err != 0) {
+        int ret = spi_nand_read_register(&spidev_dt, REG_STATUS, &status);
+        if (ret != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
         }
@@ -1396,7 +1396,7 @@ int bad_block_test(void){
     //check if dhara recognizes the block (either use first block and erase mapping or use the next one that comes)
     ret = test_store_large_file();
     if(ret == 0){
-        LOG_INF("Overall Test 4: Creation of large file, writing and comparing successful!");
+        LOG_INF("Overall Test 10: Simulation of bad block finished, recognized?");
     }else{
         return -1;
     }
@@ -1415,14 +1415,168 @@ int bad_block_test(void){
 ////////////////////////////////////////            LONG TERM TEST START     /////////////////////////////
 //Write and read over days, and look how the data is corrupted.
 
+
+int faulty_read_write_incidences = 0;
+
+static void fill_buffer(uint32_t seed, uint8_t *dst, size_t count)
+{
+    srand(seed);
+    for (size_t i = 0; i < count; ++i) {
+        dst[i] = rand() & 0xFF;  
+        //LOG_INF("Index %zu: 0x%02X", i, dst[i]);
+    }
+}
+
+static uint8_t pattern_buf[2048];
+
+static int create_and_write_file_in_chunks_rand(const char *filename, size_t total_size) {
+    struct fs_file_t file;
+    fs_file_t_init(&file);
+
+    int rc = fs_open(&file, filename, FS_O_CREATE | FS_O_RDWR);
+    if (rc < 0) {
+        printk("Failed to open file %s: %d\n", filename, rc);
+        return -1;
+    }
+    memset(pattern_buf, 0xFF, 2048);
+    fill_buffer(PATTERN_SEED, pattern_buf, 2048);
+
+    size_t total_bytes_written = 0;
+    size_t content_len = 2048;
+
+    while (total_bytes_written < total_size) {
+        size_t bytes_to_write = MIN(WRITE_CHUNK_SIZE, total_size - total_bytes_written);
+        size_t bytes_written_this_time = 0;
+
+        while (bytes_written_this_time < bytes_to_write) {
+            size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
+            rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
+            if (rc < 0) {
+                printk("Failed to write to file %s: %d\n", filename, rc);
+                fs_close(&file);
+                return -1;
+            }
+            bytes_written_this_time += remaining_bytes_to_write;
+        }
+
+        total_bytes_written += bytes_to_write;
+    }
+
+    fs_close(&file);
+    return 0;
+}
+
+
+static int write_entire_flash_rand_seed(size_t current_flash_size){
+    int rc;    
+    size_t one_eight_flash = current_flash_size / 8;
+
+    for(int i = 1; i++; i <=8){
+        char fname2[MAX_PATH_LEN];
+        snprintf(fname2, sizeof(fname2), "%s/%d_%s", nand_mount_fat.mnt_point, i, FILE_NAME_ONE_EIGHTH);
+
+        // Write data to file in chunks
+        rc = create_and_write_file_in_chunks_rand(fname2, one_eight_flash);
+        if (rc < 0) {
+            LOG_ERR("Failed to create and write to file");
+            return -1;
+        }
+    }
+    return 0;
+}
+
+static int check_files(size_t flash_size) {
+    int rc;
+    size_t one_eight_flash = flash_size / 8;
+
+    for (int i = 1; i <= 8; i++) {
+        char fname[MAX_PATH_LEN];
+        snprintf(fname, sizeof(fname), "%s/%d_%s", nand_mount_fat.mnt_point, i, FILE_NAME_ONE_EIGHTH);
+
+        // Open file
+        struct fs_file_t file;
+        fs_file_t_init(&file);
+        rc = fs_open(&file, fname, FS_O_READ);
+        if (rc < 0) {
+            printk("Failed to open file %s: %d\n", fname, rc);
+            return -1;
+        }
+
+        // Read content of the file
+        uint8_t buffer[2048];
+        size_t bytes_read = 0;
+        while (bytes_read < one_eight_flash) {
+            size_t chunk_size = MIN(sizeof(buffer), one_eight_flash - bytes_read);
+            ssize_t bytes = fs_read(&file, buffer, chunk_size);
+            if (bytes < 0) {
+                printk("Failed to read file %s: %d\n", fname, rc);
+                fs_close(&file);
+                return -1;
+            }
+            bytes_read += bytes;
+
+            // Compare with the expected pattern
+            for (size_t j = 0; j < bytes; j++) {
+                if (buffer[j] != (uint8_t)(PATTERN_SEED & 0xFF)) {
+                    printk("File %s has unexpected data at position %zu\n", fname, bytes_read - chunk_size + j);
+                    // Handle the unexpected data as required
+                    faulty_read_write_incidences++;
+                }
+            }
+        }
+
+        // Close the file
+        fs_close(&file);
+    }
+
+    return 0;
+}
+
+
 /**
  * The following tests are performed simultaneously
  * Wear leveling: log which block and page is written to, retrieve data
  * Log if the expected content is different than the written content, how many times? How many bytes differ?
  * Log how many times there is an ECC
  * Log how many times there is a bad block
-
 */
+int long_term_test(void){
+    //Fill the entire flash
+    struct fs_statvfs sbuf;
+    int rc;
+
+    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    if (rc < 0) {
+        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+        return -1;
+    }
+
+    size_t current_flash_size = sbuf.f_bsize * sbuf.f_blocks;
+    while(true){
+        //write entire flash full in 8 files
+        rc = write_entire_flash_rand_seed(current_flash_size);
+        if (rc < 0) {
+            LOG_ERR("Error: unable to write to entire flash");
+            return -1;
+        }
+        //read out files and check if they are correct
+        rc = check_files(current_flash_size);
+        if (rc < 0) {
+            LOG_ERR("Error: unable to read entire flash");
+            return -1;
+        }
+
+        LOG_INF("Overall number of wrong bytes %d", faulty_read_write_incidences);
+
+    }
+    //bad blocks, ECC errors and erasing of blocks (wear levelling) have to be logged through the nand.c and oper layer
+    //does it overwrite the flash if it is full?
+
+
+
+    //if flash filled, check if data is the expected one, if not write difference in log, count how many bytes wrong overall, count how many incidences there are
+    //
+}
 
 ////////////////////////////////////////            LONG TERM TEST END     /////////////////////////////
 
@@ -1498,5 +1652,13 @@ int test_all_main_nand_tests(void){
     }else{
         return -1;
     }
+
+    ret = bad_block_test();
+    if(ret== 0){
+        LOG_INF("Overall Test 10: Bad block detections finished");
+    }else{
+        return -1;
+    }
+
     return 0;
 }
