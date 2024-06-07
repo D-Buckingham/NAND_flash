@@ -1601,9 +1601,8 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
         while (bytes_written_this_time < bytes_to_write) {
             size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
             int retry_count = 0;
-            bool write_success = false;
 
-            while (retry_count < MAX_RETRIES) {
+            // while (retry_count < MAX_RETRIES) {
                 rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
                 if (rc < 0) {
                     LOG_ERR("Failed to write to file %s: %d", filename, rc);
@@ -1611,13 +1610,20 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
                     return -1;
                 }
 
-                // Seek to the position just written for verification
-                rc = fs_seek(&file, total_bytes_written + remaining_bytes_to_write , FS_SEEK_SET);
+                rc = fs_sync(&file);//has to be synced, since it is such a large file
                 if (rc < 0) {
-                    LOG_ERR("Failed to seek file %s: %d", filename, rc);
+                    LOG_ERR("Failed to sync file %s: %d", filename, rc);
                     fs_close(&file);
                     return -1;
                 }
+
+                // // Seek to the position just written for verification
+                // rc = fs_seek(&file, total_bytes_written + bytes_written_this_time, FS_SEEK_SET);
+                // if (rc < 0) {
+                //     LOG_ERR("Failed to seek file %s: %d", filename, rc);
+                //     fs_close(&file);
+                //     return -1;
+                // }
 
                 // Verify the written data
                 // uint8_t read_buffer[2048];
@@ -1641,7 +1647,7 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
                 //     }
                 //     retry_count++;
                 // }
-            }
+            //}
             bytes_written_this_time += remaining_bytes_to_write;
 
 
