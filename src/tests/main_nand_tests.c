@@ -152,6 +152,57 @@ static int lsdir(const char *path)
 }
 
 
+static int check_and_delete_corrupted_files(const char *dir_path) {
+    struct fs_dir_t dir;
+    struct fs_dirent entry;
+    fs_dir_t_init(&dir);
+
+    int rc = fs_opendir(&dir, dir_path);
+    if (rc < 0) {
+        LOG_ERR("Failed to open directory %s: %d", dir_path, rc);
+        return -1;
+    }
+
+    while (true) {
+        rc = fs_readdir(&dir, &entry);
+        if (rc < 0) {
+            LOG_ERR("Failed to read directory %s: %d", dir_path, rc);
+            fs_closedir(&dir);
+            return -1;
+        }
+        if (entry.name[0] == '\0') {
+            break; // End of directory
+        }
+
+        char filepath[MAX_PATH_LEN];
+        snprintf(filepath, sizeof(filepath), "%s/%s", dir_path, entry.name);
+
+        if (entry.type == FS_DIR_ENTRY_FILE) {
+            struct fs_file_t file;
+            fs_file_t_init(&file);
+            int rc = fs_open(&file, filepath, FS_O_READ);
+            if (rc < 0) {
+                LOG_ERR("Failed to open file %s: %d", filepath, rc);
+                int ret = fs_unlink(filepath);
+                if (ret < 0) {
+                    LOG_ERR("Failed to delete file %s: %d", filepath, ret);
+                    fs_closedir(&dir);
+                    return -1;
+                }
+                LOG_INF("File %s deleted successfully", filepath); // Delete if unable to open, assuming corruption
+            } else {
+                fs_close(&file);
+            }
+        } else if (entry.type == FS_DIR_ENTRY_DIR) {
+            // Recursively check the subdirectory
+            check_and_delete_corrupted_files(filepath);
+        }
+    }
+
+    fs_closedir(&dir);
+    return 0;
+}
+
 // void delete_all_files(const char *path)
 // {
 //     struct fs_dir_t dir;
@@ -1508,7 +1559,22 @@ static void fill_buffer_rand(uint32_t seed, uint8_t *dst, size_t count)
     }
 }
 
+static void print_buffer(const uint8_t *buf, size_t len) {
+    LOG_INF("Buffer:");
+    for (size_t i = 0; i < len; i += 40) {
+        char line[40 * 3 + 1]; // 40 bytes * 2 hex chars + 1 space + null terminator
+        size_t line_len = MIN(40, len - i);
+        for (size_t j = 0; j < line_len; j++) {
+            snprintf(&line[j * 3], 4, "%02x ", buf[i + j]);
+        }
+        line[line_len * 3] = '\0'; // Null-terminate the string
+        LOG_INF("%s", line);
+    }
+}
+
+
 static uint8_t pattern_buf[2048];
+#define MAX_RETRIES 3
 
 static int create_and_write_file_in_chunks_rand(const char *filename, size_t total_size) {
     struct fs_file_t file;
@@ -1522,7 +1588,7 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
     memset(pattern_buf, 0xFF, 2048);
     fill_buffer_rand(PATTERN_SEED, pattern_buf, 2048);
 
-    LOG_INF("Pattern buffer: %s", (char*)pattern_buf);
+    print_buffer(pattern_buf, sizeof(pattern_buf));
 
 
     size_t total_bytes_written = 0;
@@ -1534,13 +1600,59 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
 
         while (bytes_written_this_time < bytes_to_write) {
             size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
-            rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
-            if (rc < 0) {
-                LOG_ERR("Failed to write to file %s: %d", filename, rc);
-                fs_close(&file);
-                return -1;
+            int retry_count = 0;
+            bool write_success = false;
+
+            while (retry_count < MAX_RETRIES) {
+                rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
+                if (rc < 0) {
+                    LOG_ERR("Failed to write to file %s: %d", filename, rc);
+                    fs_close(&file);
+                    return -1;
+                }
+
+                // Seek to the position just written for verification
+                rc = fs_seek(&file, total_bytes_written + remaining_bytes_to_write , FS_SEEK_SET);
+                if (rc < 0) {
+                    LOG_ERR("Failed to seek file %s: %d", filename, rc);
+                    fs_close(&file);
+                    return -1;
+                }
+
+                // Verify the written data
+                // uint8_t read_buffer[2048];
+                // rc = fs_read(&file, read_buffer, remaining_bytes_to_write);
+                // if (rc < 0) {
+                //     LOG_ERR("Failed to read file %s for verification: %d", filename, rc);
+                //     fs_close(&file);
+                //     return -1;
+                // }
+
+                // if (memcmp(pattern_buf, read_buffer, remaining_bytes_to_write) == 0) {
+                //     //LOG_INF("remaining bytes to write %zu, retry count %d", remaining_bytes_to_write, retry_count);
+                //     break;
+                // } else {
+                //     LOG_ERR("Mismatch found after writing to file %s, retrying... (%d/%d)", filename, retry_count + 1, MAX_RETRIES);
+                //     rc = fs_seek(&file, total_bytes_written, FS_SEEK_SET);
+                //     if (rc < 0) {
+                //         LOG_ERR("Failed to seek file %s: %d", filename, rc);
+                //         fs_close(&file);
+                //         return -1;
+                //     }
+                //     retry_count++;
+                // }
             }
             bytes_written_this_time += remaining_bytes_to_write;
+
+
+            // size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
+            // rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
+            // if (rc < 0) {
+            //     LOG_ERR("Failed to write to file %s: %d", filename, rc);
+            //     fs_close(&file);
+            //     return -1;
+            // }
+            // bytes_written_this_time += remaining_bytes_to_write;
         }
 
         total_bytes_written += bytes_to_write;
@@ -1560,25 +1672,24 @@ static int write_entire_flash_rand_seed(size_t current_flash_size){
     int rc;    
     //size_t one_eight_flash = current_flash_size ;
 
-    //for(int i = 1; i <= 8; i++){
-        char fname2[MAX_PATH_LEN];
-        snprintf(fname2, sizeof(fname2), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
-        //delete_file_if_exists(fname2);
-        //printk("Deleting existing file %s\n", fname2);
-        // Write data to file in chunks
-        rc = create_and_write_file_in_chunks_rand(fname2, current_flash_size);
-        if (rc < 0) {
-            LOG_ERR("Failed to create and write to file %s", fname2);
-            return -1;
-        }
-    //}
+    char fname2[MAX_PATH_LEN];
+    snprintf(fname2, sizeof(fname2), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
+    //delete_file_if_exists(fname2);
+    //printk("Deleting existing file %s\n", fname2);
+    // Write data to file in chunks
+    rc = create_and_write_file_in_chunks_rand(fname2, current_flash_size);
+    if (rc < 0) {
+        LOG_ERR("Failed to create and write to file %s", fname2);
+        return -1;
+    }
+
     return 0;
 }
 
 static int check_files(size_t flash_size) {
     int rc;
     size_t one_eight_flash = flash_size;
-    LOG_INF("Starting to read file");
+    LOG_INF("Starting to ckeck files for data corruption");
     //for (int i = 1; i <= 8; i++) {
     char fname[MAX_PATH_LEN];
     snprintf(fname, sizeof(fname), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
@@ -1610,7 +1721,7 @@ static int check_files(size_t flash_size) {
         for (size_t j = 0; j < bytes; j++) {
             uint8_t expected = rand() & 0xFF; 
             if (buffer[j] != expected) {
-                LOG_ERR("Mismatch at index %zu: expected 0x%02X, got 0x%02X", j, expected, buffer[j]);
+                LOG_ERR("Mismatch after %zu/%zu bytes read at index %zu: expected 0x%02X, got 0x%02X",bytes_read, flash_size, j, expected, buffer[j]);
                 faulty_read_write_incidences++;
             }
             
@@ -1631,7 +1742,7 @@ static int check_files(size_t flash_size) {
 
 /**
  * The following tests are performed simultaneously
- * Wear leveling: log which block and page is written to, retrieve data
+ * Wear leveling: log which block is written to, retrieve data
  * Log if the expected content is different than the written content, how many times? How many bytes differ?
  * Log how many times there is an ECC
  * Log how many times there is a bad block
@@ -1666,7 +1777,7 @@ int long_term_test(void){
             LOG_ERR("Error: unable to write to entire flash");
             return -1;
         }
-        LOG_INF("Files written, flash full");
+        
         //read out files and check if they are correct
         rc = check_files(current_flash_size);
         if (rc < 0) {

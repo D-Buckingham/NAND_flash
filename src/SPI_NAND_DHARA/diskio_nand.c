@@ -110,6 +110,7 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
         case DISK_IOCTL_GET_SECTOR_COUNT:
             // Assuming that the capacity function requires the device handle and a pointer to store the result
             ret = spi_nand_flash_get_capacity(device_handle, (uint32_t *)buff);
+            LOG_INF("The sector count (capacity) is: %d", *((uint32_t *)buff));
             if (ret < 0) {
                 LOG_ERR("Failed to get capacity: error %d", ret);
                 return -EIO;
@@ -119,6 +120,7 @@ int nand_disk_access_ioctl(struct disk_info *disk, uint8_t cmd, void *buff) {
         case DISK_IOCTL_GET_SECTOR_SIZE:
             // Assuming that the sector size function requires the device handle and a pointer to store the result
             ret = spi_nand_flash_get_sector_size(device_handle, (uint32_t *)buff);
+            LOG_INF("The sector size is: %d", *((uint32_t *)buff));
             if (ret < 0) {
                 LOG_ERR("Failed to get sector size: error %d", ret);
                 return -EIO;

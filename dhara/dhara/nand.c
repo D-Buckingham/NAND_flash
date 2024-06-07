@@ -435,7 +435,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
 
     
     if (is_ecc_error(status)) {
-        LOG_DBG("Copy, ECC error");
+        LOG_ERR("Copy, ECC error detected");
         dhara_set_error(err, DHARA_E_ECC);
         return -1;
     }

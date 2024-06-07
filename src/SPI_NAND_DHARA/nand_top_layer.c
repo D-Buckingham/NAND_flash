@@ -468,6 +468,7 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
         ret = err;
     } else if (err == DHARA_E_ECC) {
         // This indicates a soft ECC error, we rewrite the sector to recover
+        LOG_INF("Soft ECC error, recovering");
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
             ret = err;
             LOG_ERR("error while writing to map"); 

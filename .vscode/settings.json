@@ -24,7 +24,8 @@
         "vfs_nand_flash.h": "c",
         "usbd_msc.h": "c",
         "usbd.h": "c",
-        "flash_map.h": "c"
+        "flash_map.h": "c",
+        "time.h": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
