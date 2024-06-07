@@ -203,6 +203,7 @@ static int check_and_delete_corrupted_files(const char *dir_path) {
     return 0;
 }
 
+
 // void delete_all_files(const char *path)
 // {
 //     struct fs_dir_t dir;
@@ -1574,7 +1575,6 @@ static void print_buffer(const uint8_t *buf, size_t len) {
 
 
 static uint8_t pattern_buf[2048];
-#define MAX_RETRIES 3
 
 static int create_and_write_file_in_chunks_rand(const char *filename, size_t total_size) {
     struct fs_file_t file;
@@ -1600,65 +1600,19 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
 
         while (bytes_written_this_time < bytes_to_write) {
             size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
-            int retry_count = 0;
-
-            // while (retry_count < MAX_RETRIES) {
-                rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
-                if (rc < 0) {
-                    LOG_ERR("Failed to write to file %s: %d", filename, rc);
-                    fs_close(&file);
-                    return -1;
-                }
-
-                rc = fs_sync(&file);//has to be synced, since it is such a large file
-                if (rc < 0) {
-                    LOG_ERR("Failed to sync file %s: %d", filename, rc);
-                    fs_close(&file);
-                    return -1;
-                }
-
-                // // Seek to the position just written for verification
-                // rc = fs_seek(&file, total_bytes_written + bytes_written_this_time, FS_SEEK_SET);
-                // if (rc < 0) {
-                //     LOG_ERR("Failed to seek file %s: %d", filename, rc);
-                //     fs_close(&file);
-                //     return -1;
-                // }
-
-                // Verify the written data
-                // uint8_t read_buffer[2048];
-                // rc = fs_read(&file, read_buffer, remaining_bytes_to_write);
-                // if (rc < 0) {
-                //     LOG_ERR("Failed to read file %s for verification: %d", filename, rc);
-                //     fs_close(&file);
-                //     return -1;
-                // }
-
-                // if (memcmp(pattern_buf, read_buffer, remaining_bytes_to_write) == 0) {
-                //     //LOG_INF("remaining bytes to write %zu, retry count %d", remaining_bytes_to_write, retry_count);
-                //     break;
-                // } else {
-                //     LOG_ERR("Mismatch found after writing to file %s, retrying... (%d/%d)", filename, retry_count + 1, MAX_RETRIES);
-                //     rc = fs_seek(&file, total_bytes_written, FS_SEEK_SET);
-                //     if (rc < 0) {
-                //         LOG_ERR("Failed to seek file %s: %d", filename, rc);
-                //         fs_close(&file);
-                //         return -1;
-                //     }
-                //     retry_count++;
-                // }
-            //}
+            rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
+            if (rc < 0) {
+                LOG_ERR("Failed to write to file %s: %d", filename, rc);
+                fs_close(&file);
+                return -1;
+            }
+            rc = fs_sync(&file);
+            if (rc < 0) {
+                LOG_ERR("Failed to sync file %s: %d", filename, rc);
+                fs_close(&file);
+                return -1;
+            }
             bytes_written_this_time += remaining_bytes_to_write;
-
-
-            // size_t remaining_bytes_to_write = MIN(content_len, bytes_to_write - bytes_written_this_time);
-            // rc = fs_write(&file, pattern_buf, remaining_bytes_to_write);
-            // if (rc < 0) {
-            //     LOG_ERR("Failed to write to file %s: %d", filename, rc);
-            //     fs_close(&file);
-            //     return -1;
-            // }
-            // bytes_written_this_time += remaining_bytes_to_write;
         }
 
         total_bytes_written += bytes_to_write;
