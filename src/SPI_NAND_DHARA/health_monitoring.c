@@ -36,16 +36,37 @@ void get_flash_health_metrics(struct flash_health_metrics *metrics) {
     metrics->erase_count = read_erase_count();
     metrics->program_erase_cycles = read_program_erase_cycles();
     metrics->ecc_errors = read_ecc_errors();
-};
+}
 
 
 
+int display_health(){
+    struct flash_health_metrics metrics;
+    get_flash_health_metrics(&metrics);
+    LOG_INF("Bad Block Count: %u", metrics.bad_block_count);
+    LOG_INF("Erase Count: %u", metrics.erase_count);
+    LOG_INF("Program/Erase Cycles: %u", metrics.program_erase_cycles);
+    LOG_INF("ECC Errors: %u", metrics.ecc_errors);
+}
 
-// Example usage
-struct flash_health_metrics metrics;
-get_flash_health_metrics(&metrics);
-LOG_INF("Bad Block Count: %u", metrics.bad_block_count);
-LOG_INF("Erase Count: %u", metrics.erase_count);
-LOG_INF("Program/Erase Cycles: %u", metrics.program_erase_cycles);
-LOG_INF("ECC Errors: %u", metrics.ecc_errors);
+//checks on first page of each block the total amount of bad blocks out
+//spare area 816h 817h
+uint32_t read_bad_block_count(void){
 
+    return 0;
+}
+
+//counter indicating on how many cycles, first spare area
+//spare area 818h 820h
+uint32_t read_erase_count(void){
+    return 0;
+}
+
+//spare area 821h 822h
+uint32_t read_program_erase_cycles(void){
+    return 0;
+}
+//spare area 83h 824h
+uint32_t read_ecc_errors(void){
+    return 0;
+}
