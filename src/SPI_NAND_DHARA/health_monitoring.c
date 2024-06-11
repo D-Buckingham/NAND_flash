@@ -51,6 +51,7 @@ int display_health(){
     LOG_INF("Total Bad Block Count: %u", metrics.bad_block_count);
     LOG_INF("Mean Erase Count per Block: %u", metrics.erase_count);
     LOG_INF("Total ECC Errors: %u", metrics.ecc_errors);
+    return 0;
 }
 
 
@@ -116,7 +117,7 @@ uint32_t read_bad_block_count(void) {
     int ret;
 
     for (int b = 0; b < device_handle->num_blocks; b++) {
-        int first_block_page = b * device_handle->block_size;
+        uint32_t first_block_page = b * (1 << device_handle->dhara_nand.log2_ppb);
 
         // Read the first page of the block
         ret = read_page_and_wait(first_block_page, NULL);
@@ -136,7 +137,7 @@ uint32_t read_bad_block_count(void) {
             continue;
         }
 
-        LOG_INF("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, bad_block_indicator);
+        //LOG_INF("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, bad_block_indicator);
 
         // Check if the block is bad
         if (bad_block_indicator != 0xFFFF) {
@@ -157,7 +158,7 @@ uint32_t read_erase_count(void){
     int ret;
 
     for (int b = 0; b < device_handle->num_blocks; b++) {
-        int first_block_page = b * device_handle->block_size;
+        uint32_t first_block_page = b * (1 << device_handle->dhara_nand.log2_ppb);
 
         // Read the first page of the block
         ret = read_page_and_wait(first_block_page, NULL);
@@ -186,14 +187,14 @@ uint32_t read_erase_count(void){
 }
 
 
-//spare area 821h 824h
+//spare area 820h 824h
 uint32_t read_ecc_errors(void) {
     uint32_t ecc_error_count = 0;
     uint32_t ecc_error_total = 0;
     int ret;
 
     for (int b = 0; b < device_handle->num_blocks; b++) {
-        int first_block_page = b * (1 << device_handle->dhara_nand.log2_ppb);
+        uint32_t first_block_page = b * (1 << device_handle->dhara_nand.log2_ppb);
 
         // Read the first page of the block
         ret = read_page_and_wait(first_block_page, NULL);
@@ -204,7 +205,7 @@ uint32_t read_ecc_errors(void) {
         }
 
         // Read the ECC error count from the spare area (0x821 to 0x824)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, 0x821, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, 0x820, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read ECC error count, assuming block bad");
             continue;
@@ -224,4 +225,4 @@ uint32_t read_ecc_errors(void) {
 }
 
 
-SYS_INIT(display_health, APPLICATION, 60);
+//SYS_INIT(display_health, APPLICATION, 60);

@@ -137,11 +137,13 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
     return wait_for_ready_nand(device -> config.spi_dev, device -> program_page_delay_us, status_out);
 }
 
+
+
 #define SPARE_AREA_OFFSET_1 0x816
 #define SPARE_AREA_OFFSET_2 0x820
 //write to first page in block spare area 816h 820h how many times it was erased
 static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nand_flash_device_t *device) {
-    uint32_t erase_count_indicator = 1;
+    uint32_t erase_count_indicator = 0;
     int ret;
 
     // Read the first page of the block
@@ -310,7 +312,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     }
 
     //write to first page in block spare area 816h 820h how many times it was erased
-    ret = erase_counter_increased(first_block_page, dev);
+    //ret = erase_counter_increased(first_block_page, dev);
     if(ret!= 0){
         LOG_ERR("Failed to increase the erase counter");
     }
@@ -411,8 +413,7 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 
 
 
-#define ECC_SPARE_AREA_OFFSET_1 0x821
-#define ECC_SPARE_AREA_OFFSET_2 0x824
+#define ECC_SPARE_AREA_OFFSET_1 0x820
 static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t page) {
     uint32_t ecc_count_indicator = 0;
     int ret;
@@ -485,7 +486,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
     if (is_ecc_error(status)) {
         LOG_ERR("ECC error on page %u", p);
         dhara_set_error(err, DHARA_E_ECC);
-        increase_ECC_counter(dev, p);
+        //increase_ECC_counter(dev, p);
         return -1;
     }
 
@@ -535,7 +536,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     if (is_ecc_error(status)) {
         LOG_ERR("Copy, ECC error detected");
         dhara_set_error(err, DHARA_E_ECC);
-        increase_ECC_counter(dev, src);
+        //increase_ECC_counter(dev, src);
         return -1;
     }
 
