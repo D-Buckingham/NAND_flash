@@ -137,7 +137,57 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
     return wait_for_ready_nand(device -> config.spi_dev, device -> program_page_delay_us, status_out);
 }
 
+#define SPARE_AREA_OFFSET_1 0x816
+#define SPARE_AREA_OFFSET_2 0x820
+//write to first page in block spare area 816h 820h how many times it was erased
+static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nand_flash_device_t *device) {
+    uint32_t erase_count_indicator = 0;
+    int ret;
 
+    // Read the first page of the block
+    ret = read_page_and_wait(device, first_block_page, NULL);
+    if (ret != 0) {
+        LOG_ERR("Error reading page %u: %d", first_block_page, ret);
+        return ret;
+    }
+
+    // Read the current erase count indicator from the spare area
+    ret = spi_nand_read(device->config.spi_dev, (uint8_t *)&erase_count_indicator, SPARE_AREA_OFFSET_1, 4);
+    if (ret != 0) {
+        LOG_ERR("Failed to read erase count from spare area: %d", ret);
+        return ret;
+    }
+
+    LOG_INF("Current erase count for block at page %u: %u", first_block_page, erase_count_indicator);
+
+    // Increment the erase count
+    erase_count_indicator++;
+
+    // Enable writing to the NAND device
+    ret = spi_nand_write_enable(device->config.spi_dev);
+    if (ret != 0) {
+        LOG_ERR("Failed to enable write: %d", ret);
+        return ret;
+    }
+
+    // Load the incremented erase count into the NAND device's cache
+    ret = spi_nand_program_load(device->config.spi_dev, (uint8_t *)&erase_count_indicator, SPARE_AREA_OFFSET_1, 4);
+    if (ret != 0) {
+        LOG_ERR("Failed to load program with new erase count: %d", ret);
+        return ret;
+    }
+
+    // Execute the program operation to write the new erase count to the NAND device
+    ret = program_execute_and_wait(device, first_block_page, NULL);
+    if (ret != 0) {
+        LOG_ERR("Failed to execute program and wait: %d", ret);
+        return ret;
+    }
+
+    LOG_INF("Updated erase count for block at page %u to %u", first_block_page, erase_count_indicator);
+
+    return 0; // Success
+}
 
 
 /**
@@ -253,6 +303,11 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
+    //write to first page in block spare area 816h 820h how many times it was erased
+    ret = erase_counter_increased(first_block_page, dev);
+    if(ret!= 0){
+        LOG_ERR("Failed to increase the erase counter");
+    }
    
 
     if ((status & STAT_ERASE_FAILED) != 0) {
@@ -355,13 +410,53 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
     return used_marker == 0xFFFF; // Check against expected marker value for a free page
 }
 
+static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t page){
 
+}
 
+#define ECC_SPARE_AREA_OFFSET_1 0x821
+#define ECC_SPARE_AREA_OFFSET_2 0x824
+static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t page) {
+    uint32_t ecc_count_indicator = 0;
+    int ret;
 
+    ret = read_page_and_wait(device, page, NULL);
+    if (ret != 0) {
+        LOG_ERR("Error reading page %u: %d", page, ret);
+        return ret;
+    }
 
-static int is_ecc_error(uint8_t status)
-{
-    return (status & STAT_ECC1) != 0 && (status & STAT_ECC0) == 0;
+    ret = spi_nand_read(device->config.spi_dev, (uint8_t *)&ecc_count_indicator, ECC_SPARE_AREA_OFFSET_1, 4);
+    if (ret != 0) {
+        LOG_ERR("Failed to read ECC count from spare area: %d", ret);
+        return ret;
+    }
+
+    LOG_INF("Current ECC count for page %u: %u", page, ecc_count_indicator);
+
+    ecc_count_indicator++;
+
+    ret = spi_nand_write_enable(device->config.spi_dev);
+    if (ret != 0) {
+        LOG_ERR("Failed to enable write: %d", ret);
+        return ret;
+    }
+
+    ret = spi_nand_program_load(device->config.spi_dev, (uint8_t *)&ecc_count_indicator, ECC_SPARE_AREA_OFFSET_1, 4);
+    if (ret != 0) {
+        LOG_ERR("Failed to load program with new ECC count: %d", ret);
+        return ret;
+    }
+
+    ret = program_execute_and_wait(device->config.spi_dev, page, NULL);
+    if (ret != 0) {
+        LOG_ERR("Failed to execute program and wait: %d", ret);
+        return ret;
+    }
+
+    LOG_INF("Updated ECC count for page %u to %u", page, ecc_count_indicator);
+
+    return 0; 
 }
 
 
@@ -388,6 +483,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
     if (is_ecc_error(status)) {
         LOG_ERR("ECC error on page %u", p);
         dhara_set_error(err, DHARA_E_ECC);
+        increase_ECC_counter(dev, p);
         return -1;
     }
 
@@ -437,6 +533,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     if (is_ecc_error(status)) {
         LOG_ERR("Copy, ECC error detected");
         dhara_set_error(err, DHARA_E_ECC);
+        increase_ECC_counter(dev, src);
         return -1;
     }
 

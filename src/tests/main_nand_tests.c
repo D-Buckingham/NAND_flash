@@ -1613,6 +1613,7 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
             //     return -1;
             // }
             bytes_written_this_time += remaining_bytes_to_write;
+            k_msleep(5);
         }
 
         total_bytes_written += bytes_to_write;
