@@ -419,7 +419,7 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 
 
 
-#define ECC_SPARE_AREA_OFFSET_1 0x820
+#define ECC_SPARE_AREA_OFFSET_1 0x824
 static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t page) {
     uint32_t ecc_count_indicator = 0;
     int ret;
@@ -492,7 +492,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
     if (is_ecc_error(status)) {
         LOG_ERR("ECC error on page %u", p);
         dhara_set_error(err, DHARA_E_ECC);
-        //increase_ECC_counter(dev, p);
+        increase_ECC_counter(dev, p);
         return -1;
     }
 
@@ -542,7 +542,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     if (is_ecc_error(status)) {
         LOG_ERR("Copy, ECC error detected");
         dhara_set_error(err, DHARA_E_ECC);
-        //increase_ECC_counter(dev, src);
+        increase_ECC_counter(dev, src);
         return -1;
     }
 

@@ -187,7 +187,7 @@ uint32_t read_erase_count(void){
 }
 
 
-//spare area 820h 824h
+//spare area 824h
 uint32_t read_ecc_errors(void) {
     uint32_t ecc_error_count = 0;
     uint32_t ecc_error_total = 0;
@@ -205,7 +205,7 @@ uint32_t read_ecc_errors(void) {
         }
 
         // Read the ECC error count from the spare area (0x821 to 0x824)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, 0x820, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, 0x824, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read ECC error count, assuming block bad");
             continue;
