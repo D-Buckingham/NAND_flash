@@ -139,12 +139,17 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
 
 
 
-#define SPARE_AREA_OFFSET_1 0x816
-#define SPARE_AREA_OFFSET_2 0x820
+#define SPARE_AREA_OFFSET_1 0x812
 //write to first page in block spare area 816h 820h how many times it was erased
 static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nand_flash_device_t *device) {
     uint32_t erase_count_indicator = 0;
     int ret;
+
+    ret = spi_nand_write_enable(device->config.spi_dev);
+    if (ret) {
+        LOG_ERR("Failed to enable write, error: %d", ret);
+        return;
+    }
 
     // Read the first page of the block
     ret = read_page_and_wait(device, first_block_page, NULL);
@@ -164,6 +169,7 @@ static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nan
 
     // Increment the erase count
     erase_count_indicator++;
+    if (erase_count_indicator == 0){erase_count_indicator++;}
 
     // Enable writing to the NAND device
     ret = spi_nand_write_enable(device->config.spi_dev);
@@ -312,7 +318,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     }
 
     //write to first page in block spare area 816h 820h how many times it was erased
-    //ret = erase_counter_increased(first_block_page, dev);
+    ret = erase_counter_increased(first_block_page, dev);
     if(ret!= 0){
         LOG_ERR("Failed to increase the erase counter");
     }

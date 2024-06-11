@@ -45,7 +45,7 @@ void get_flash_health_metrics(struct flash_health_metrics *metrics) {
 
 
 int display_health(){
-    LOG_INF("Initializing Health Monitoring NAND Flash");
+    LOG_INF("Health Monitoring NAND Flash:");
     struct flash_health_metrics metrics;
     get_flash_health_metrics(&metrics);
     LOG_INF("Total Bad Block Count: %u", metrics.bad_block_count);
@@ -169,7 +169,7 @@ uint32_t read_erase_count(void){
         }
 
         // Read the bad block indicator from the spare area (0x816 and 0x817)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&erase_count_indicator, 0x816, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&erase_count_indicator, 0x812, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read assuming block bad");
             continue;
@@ -225,4 +225,4 @@ uint32_t read_ecc_errors(void) {
 }
 
 
-//SYS_INIT(display_health, APPLICATION, 60);
+SYS_INIT(display_health, APPLICATION, 60);

@@ -1634,7 +1634,7 @@ static int write_entire_flash_rand_seed(size_t current_flash_size){
 
     char fname2[MAX_PATH_LEN];
     snprintf(fname2, sizeof(fname2), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
-    //delete_file_if_exists(fname2);
+    delete_file_if_exists(fname2);
     //printk("Deleting existing file %s\n", fname2);
     // Write data to file in chunks
     rc = create_and_write_file_in_chunks_rand(fname2, current_flash_size);
