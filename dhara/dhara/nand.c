@@ -141,7 +141,7 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
 #define SPARE_AREA_OFFSET_2 0x820
 //write to first page in block spare area 816h 820h how many times it was erased
 static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nand_flash_device_t *device) {
-    uint32_t erase_count_indicator = 0;
+    uint32_t erase_count_indicator = 1;
     int ret;
 
     // Read the first page of the block
@@ -303,17 +303,16 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    //write to first page in block spare area 816h 820h how many times it was erased
-    ret = erase_counter_increased(first_block_page, dev);
-    if(ret!= 0){
-        LOG_ERR("Failed to increase the erase counter");
-    }
-   
-
     if ((status & STAT_ERASE_FAILED) != 0) {
         dhara_set_error(err, DHARA_E_BAD_BLOCK);
         LOG_ERR("Erasing failed, indicated by status register");
         return -1;
+    }
+
+    //write to first page in block spare area 816h 820h how many times it was erased
+    ret = erase_counter_increased(first_block_page, dev);
+    if(ret!= 0){
+        LOG_ERR("Failed to increase the erase counter");
     }
 
     return 0;
@@ -410,9 +409,7 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
     return used_marker == 0xFFFF; // Check against expected marker value for a free page
 }
 
-static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t page){
 
-}
 
 #define ECC_SPARE_AREA_OFFSET_1 0x821
 #define ECC_SPARE_AREA_OFFSET_2 0x824
@@ -448,7 +445,7 @@ static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t
         return ret;
     }
 
-    ret = program_execute_and_wait(device->config.spi_dev, page, NULL);
+    ret = program_execute_and_wait(device, page, NULL);
     if (ret != 0) {
         LOG_ERR("Failed to execute program and wait: %d", ret);
         return ret;
@@ -459,6 +456,11 @@ static int increase_ECC_counter(struct spi_nand_flash_device_t *device, uint32_t
     return 0; 
 }
 
+
+static int is_ecc_error(uint8_t status)
+{
+    return (status & STAT_ECC1) != 0 && (status & STAT_ECC0) == 0;
+}
 
 /* Read a portion of a page. ECC must be handled by the NAND
  * implementation. Returns 0 on sucess or -1 if an error occurs. If an

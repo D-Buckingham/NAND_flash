@@ -17,6 +17,8 @@
 
 #define ROM_WAIT_THRESHOLD_US 1000
 
+LOG_MODULE_REGISTER(health_monitoring, CONFIG_LOG_DEFAULT_LEVEL);
+
 //Bad Block Count, percentage of capacity
 //Erase Count / Wear Leveling to estimate live cycle, Number of times each block has been erased and programmed
 //Program / Erase Cycles, Number of program/erase cycles the flash memory has undergone.
@@ -43,6 +45,7 @@ void get_flash_health_metrics(struct flash_health_metrics *metrics) {
 
 
 int display_health(){
+    LOG_INF("Initializing Health Monitoring NAND Flash");
     struct flash_health_metrics metrics;
     get_flash_health_metrics(&metrics);
     LOG_INF("Total Bad Block Count: %u", metrics.bad_block_count);
@@ -171,7 +174,7 @@ uint32_t read_erase_count(void){
             continue;
         }
 
-        LOG_INF("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, erase_count_indicator);
+        //LOG_INF("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, erase_count_indicator);
 
         // Check if the block is bad
         if (erase_count_indicator != 0x00000000 && erase_count_indicator != 0xFFFFFFFF) {
@@ -207,7 +210,7 @@ uint32_t read_ecc_errors(void) {
             continue;
         }
 
-        LOG_INF("Block=%u, Page=%u, ECC Errors=%04x", b, first_block_page, ecc_error_count);
+        //LOG_INF("Block=%u, Page=%u, ECC Errors=%04x", b, first_block_page, ecc_error_count);
 
         // Check if the ECC error count is valid
         if (ecc_error_count != 0x00000000 && ecc_error_count != 0xFFFFFFFF) {
@@ -219,3 +222,6 @@ uint32_t read_ecc_errors(void) {
 
     return ecc_error_total;
 }
+
+
+SYS_INIT(display_health, APPLICATION, 60);
