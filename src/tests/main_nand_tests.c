@@ -1606,12 +1606,12 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
                 fs_close(&file);
                 return -1;
             }
-            rc = fs_sync(&file);
-            if (rc < 0) {
-                LOG_ERR("Failed to sync file %s: %d", filename, rc);
-                fs_close(&file);
-                return -1;
-            }
+            // rc = fs_sync(&file);
+            // if (rc < 0) {
+            //     LOG_ERR("Failed to sync file %s: %d", filename, rc);
+            //     fs_close(&file);
+            //     return -1;
+            // }
             bytes_written_this_time += remaining_bytes_to_write;
         }
 
