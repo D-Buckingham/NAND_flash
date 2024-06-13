@@ -58,7 +58,7 @@ Adjustments can either be created in the device tree for the SPI or in the overl
 
 NAND flash memory is a type of non-volatile storage technology that does not require power to retain data. It is commonly used in various storage applications due to its high density and low cost. Multistack implementation in NAND flash refers to how the integration is provided in multiple layers to accomodate for the three main challenges (wear levelling, bad block management, ECC).
 
-
+![NAND Flash Multistack Implementation (Zephyr)](images/Multistack.png)
 
 
 ### DHARA
