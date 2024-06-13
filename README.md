@@ -88,7 +88,7 @@ Key Concepts:
 ## References
 
 - [Zephyr Project Documentation](https://docs.zephyrproject.org/latest/index.html)
-- [DHARA GitHub Repository]([https://github.com/dvhart/dhara](https://github.com/dlbeer/dhara.git)
+- [DHARA GitHub Repository](https://github.com/dlbeer/dhara.git)
 - [NAND Flash Memory Overview](https://en.wikipedia.org/wiki/Flash_memory#NAND_flash)
 - [nRF Connect for VS Code](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-Visual-Studio-Code)
 - [Getting Started with nRF5340 DK](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5340.html)
