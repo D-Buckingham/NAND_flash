@@ -8,14 +8,8 @@
 3. [Setup and Configuration](#setup-and-configuration)
    - [Hardware Setup](#hardware-setup)
    - [Software Setup](#software-setup)
-4. [Integrating DHARA with NAND Flash](#integrating-dhara-with-nand-flash)
-   - [NAND Flash Driver Integration](#nand-flash-driver-integration)
-   - [DHARA Initialization](#dhara-initialization)
-   - [Basic Operations](#basic-operations)
-5. [Example Application](#example-application)
-6. [Testing and Validation](#testing-and-validation)
-7. [Troubleshooting](#troubleshooting)
-8. [References](#references)
+4. [Troubleshooting](#troubleshooting)
+5. [References](#references)
 
 ## Introduction
 
@@ -44,44 +38,19 @@ This guide provides a comprehensive overview of integrating NAND flash memory in
 ![NAND Flash Cable Connection](images/Pinout_NAND.png)
 
 ### Software Setup
+1. **Set Up Zephyr**:
 
-1. **Clone Zephyr Repository**:
-    ```sh
-    git clone https://github.com/zephyrproject-rtos/zephyr.git
-    cd zephyr
-    git checkout <desired_version>
-    ```
-
-2. **Set Up Zephyr SDK**:
     Follow the [Zephyr Getting Started Guide](https://docs.zephyrproject.org/latest/getting_started/index.html) to install and set up the Zephyr SDK.
+2. **Add the nrf Connect extension in vs code**
+3. **Build and flash the repo**
+   ```c
+   west build -p --board nrf5340dk_nrf5340_cpuapp
+   west flash
+   ```
 
-3. **Clone DHARA Repository**:
-    ```sh
-    git clone https://github.com/dvhart/dhara.git
-    cd dhara
-    ```
-
-4. **Add DHARA to Your Zephyr Project**:
-    - Place the DHARA source code in the `modules` directory of your Zephyr project.
-    - Modify your `CMakeLists.txt` to include DHARA.
-
-## Integrating DHARA with NAND Flash
-
-### NAND Flash Driver Integration
-
-1. **Write the NAND Flash Driver**:
-    - Implement the necessary functions to interact with your specific NAND flash memory.
-    - Ensure the driver supports basic operations such as read, write, and erase.
-
-2. **Configure the NAND Driver in Zephyr**:
-    - Create or modify the Device Tree Source (DTS) file to include the NAND flash.
-    - Define the NAND flash parameters (e.g., page size, block size) in the DTS file.
+Adjustments can either be created in the device tree for the SPI or in the overlay.
 
 
-
-
-
-## How to setup
 
 ## Theory Corner
 
