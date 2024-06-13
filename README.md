@@ -56,13 +56,10 @@ Adjustments can either be created in the device tree for the SPI or in the overl
 
 ### NAND Flash Multistack Implementation
 
-NAND flash memory is a type of non-volatile storage technology that does not require power to retain data. It is commonly used in various storage applications due to its high density and low cost. Multistack implementation in NAND flash refers to the use of multiple layers of memory cells stacked vertically to increase storage capacity without expanding the physical footprint.
+NAND flash memory is a type of non-volatile storage technology that does not require power to retain data. It is commonly used in various storage applications due to its high density and low cost. Multistack implementation in NAND flash refers to how the integration is provided in multiple layers to accomodate for the three main challenges (wear levelling, bad block management, ECC).
 
-Key Concepts:
-- **Memory Cells**: Basic storage units in NAND flash, which can store multiple bits of data.
-- **Pages and Blocks**: NAND flash memory is organized into pages (the smallest writable unit) and blocks (the smallest erasable unit).
-- **Multistack Technology**: Increases storage density by stacking multiple layers of memory cells vertically.
-- **Endurance and Reliability**: Measures such as wear leveling and error correction are used to enhance the lifespan and reliability of NAND flash memory.
+
+
 
 ### DHARA
 
