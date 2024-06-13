@@ -95,4 +95,5 @@ Key Concepts:
 
 ---
 
-This README provides a step-by-step guide to integrating NAND flash memory with the DHARA Flash Translation Layer in Zephyr. It covers the setup, configuration, integration, example usage, testing, and troubleshooting to ensure a smooth implementation.
+### QUESTIONS?
+Contact: Denis Buckingham denisb@ethz.ch
