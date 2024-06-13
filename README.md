@@ -41,6 +41,8 @@ This guide provides a comprehensive overview of integrating NAND flash memory in
 1. **Connect NAND Flash**: Ensure the NAND flash is correctly connected to the development board according to the following illustration.
 2. **Verify Connections**: Double-check the connections, especially the data lines, control signals, and power supply.
 
+![NAND Flash Cable Connection](images/Pinout_NAND.png)
+
 ### Software Setup
 
 1. **Clone Zephyr Repository**:
