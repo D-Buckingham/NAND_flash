@@ -139,16 +139,31 @@ static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint
 
 
 
-
+#define SPARE_AREA_OFFSET 16
 //write to first page in block spare area 816h 820h how many times it was erased
 static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nand_flash_device_t *device) {
+    uint8_t buffer_size = device->page_size + 16;
+    uint8_t *buffer = (uint8_t *)malloc(buffer_size);
     uint32_t erase_count_indicator = 0;
     int ret;
+
+    if (buffer == NULL) {
+        LOG_ERR("Failed to allocate memory for buffer");
+        return -1;
+    }
 
     // Read the first page of the block
     ret = read_page_and_wait(device, first_block_page, NULL);
     if (ret != 0) {
         LOG_ERR("Error reading page %u: %d", first_block_page, ret);
+        free(buffer);   
+        return ret;
+    }
+    
+    ret = spi_nand_read(device->config.spi_dev, buffer, 0, buffer_size);
+    if (ret != 0) {
+        LOG_ERR("Failed to read page %u: %d", first_block_page, ret);
+        free(buffer);
         return ret;
     }
 
