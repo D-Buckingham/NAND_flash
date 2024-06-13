@@ -1,0 +1,20 @@
+
+manifest:
+  remotes:
+  - name: ncs
+      url-base: https://github.com/nrfconnect
+    - name: zephyr
+      url-base: https://github.com/zephyrproject-rtos
+  projects:
+    - name: zephyr
+      remote: zephyr
+      revision: main
+      path: zephyr
+    - name: sdk-nrf
+      remote: ncs
+      path: nrf
+      revision: v2.5.1
+      import: true
+      west-commands: scripts/west-commands.yml
+  self:
+    path: app

@@ -1,0 +1,33 @@
+{
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.5.20231017}",
+    "files.associations": {
+        "spi.h": "c",
+        "spi_nand_oper.h": "c",
+        "log.h": "c",
+        "nand.h": "c",
+        "error.h": "c",
+        "device.h": "c",
+        "sim.h": "c",
+        "nand_top_layer.h": "c",
+        "test_spi_nand_top_layer.h": "c",
+        "limits": "c",
+        "type_traits": "c",
+        "fs.h": "c",
+        "disk_access.h": "c",
+        "ff.h": "c",
+        "diskio.h": "c",
+        "diskio_nand.h": "c",
+        "concepts": "c",
+        "cstdio": "c",
+        "new": "c",
+        "typeinfo": "c",
+        "vfs_nand_flash.h": "c",
+        "usbd_msc.h": "c",
+        "usbd.h": "c",
+        "flash_map.h": "c",
+        "time.h": "c"
+    },
+    "nrf-connect.debugging.bindings": {
+        "${workspaceFolder}/build": "Launch build"
+    }
+}
