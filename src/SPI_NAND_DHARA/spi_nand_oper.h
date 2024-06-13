@@ -37,6 +37,14 @@ struct spi_nand_transaction_t {
 
 typedef struct spi_nand_transaction_t spi_nand_transaction_t;
 
+// Define function pointer type
+typedef int (*spi_nand_transmit_fn)(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
+
+// Structure to hold function pointers for the driver
+typedef struct {
+    spi_nand_transmit_fn transmit;
+    // Add other function pointers if needed
+} spi_nand_driver_t;
 
 
 #define CMD_WRITE_DISABLE   0x04
