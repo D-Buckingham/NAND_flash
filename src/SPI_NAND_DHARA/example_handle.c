@@ -1,4 +1,4 @@
-#include "spi_nand_driver.h"
+#include "spi_nand_oper.h"
 #include <zephyr.h>
 
 int custom_spi_nand_transmit(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction) {
