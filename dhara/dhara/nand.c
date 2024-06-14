@@ -29,6 +29,13 @@
 LOG_MODULE_REGISTER(dhara_glue, CONFIG_LOG_DEFAULT_LEVEL);
 
 #define ROM_WAIT_THRESHOLD_US 1000
+#define ERASE_COUNTER_SPARE_AREA_OFFSET 16
+#define ECC_COUNTER_SPARE_AREA_OFFSET 36
+
+size_t Erase_counter_FLAG = 0;
+size_t ECC_counter_FLAG = 0;
+dhara_page_t Erased_block = 0;
+dhara_page_t ECC_page_block = 0;
 
 //defined in 
 
@@ -155,11 +162,6 @@ static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nan
     uint32_t erase_count_indicator = 0;
     int ret;
 
-    ret = spi_nand_write_enable(device->config.spi_dev);
-    if (ret) {
-        LOG_ERR("Failed to enable write, error: %d", ret);
-        return -1;
-    }
 
     // Read the first page of the block
     ret = read_page_and_wait(device, first_block_page, NULL);
@@ -246,7 +248,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 
 
 
-//TODO check in datasheet process
+//TODO check in datasheet process, erase counter has not to be increased
 void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
 {
     spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);//struct?
@@ -326,12 +328,14 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         LOG_ERR("Erasing failed, indicated by status register");
         return -1;
     }
+    Erase_counter_FLAG = 1; //setting flag to make sure, that a page is only written to once, not twice partly
+    Erased_block = first_block_page;
 
-    //write to first page in block spare area 816h 820h how many times it was erased
-    ret = erase_counter_increased(first_block_page, dev);
-    if(ret!= 0){
-        LOG_ERR("Failed to increase the erase counter");
-    }
+    // //write to first page in block spare area 816h 820h how many times it was erased
+    // ret = erase_counter_increased(first_block_page, dev);
+    // if(ret!= 0){
+    //     LOG_ERR("Failed to increase the erase counter");
+    // }
 
     return 0;
 }
@@ -350,11 +354,32 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     int ret;
     uint8_t status;
     uint16_t used_marker = 0;
+    uint32_t erase_count_indicator = 0;
 
     ret = read_page_and_wait(dev, p, NULL);//Initiate page read operation to cache. Reads the specified page from NAND to the device's internal cache.
     if (ret) {
         LOG_ERR("Failed to read page %u", p);
         return -1;
+    }
+
+
+
+    //check if the erase counter has to be increased as well
+    if(Erase_counter_FLAG && Erased_block == p){
+
+        // Read the current erase count indicator from the spare area
+        ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
+        if (ret != 0) {
+            LOG_ERR("Failed to read erase count from spare area: %d", ret);
+            return ret;
+        }
+
+        LOG_INF("Current erase count for block at page %u: %u", Erased_block, erase_count_indicator);
+
+        // Increment the erase count
+        erase_count_indicator++;
+        if (erase_count_indicator == 0){erase_count_indicator++;}
+        
     }
 
     ret = spi_nand_write_enable(dev->config.spi_dev);//Enable writing on the SPI NAND device.
@@ -387,6 +412,15 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         return -1;
     }
 
+    if(Erase_counter_FLAG && Erased_block == p){
+        ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
+        if (ret) {
+            LOG_ERR("Failed to load erase counter, error: %d", ret);
+            return -1;
+        }
+        Erase_counter_FLAG = 0;
+    }
+
     ret = program_execute_and_wait(dev, p, &status);//Execute a program operation. Commits the data previously loaded into the device's cache to the NAND array
     if (ret) {
         LOG_ERR("Failed to execute program, error: %d", ret);
@@ -398,6 +432,7 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         dhara_set_error(err, DHARA_E_BAD_BLOCK);
         return -1;
     }
+    
 
     return 0;
 }
@@ -514,7 +549,9 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
     if (is_ecc_error(status)) {
         LOG_ERR("ECC error on page %u", p);
         dhara_set_error(err, DHARA_E_ECC);
-        increase_ECC_counter(dev, p);
+        ECC_counter_FLAG = 1;
+        ECC_page_block = p;
+        //increase_ECC_counter(dev, p);
         return -1;
     }
 
@@ -564,7 +601,9 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     if (is_ecc_error(status)) {
         LOG_ERR("Copy, ECC error detected");
         dhara_set_error(err, DHARA_E_ECC);
-        increase_ECC_counter(dev, src);
+        //increase_ECC_counter(dev, src);
+        ECC_counter_FLAG = 1;
+        ECC_page_block = src;
         return -1;
     }
 
