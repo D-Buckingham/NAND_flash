@@ -158,7 +158,7 @@ static int erase_counter_increased(dhara_page_t first_block_page, struct spi_nan
     ret = spi_nand_write_enable(device->config.spi_dev);
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
-        return;
+        return -1;
     }
 
     // Read the first page of the block
@@ -514,7 +514,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
     if (is_ecc_error(status)) {
         LOG_ERR("ECC error on page %u", p);
         dhara_set_error(err, DHARA_E_ECC);
-        //increase_ECC_counter(dev, p);
+        increase_ECC_counter(dev, p);
         return -1;
     }
 
@@ -564,7 +564,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     if (is_ecc_error(status)) {
         LOG_ERR("Copy, ECC error detected");
         dhara_set_error(err, DHARA_E_ECC);
-        //increase_ECC_counter(dev, src);
+        increase_ECC_counter(dev, src);
         return -1;
     }
 

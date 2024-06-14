@@ -114,8 +114,7 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     //setting up the device
     dev->erase_block_delay_us = 3000;
     dev->program_page_delay_us = 630;
-
-    dev->first_spare_area = 0x812;//TODO, adjust
+    dev->first_spare_area = 0x812;
     dev->second_spare_area = 0x824;
     switch (device_id) {
     case ALLIANCE_DI_25: //AS5F31G04SND-08LIN
@@ -127,6 +126,8 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
         LOG_INF("Automatic recognition of AS5F32G04SND-08LIN flash");
     case ALLIANCE_DI_8E: //AS5F12G04SND-10LIN
         LOG_INF("Automatic recognition of AS5F12G04SND-10LIN flash");
+        dev->first_spare_area = 0x812;
+        dev->second_spare_area = 0x824;
         dev->dhara_nand.num_blocks = 2048;
         dev->read_page_delay_us = 60;
         break;
