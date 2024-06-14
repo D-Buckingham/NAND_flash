@@ -169,7 +169,7 @@ uint32_t read_erase_count(void){
         }
 
         // Read the bad block indicator from the spare area (0x816 and 0x817)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&erase_count_indicator, 0x812, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&erase_count_indicator, device_handle->page_size + 16, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read assuming block bad");
             continue;
@@ -205,7 +205,7 @@ uint32_t read_ecc_errors(void) {
         }
 
         // Read the ECC error count from the spare area (0x821 to 0x824)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, 0x824, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, device_handle->page_size + 36, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read ECC error count, assuming block bad");
             continue;

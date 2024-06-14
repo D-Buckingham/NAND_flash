@@ -24,24 +24,59 @@
 extern "C" {
 #endif
 
-typedef struct {
-    uint8_t command;
-    uint8_t address_bytes;
-    uint32_t address;
-    uint32_t mosi_len;
-    const uint8_t *mosi_data;
-    uint32_t miso_len;
-    uint8_t *miso_data;
-    uint32_t dummy_bytes;
-}spi_nand_transaction_t;
-
 //////////////////////////////          Handle START          //////////////////////////////////
 
-// Define function pointer type
+/**
+ * @brief Structure representing a SPI NAND transaction.
+ *
+ * This structure holds all necessary data for performing a SPI NAND transaction,
+ * including command, address, data to send and receive, and dummy bytes for timing purposes.
+ */
+typedef struct {
+    uint8_t command;          /**< Command byte to send */
+    uint8_t address_bytes;    /**< Number of address bytes */
+    uint32_t address;         /**< Address for the transaction */
+    uint32_t mosi_len;        /**< Length of the data to send */
+    const uint8_t *mosi_data; /**< Pointer to the data to send */
+    uint32_t miso_len;        /**< Length of the data to receive */
+    uint8_t *miso_data;       /**< Pointer to the buffer for received data */
+    uint32_t dummy_bytes;     /**< Number of dummy bytes for timing */
+} spi_nand_transaction_t;
+
+
+/**
+ * @brief Function pointer type for transmitting SPI NAND transactions.
+ *
+ * This type defines a function pointer for transmitting SPI NAND transactions.
+ *
+ * @param spidev_dt Pointer to the SPI device specification structure.
+ * @param transaction Pointer to the SPI NAND transaction structure.
+ * @return 0 if successful, or a negative error code on failure.
+ */
 typedef int (*spi_nand_transmit_fn)(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
 
-// Function prototypes
+
+/**
+ * @brief Sets the transmit function for SPI NAND transactions.
+ *
+ * This function sets the transmit function that will be used to transmit SPI NAND transactions.
+ * If this function is not called, a default transmit function will be used.
+ *
+ * @param transmit Function pointer to the transmit function to use.
+ */
 void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit);
+
+
+/**
+ * @brief Executes a SPI NAND transaction.
+ *
+ * This function executes a SPI NAND transaction using the currently set transmit function.
+ * If no transmit function has been set, a default transmit function will be used.
+ *
+ * @param spidev_dt Pointer to the SPI device specification structure.
+ * @param transaction Pointer to the SPI NAND transaction structure.
+ * @return 0 if successful, or a negative error code on failure.
+ */
 int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
 
 
