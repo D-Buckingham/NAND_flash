@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-struct spi_nand_transaction_t {
+typedef struct {
     uint8_t command;
     uint8_t address_bytes;
     uint32_t address;
@@ -33,19 +33,19 @@ struct spi_nand_transaction_t {
     uint32_t miso_len;
     uint8_t *miso_data;
     uint32_t dummy_bytes;
-};
+}spi_nand_transaction_t;
 
-typedef struct spi_nand_transaction_t spi_nand_transaction_t;
+//////////////////////////////          Handle START          //////////////////////////////////
 
 // Define function pointer type
 typedef int (*spi_nand_transmit_fn)(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
 
-// Structure to hold function pointers for the driver
-typedef struct {
-    spi_nand_transmit_fn transmit;
-    // Add other function pointers if needed
-} spi_nand_driver_t;
+// Function prototypes
+void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit);
+int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
 
+
+//////////////////////////////          Handle END          //////////////////////////////////
 
 #define CMD_WRITE_DISABLE   0x04
 #define CMD_WRITE_ENABLE    0x06
@@ -109,7 +109,7 @@ const struct spi_dt_spec spi_nand_init(void);
  * @param transaction Transaction parameters including command, address, and data.
  * @return 0 on success, negative errno error code otherwise.
  */
-int spi_nand_execute_transaction(const struct spi_dt_spec *dev, spi_nand_transaction_t *transaction);
+int spi_nand_execute_transaction_default(const struct spi_dt_spec *dev, spi_nand_transaction_t *transaction);
 
 /**
  * @brief Read a register from the SPI NAND device.

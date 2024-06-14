@@ -37,17 +37,14 @@ uint8_t dummy_byte_value = 0xFF;
 uint8_t var;
 
 
-const struct spi_dt_spec spi_nand_init(void) {
-    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+//////////////////////////////          Handle START          //////////////////////////////////
 
-    if (!device_is_ready((&spidev_dt)->bus)) {
-        LOG_ERR("SPI device is not ready");
-    }else {
-        LOG_INF("NAND flash as SPI device initialized!");
-    }
+static spi_nand_transmit_fn current_transmit_fn = NULL;
 
-    return spidev_dt;
+void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit) {
+    current_transmit_fn = transmit;
 }
+
 
 
 
@@ -58,7 +55,7 @@ const struct spi_dt_spec spi_nand_init(void) {
 */
 
 
-int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
+int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
 {
     //transmitter preparation before sending
     //address bytes + data bytes + the command byte + dummy byte
@@ -214,6 +211,28 @@ int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_t
     return 0;
 }
 
+int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction) {
+    if (current_transmit_fn == NULL) {
+        return spi_nand_execute_transaction_default(spidev_dt, transaction); //use default
+    }
+    return current_transmit_fn(spidev_dt, transaction);
+}
+
+
+//////////////////////////////          Handle END          //////////////////////////////////
+
+
+const struct spi_dt_spec spi_nand_init(void) {
+    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+
+    if (!device_is_ready((&spidev_dt)->bus)) {
+        LOG_ERR("SPI device is not ready");
+    }else {
+        LOG_INF("NAND flash as SPI device initialized!");
+    }
+
+    return spidev_dt;
+}
 
 
 //address_bytes = 0
