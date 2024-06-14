@@ -16,6 +16,8 @@
 #include "health_monitoring.h"
 
 #define ROM_WAIT_THRESHOLD_US 1000
+#define ERASE_COUNTER_SPARE_AREA_OFFSET 16
+#define ECC_COUNTER_SPARE_AREA_OFFSET 36
 
 LOG_MODULE_REGISTER(health_monitoring, CONFIG_LOG_DEFAULT_LEVEL);
 
@@ -169,7 +171,7 @@ uint32_t read_erase_count(void){
         }
 
         // Read the bad block indicator from the spare area (0x816 and 0x817)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&erase_count_indicator, device_handle->page_size + 16, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&erase_count_indicator, device_handle->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read assuming block bad");
             continue;
@@ -205,7 +207,7 @@ uint32_t read_ecc_errors(void) {
         }
 
         // Read the ECC error count from the spare area (0x821 to 0x824)
-        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, device_handle->page_size + 36, 4);
+        ret = spi_nand_read(device_handle->config.spi_dev, (uint8_t *)&ecc_error_count, device_handle->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read ECC error count, assuming block bad");
             continue;
