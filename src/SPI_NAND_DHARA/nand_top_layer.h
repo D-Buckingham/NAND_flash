@@ -46,6 +46,8 @@ typedef struct spi_nand_flash_device_t{
     spi_nand_flash_config_t config;
     uint32_t block_size;
     uint32_t page_size;
+    uint32_t first_spare_area;
+    uint32_t second_spare_area;
     uint32_t num_blocks;
     struct dhara_map dhara_map;
     struct dhara_nand dhara_nand;
