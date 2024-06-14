@@ -34,15 +34,13 @@ LOG_MODULE_REGISTER(dhara_glue, CONFIG_LOG_DEFAULT_LEVEL);
 
 size_t Erase_counter_FLAG = 0;
 dhara_page_t Erased_block = 0;
-dhara_page_t ECC_page_block = 0;
 
-size_t NEW_ECC_counter = 0;
 size_t Delta_ECC_counter = 0;
 size_t Initial_ECC_counter = 0;
-
+uint32_t Total_ECC_counter = 0;
 
 uint32_t erase_count_indicator = 0;
-uint32_t total_ecc_counter = 0;
+
 
 //defined in 
 
@@ -276,11 +274,15 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         LOG_ERR("Failed to read erase count from spare area: %d", ret);
         return ret;
     }
-    if(Initial_ECC_counter == 0){Initial_ECC_counter = ecc_count_indicator;}//Initializing counter
-    if(ecc_count_indicator > Initial_ECC_counter + Delta_ECC_counter){//we found a counter value, larger than the one we locally stored since the last start up
-        Initial_ECC_counter = ecc_count_indicator;//thus adjusting the Initial one
+    if(ecc_count_indicator != 0xFFFFFFFF){
+        if(Initial_ECC_counter == 0 ){Initial_ECC_counter = ecc_count_indicator;}//Initializing counter
+        if(ecc_count_indicator > Initial_ECC_counter + Delta_ECC_counter){//we found a counter value, larger than the one we locally stored since the last start up
+            Initial_ECC_counter = ecc_count_indicator;//thus adjusting the Initial one
+        }
+        Total_ECC_counter = Initial_ECC_counter + Delta_ECC_counter;
+        LOG_INF("Current total ECC faults found %u:", Total_ECC_counter);
     }
-    total_ecc_counter = Initial_ECC_counter + Delta_ECC_counter;
+    
 
 
     ret = spi_nand_write_enable(dev->config.spi_dev);
@@ -340,38 +342,6 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         return -1;
     }
 
-
-
-    // //check if the erase counter has to be increased as well
-    // if(Erase_counter_FLAG && Erased_block == p){//is first page of block
-
-    //     // Read the current erase count indicator from the spare area
-    //     ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
-    //     if (ret != 0) {
-    //         LOG_ERR("Failed to read erase count from spare area: %d", ret);
-    //         return ret;
-    //     }
-
-    //     LOG_INF("Current erase count for block at page %u: %u", Erased_block, erase_count_indicator);
-
-    //     // Increment the erase count
-    //     erase_count_indicator++;
-    //     if (erase_count_indicator == 0){erase_count_indicator++;}
-
-
-    //     //read out the ECC counter from the first page of each block
-    //     ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&ecc_count_indicator, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
-    //     if (ret != 0) {
-    //         LOG_ERR("Failed to read erase count from spare area: %d", ret);
-    //         return ret;
-    //     }
-    //     if(Initial_ECC_counter == 0){Initial_ECC_counter = ecc_count_indicator;}//Initializing counter
-    //     if(ecc_count_indicator > Initial_ECC_counter + Delta_ECC_counter){//we found a counter value, larger than the one we locally stored since the last start up
-    //         Initial_ECC_counter = ecc_count_indicator;//thus adjusting the Initial one
-    //     }
-    //     total_ecc_counter = Initial_ECC_counter + Delta_ECC_counter;
-    // }
-
     ret = spi_nand_write_enable(dev->config.spi_dev);//Enable writing on the SPI NAND device.
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
@@ -399,7 +369,7 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         Erase_counter_FLAG = 0;
 
         //we store the ECC counter as well since it is the first page
-        ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&total_ecc_counter, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
+        ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&Total_ECC_counter, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
         if (ret) {
             LOG_ERR("Failed to load ECC counter, error: %d", ret);
             return -1;
