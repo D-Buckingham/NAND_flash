@@ -183,7 +183,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 
     LOG_DBG("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, bad_block_indicator);
     if(bad_block_indicator == 0x0000){LOG_INF("Bad_Block on Block=%u, Page=%u", b, first_block_page);}
-    return bad_block_indicator == 0x0000;//!= 0xFFFF;//changed because of accidental changes
+    return bad_block_indicator == 0x0000;
 }
 
 
@@ -191,7 +191,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 //TODO check in datasheet process, erase counter has not to be increased
 void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
 {
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);//struct?
+    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);
     int ret;
 
     dhara_page_t first_block_page = b * (1 << n->log2_ppb);
@@ -248,7 +248,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
 
 
     //first read out the flags and store them, they will be written to the page
-    ret = read_page_and_wait(dev, first_block_page, NULL);//Initiate page read operation to cache. Reads the specified page from NAND to the device's internal cache.
+    ret = read_page_and_wait(dev, first_block_page, NULL);
     if (ret) {
         LOG_ERR("Failed to read page %u", first_block_page);
         return -1;
@@ -276,7 +276,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     }
     if(ecc_count_indicator != 0xFFFFFFFF){
         if(Initial_ECC_counter == 0 ){Initial_ECC_counter = ecc_count_indicator;}//Initializing counter
-        if(ecc_count_indicator > Initial_ECC_counter + Delta_ECC_counter){//we found a counter value, larger than the one we locally stored since the last start up
+        if(ecc_count_indicator > Initial_ECC_counter + Delta_ECC_counter){//we found a counter value in the NAND flash (larger than the one we locally stored since the last start up)
             Initial_ECC_counter = ecc_count_indicator;//thus adjusting the Initial one
         }
         Total_ECC_counter = Initial_ECC_counter + Delta_ECC_counter;
@@ -310,12 +310,6 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     }
     Erase_counter_FLAG = 1; //setting flag to make sure, that a page is only written to once, not twice partly
     Erased_block = first_block_page;
-
-    // //write to first page in block spare area 816h 820h how many times it was erased
-    // ret = erase_counter_increased(first_block_page, dev);
-    // if(ret!= 0){
-    //     LOG_ERR("Failed to increase the erase counter");
-    // }
 
     return 0;
 }
