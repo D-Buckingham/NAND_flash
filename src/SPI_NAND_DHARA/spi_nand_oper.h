@@ -24,13 +24,69 @@
 extern "C" {
 #endif
 
-//////////////////////////////          Handle START          //////////////////////////////////
+// //////////////////////////////          Handle DEFINITION          //////////////////////////////////
+
+// /**
+//  * @brief Function pointer type for transmitting SPI NAND transactions.
+//  *
+//  * This type defines a function pointer for transmitting SPI NAND transactions.
+//  *
+//  * @param spidev_dt Pointer to the SPI device specification structure.
+//  * @param transaction Pointer to the SPI NAND transaction structure.
+//  * @return 0 if successful, or a negative error code on failure.
+//  */
+// typedef int (*nand_transmit_fn)(nand_transaction_t *transaction);
+
+//////////////////////////////          Handle DEFINITION          //////////////////////////////////
 
 /**
- * @brief Structure representing a SPI NAND transaction.
+ * @brief SPI NAND Device Handle struct.
+ * Represents a single SPI NAND device. Holds the hardware-specific interface functions,
+ * and device configuration.
+ */
+typedef struct nand_h {
+  // === Interface function pointers. Required. ===
+
+  /**
+   * @brief Function pointer for transmitting and receiving SPI NAND transactions.
+   * @warning Required!
+   *
+   * @param transaction Pointer to the SPI NAND transaction structure.
+   * @return 0 if successful, or a negative error code on failure.
+   */
+  int (*transceive)(nand_transaction_t *transaction);
+
+  // === Interface function pointers. Optional. ===
+
+  /**
+   * @brief Pointer to logging function.
+   * Called by the driver to log status and error messages, with an optional integer
+   * variable to log. Note that the string does not contain any formatting specifiers,
+   * and should be logged as follows (if has_int_arg is true):
+   *
+   * printf("%s: %s %i", is_err ? "ERR" : "LOG", msg, arg);
+   *
+   * @param msg the log message
+   * @param is_err indicates if this is an error message
+   * @param has_int_arg indicates if this message is accompanied by an integer variable to log.
+   * @param arg the integer variable to log if has_int_arg is true.
+   */
+  void (*log)(char *msg, bool is_err, bool has_int_arg, uint32_t arg);
+
+  //uint8_t internal_regs[0x76]; //!< For internal use.???
+} nand_h;
+
+
+
+
+
+/**
+ * @brief Structure representing a NAND transaction.
  *
- * This structure holds all necessary data for performing a SPI NAND transaction,
+ * This structure holds all necessary data for performing a NAND transaction,
  * including command, address, data to send and receive, and dummy bytes for timing purposes.
+ * Basically, it gives the structure used to create the order of bytes that need to be sent, independent of
+ * communication protocol.
  */
 typedef struct {
     uint8_t command;          /**< Command byte to send */
@@ -41,19 +97,9 @@ typedef struct {
     uint32_t miso_len;        /**< Length of the data to receive */
     uint8_t *miso_data;       /**< Pointer to the buffer for received data */
     uint32_t dummy_bytes;     /**< Number of dummy bytes for timing */
-} spi_nand_transaction_t;
+} nand_transaction_t;
 
 
-/**
- * @brief Function pointer type for transmitting SPI NAND transactions.
- *
- * This type defines a function pointer for transmitting SPI NAND transactions.
- *
- * @param spidev_dt Pointer to the SPI device specification structure.
- * @param transaction Pointer to the SPI NAND transaction structure.
- * @return 0 if successful, or a negative error code on failure.
- */
-typedef int (*spi_nand_transmit_fn)(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
 
 
 /**
@@ -64,7 +110,7 @@ typedef int (*spi_nand_transmit_fn)(const struct spi_dt_spec *spidev_dt, spi_nan
  *
  * @param transmit Function pointer to the transmit function to use.
  */
-void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit);
+void spi_nand_set_transmit_function(nand_transmit_fn transmit);
 
 
 /**
@@ -77,7 +123,7 @@ void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit);
  * @param transaction Pointer to the SPI NAND transaction structure.
  * @return 0 if successful, or a negative error code on failure.
  */
-int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction);
+int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction);
 
 
 //////////////////////////////          Handle END          //////////////////////////////////
@@ -144,7 +190,7 @@ const struct spi_dt_spec spi_nand_init(void);
  * @param transaction Transaction parameters including command, address, and data.
  * @return 0 on success, negative errno error code otherwise.
  */
-int spi_nand_execute_transaction_default(const struct spi_dt_spec *dev, spi_nand_transaction_t *transaction);
+int spi_nand_execute_transaction_default(const struct spi_dt_spec *dev, nand_transaction_t *transaction);
 
 /**
  * @brief Read a register from the SPI NAND device.

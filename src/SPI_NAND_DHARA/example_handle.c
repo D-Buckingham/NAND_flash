@@ -1,7 +1,7 @@
 #include "spi_nand_oper.h"
 #include <zephyr.h>
 
-int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
+int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction)
 {
     //transmitter preparation before sending
     //address bytes + data bytes + the command byte + dummy byte
@@ -159,7 +159,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
 
 int main() {
     struct spi_dt_spec spidev_dt = spi_nand_init();
-    spi_nand_transaction_t transaction;
+    nand_transaction_t transaction;
 
     // Set the custom transmit function, if not set, it uses the default
     spi_nand_set_transmit_function(custom_spi_nand_transmit);
