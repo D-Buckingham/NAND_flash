@@ -24,18 +24,6 @@
 extern "C" {
 #endif
 
-// //////////////////////////////          Handle DEFINITION          //////////////////////////////////
-
-// /**
-//  * @brief Function pointer type for transmitting SPI NAND transactions.
-//  *
-//  * This type defines a function pointer for transmitting SPI NAND transactions.
-//  *
-//  * @param spidev_dt Pointer to the SPI device specification structure.
-//  * @param transaction Pointer to the SPI NAND transaction structure.
-//  * @return 0 if successful, or a negative error code on failure.
-//  */
-// typedef int (*nand_transmit_fn)(nand_transaction_t *transaction);
 
 //////////////////////////////          Handle DEFINITION          //////////////////////////////////
 
@@ -102,28 +90,17 @@ typedef struct {
 
 
 
-/**
- * @brief Sets the transmit function for SPI NAND transactions.
- *
- * This function sets the transmit function that will be used to transmit SPI NAND transactions.
- * If this function is not called, a default transmit function will be used.
- *
- * @param transmit Function pointer to the transmit function to use.
- */
-void spi_nand_set_transmit_function(nand_transmit_fn transmit);
-
-
-/**
- * @brief Executes a SPI NAND transaction.
- *
- * This function executes a SPI NAND transaction using the currently set transmit function.
- * If no transmit function has been set, a default transmit function will be used.
- *
- * @param spidev_dt Pointer to the SPI device specification structure.
- * @param transaction Pointer to the SPI NAND transaction structure.
- * @return 0 if successful, or a negative error code on failure.
- */
-int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction);
+// /**
+//  * @brief Executes a SPI NAND transaction.
+//  *
+//  * This function executes a SPI NAND transaction using the currently set transmit function.
+//  * If no transmit function has been set, a default transmit function will be used.
+//  *
+//  * @param spidev_dt Pointer to the SPI device specification structure.
+//  * @param transaction Pointer to the SPI NAND transaction structure.
+//  * @return 0 if successful, or a negative error code on failure.
+//  */
+// int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction);
 
 
 //////////////////////////////          Handle END          //////////////////////////////////

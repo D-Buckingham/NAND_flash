@@ -37,16 +37,6 @@ uint8_t dummy_byte_value = 0xFF;
 uint8_t var;
 
 
-//////////////////////////////          Handle START          //////////////////////////////////
-
-static spi_nand_transmit_fn current_transmit_fn = NULL;
-
-void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit) {
-    current_transmit_fn = transmit;
-}
-
-
-
 
 /**
  * Executes operation set in struct
@@ -55,7 +45,7 @@ void spi_nand_set_transmit_function(spi_nand_transmit_fn transmit) {
 */
 
 
-int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
+int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction)
 {
     //transmitter preparation before sending
     //address bytes + data bytes + the command byte + dummy byte
@@ -211,12 +201,12 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
     return 0;
 }
 
-int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction) {
-    if (current_transmit_fn == NULL) {
-        return spi_nand_execute_transaction_default(spidev_dt, transaction); //use default
-    }
-    return current_transmit_fn(spidev_dt, transaction);
-}
+// int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction) {
+//     if (current_transmit_fn == NULL) {
+//         return spi_nand_execute_transaction_default(spidev_dt, transaction); //use default
+//     }
+//     return current_transmit_fn(spidev_dt, transaction);
+// }
 
 
 //////////////////////////////          Handle END          //////////////////////////////////
@@ -238,7 +228,7 @@ const struct spi_dt_spec spi_nand_init(void) {
 //address_bytes = 0
 int spi_nand_write_enable(const struct spi_dt_spec *dev)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_WRITE_ENABLE
     };
 
@@ -251,7 +241,7 @@ int spi_nand_write_enable(const struct spi_dt_spec *dev)
 
 int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *val)
 {
-    spi_nand_transaction_t t = {
+    nand_transaction_t t = {
         .command = CMD_READ_REGISTER,
         .address_bytes = 1,
         .address = reg,
@@ -264,7 +254,7 @@ int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *
 
 int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t val)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_SET_REGISTER,
         .address_bytes = 1,
         .address = reg,
@@ -277,7 +267,7 @@ int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t 
 
 int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
 
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_READ_ID,
         .address_bytes = 1,
         .address = DEVICE_ADDR_READ,
@@ -294,7 +284,7 @@ int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id){
 
 int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_READ_FAST,
         .address_bytes = 2,
         .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//big to small endian
@@ -309,7 +299,7 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
 
 int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
         .address_bytes = 2,
         .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),
@@ -327,7 +317,7 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
 
 int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
         .address_bytes = 3,
         .address = ((page & 0x00FF0000) >> 16) |  // Move A23-A16 to the correct position (middle byte)
@@ -345,7 +335,7 @@ int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page)
 
 int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_PROGRAM_EXECUTE,
         .address_bytes = 3,
         .address = ((page & 0x00FF0000) >> 16) |  // Move A23-A16 to the correct position (middle byte)
@@ -362,7 +352,7 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page)
 
 int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page)
 {
-    spi_nand_transaction_t  t = {
+    nand_transaction_t  t = {
         .command = CMD_ERASE_BLOCK,
         .address_bytes = 3,
         .address = ((page & 0x00FF0000) >> 16) |  // Move A23-A16 to the correct position (middle byte)

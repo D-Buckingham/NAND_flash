@@ -42,7 +42,7 @@ spi_nand_flash_device_t *device_handle = &spi_nand_flash_device;
 static int spi_nand_winbond_init(spi_nand_flash_device_t *dev)
 {
     uint8_t device_id_buf[2];
-    spi_nand_transaction_t t = {
+    nand_transaction_t t = {
         .command = CMD_READ_ID,
         .dummy_bytes = 2,
         .miso_len = 2,
@@ -99,7 +99,7 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
 {
     int err;
     uint8_t device_id;
-    spi_nand_transaction_t t = {
+    nand_transaction_t t = {
         .command = CMD_READ_ID,
         .address =  DEVICE_ADDR_READ,
         .address_bytes = 1,
@@ -164,7 +164,7 @@ static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
 {
     uint8_t device_id;
     int err;
-    spi_nand_transaction_t t = {
+    nand_transaction_t t = {
         .command = CMD_READ_ID,
         .dummy_bytes = 2,
         .miso_len = 1,
@@ -232,7 +232,7 @@ static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
 static int detect_chip(spi_nand_flash_device_t *dev)
 {
     uint8_t manufacturer_id;
-    spi_nand_transaction_t t = {
+    nand_transaction_t t = {
         .command = CMD_READ_ID,
         .address = 0, // This normally selects the manufacturer id. Some chips ignores it, but still expects 8 dummy bits here
         .address_bytes = 1,
