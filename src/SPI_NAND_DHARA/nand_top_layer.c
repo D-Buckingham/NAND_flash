@@ -5,7 +5,7 @@
 #include <zephyr/logging/log.h>
 
 
-#include "error.h"
+//#include "error.h"
 #include "spi_nand_oper.h"
 #include "nand.h"
 #include "nand_top_layer.h"

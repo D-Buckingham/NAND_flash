@@ -1,5 +1,9 @@
 #include "spi_nand_oper.h"
-#include <zephyr.h>
+#include <zephyr/device.h>
+#include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+#include <zephyr/drivers/gpio.h>                                                                                                                                                     
+#include <zephyr/drivers/spi.h>
 
 int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
 {
