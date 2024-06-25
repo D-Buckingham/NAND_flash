@@ -6,7 +6,8 @@
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
-#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/gpio.h>                                                                                                                                                     
+#include <zephyr/drivers/spi.h>
 
 
 #include <assert.h>
@@ -34,6 +35,19 @@
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
 /////////////////////////////////////////////       FUNCTIONALITY TESTS START     //////////////////////////
+
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+const struct spi_dt_spec spi_nand_init(void) {
+    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+
+    if (!device_is_ready((&spidev_dt)->bus)) {
+        LOG_ERR("SPI device is not ready");
+    }else {
+        LOG_INF("NAND flash as SPI device initialized!");
+    }
+
+    return spidev_dt;
+}
 
 const char *sonnet = 
         "In Zephyr's realm, where microchips do sing,\n"
@@ -1377,34 +1391,33 @@ static int mark_block_as_bad(void)
     uint32_t first_block_page = 0;
 
     LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", 0, first_block_page, bad_block_indicator);
-    const struct spi_dt_spec spidev_dt = spi_nand_init();
 
-    ret = spi_nand_write_enable(&spidev_dt);
+    ret = spi_nand_write_enable();
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_erase_block(&spidev_dt, first_block_page);
+    ret = spi_nand_erase_block(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_write_enable(&spidev_dt);
+    ret = spi_nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
+    ret = spi_nand_program_load((uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
         return -1;
     }
 
 
-    ret = spi_nand_program_execute(&spidev_dt, first_block_page);
+    ret = spi_nand_program_execute(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to execute program on page %u, error: %d", first_block_page, ret);
         return -1;
@@ -1412,7 +1425,7 @@ static int mark_block_as_bad(void)
 
     while (true) {
         uint8_t status;
-        int ret = spi_nand_read_register(&spidev_dt, REG_STATUS, &status);
+        int ret = spi_nand_read_register( REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -1435,34 +1448,33 @@ static int mark_block_as_good(void)
     uint32_t first_block_page = 0;
 
     LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", 0, first_block_page, bad_block_indicator);
-    const struct spi_dt_spec spidev_dt = spi_nand_init();
 
-    ret = spi_nand_write_enable(&spidev_dt);
+    ret = spi_nand_write_enable();
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_erase_block(&spidev_dt, first_block_page);
+    ret = spi_nand_erase_block(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_write_enable(&spidev_dt);
+    ret = spi_nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load(&spidev_dt, (uint8_t *)&bad_block_indicator, 2048, 2);
+    ret = spi_nand_program_load((uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
         return -1;
     }
 
 
-    ret = spi_nand_program_execute(&spidev_dt, first_block_page);
+    ret = spi_nand_program_execute(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to execute program on page %u, error: %d", first_block_page, ret);
         return -1;
@@ -1470,7 +1482,7 @@ static int mark_block_as_good(void)
 
     while (true) {
         uint8_t status;
-        int ret = spi_nand_read_register(&spidev_dt, REG_STATUS, &status);
+        int ret = spi_nand_read_register(REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 

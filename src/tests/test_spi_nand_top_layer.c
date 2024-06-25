@@ -30,11 +30,10 @@ LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle)
 {
 
-    nand_flash_config.spi_dev = spi_handle;
 
     
 
-    int ret = spi_nand_flash_init_device(&nand_flash_config, &device_handle);//TODO correctly handled? &
+    int ret = spi_nand_flash_init_device(&device_handle);//TODO correctly handled? &
     if(ret != 0){
         LOG_ERR("Initialization of device on top layer, error: %d", ret);
     }else{
@@ -45,11 +44,11 @@ void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_
 
 
 
-int wait_and_chill(const struct spi_dt_spec *dev){
+int wait_and_chill(){
     uint8_t status;
     int ret = 0;
     while (true) {
-        ret = spi_nand_read_register(dev, REG_STATUS, &status);
+        ret = spi_nand_read_register(REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register while waiting");
             ret = -1;
@@ -177,7 +176,7 @@ int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uin
         }
 
         memset((void *)temp_buf, 0x00, sector_size);
-        ret = wait_and_chill(flash -> config.spi_dev);
+        ret = wait_and_chill();
         
         
         
@@ -299,7 +298,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     }
     
 
-    ret = wait_and_chill(device_handle -> config.spi_dev);
+    ret = wait_and_chill();
     if (ret != 0) {
         return -1;
     }

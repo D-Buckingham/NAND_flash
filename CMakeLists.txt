@@ -20,6 +20,7 @@ file(GLOB APP_SOURCES
             "src/SPI_NAND_DHARA/USB_mass_storage.c"
             "src/tests/simulation_test.c"
             "src/SPI_NAND_DHARA/health_monitoring.c"
+            "src/SPI_NAND_DHARA/example_handle.c"
            
 )
 

@@ -25,6 +25,19 @@
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+static const struct spi_dt_spec spi_nand_init(void) {
+    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+
+    if (!device_is_ready((&spidev_dt)->bus)) {
+        LOG_ERR("SPI device is not ready");
+    }else {
+        LOG_INF("NAND flash as SPI device initialized!");
+    }
+
+    return spidev_dt;
+}
+
 
 
 int  main(void)

@@ -8,21 +8,37 @@
  * Date: [10.03.2024]
  */
 
+#include "nand_top_layer.h"
 
 #ifndef SPI_NAND_OPER_H
 #define SPI_NAND_OPER_H
 
 #pragma once
 
-#include <zephyr/kernel.h>
-#include <Zephyr/device.h>
-#include <Zephyr/drivers/spi.h>
-#include <zephyr/devicetree.h>
-#include <Zephyr/sys/util.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+/**
+ * @brief Structure representing a NAND transaction.
+ *
+ * This structure holds all necessary data for performing a NAND transaction,
+ * including command, address, data to send and receive, and dummy bytes for timing purposes.
+ * Basically, it gives the structure used to create the order of bytes that need to be sent, independent of
+ * communication protocol.
+ */
+typedef struct {
+    uint8_t command;          /**< Command byte to send */
+    uint8_t address_bytes;    /**< Number of address bytes */
+    uint32_t address;         /**< Address for the transaction */
+    uint32_t mosi_len;        /**< Length of the data to send */
+    const uint8_t *mosi_data; /**< Pointer to the data to send */
+    uint32_t miso_len;        /**< Length of the data to receive */
+    uint8_t *miso_data;       /**< Pointer to the buffer for received data */
+    uint32_t dummy_bytes;     /**< Number of dummy bytes for timing */
+} nand_transaction_t;
+
 
 
 //////////////////////////////          Handle DEFINITION          //////////////////////////////////
@@ -64,46 +80,11 @@ typedef struct nand_h {
   //uint8_t internal_regs[0x76]; //!< For internal use.???
 } nand_h;
 
-
-
-
-
-/**
- * @brief Structure representing a NAND transaction.
- *
- * This structure holds all necessary data for performing a NAND transaction,
- * including command, address, data to send and receive, and dummy bytes for timing purposes.
- * Basically, it gives the structure used to create the order of bytes that need to be sent, independent of
- * communication protocol.
- */
-typedef struct {
-    uint8_t command;          /**< Command byte to send */
-    uint8_t address_bytes;    /**< Number of address bytes */
-    uint32_t address;         /**< Address for the transaction */
-    uint32_t mosi_len;        /**< Length of the data to send */
-    const uint8_t *mosi_data; /**< Pointer to the data to send */
-    uint32_t miso_len;        /**< Length of the data to receive */
-    uint8_t *miso_data;       /**< Pointer to the buffer for received data */
-    uint32_t dummy_bytes;     /**< Number of dummy bytes for timing */
-} nand_transaction_t;
-
-
-
-
-// /**
-//  * @brief Executes a SPI NAND transaction.
-//  *
-//  * This function executes a SPI NAND transaction using the currently set transmit function.
-//  * If no transmit function has been set, a default transmit function will be used.
-//  *
-//  * @param spidev_dt Pointer to the SPI device specification structure.
-//  * @param transaction Pointer to the SPI NAND transaction structure.
-//  * @return 0 if successful, or a negative error code on failure.
-//  */
-// int spi_nand_execute_transaction(const struct spi_dt_spec *spidev_dt, nand_transaction_t *transaction);
-
-
+//Prototype, this handle has to be defined in the example_handle.c
+extern nand_h *my_nand_handle;
 //////////////////////////////          Handle END          //////////////////////////////////
+
+
 
 #define CMD_WRITE_DISABLE   0x04
 #define CMD_WRITE_ENABLE    0x06
@@ -142,32 +123,7 @@ typedef struct {
 
 // Commands, registers, and status flags definitions
 
-/**
- * @brief Initialize the SPI device for NAND operations.
- *
- * This function initializes an SPI device based on the device tree specification.
- * It verifies if the SPI device is ready to be used for communication. In case
- * the device is not ready, it logs an error message.
- *
- * @note Replace `spidev` with the actual node label of your SPI device in the
- *       device tree.
- *
- * @return A spi_dt_spec structure representing the initialized SPI device.
- */
-const struct spi_dt_spec spi_nand_init(void);
 
-/**
- * @brief Execute a transaction over SPI to a NAND device.
- *
- * This function prepares and executes a transaction based on the provided
- * transaction parameters including command, address, data to be written
- * or read, and dummy bytes.
- *
- * @param dev Device SPI configuration data obtained from devicetree.
- * @param transaction Transaction parameters including command, address, and data.
- * @return 0 on success, negative errno error code otherwise.
- */
-int spi_nand_execute_transaction_default(const struct spi_dt_spec *dev, nand_transaction_t *transaction);
 
 /**
  * @brief Read a register from the SPI NAND device.
@@ -177,7 +133,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *dev, nand_tra
  * @param val Pointer to variable where read value will be stored.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *val);
+int spi_nand_read_register(uint8_t reg, uint8_t *val);
 
 /**
  * @brief Write to a register on the SPI NAND device.
@@ -187,7 +143,7 @@ int spi_nand_read_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t *
  * @param val Value to write to the register.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t val);
+int spi_nand_write_register(uint8_t reg, uint8_t val);
 
 /**
  * @brief Enable writing on the SPI NAND device.
@@ -197,7 +153,7 @@ int spi_nand_write_register(const struct spi_dt_spec *dev, uint8_t reg, uint8_t 
  * @param dev Device SPI configuration data obtained from devicetree.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_write_enable(const struct spi_dt_spec *dev);
+int spi_nand_write_enable(void);
 
 /**
  * @brief Initiate page read operation to cache.
@@ -208,7 +164,7 @@ int spi_nand_write_enable(const struct spi_dt_spec *dev);
  * @param page Page number to read. 24-bit address consists of 7 dummy bits and 17 page/block address bits
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page);
+int spi_nand_read_page(uint32_t page);
 
 /**
  * @brief Read data from the SPI NAND device's cache.
@@ -221,7 +177,7 @@ int spi_nand_read_page(const struct spi_dt_spec *dev, uint32_t page);
  * @param length Number of bytes to read.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column, uint16_t length);
+int spi_nand_read(uint8_t *data, uint16_t column, uint16_t length);
 
 /**
  * @brief Execute a program operation.
@@ -232,7 +188,7 @@ int spi_nand_read(const struct spi_dt_spec *dev, uint8_t *data, uint16_t column,
  * @param page Page number to program.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page);
+int spi_nand_program_execute(uint32_t page);
 
 /**
  * @brief Load data into the SPI NAND device's cache.
@@ -243,7 +199,7 @@ int spi_nand_program_execute(const struct spi_dt_spec *dev, uint32_t page);
  * @param length Number of bytes to write.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, uint16_t column, uint16_t length);
+int spi_nand_program_load(const uint8_t *data, uint16_t column, uint16_t length);
 
 /**
  * @brief Erase a block on the SPI NAND device.
@@ -252,7 +208,7 @@ int spi_nand_program_load(const struct spi_dt_spec *dev, const uint8_t *data, ui
  * @param page Page number within the block to be erased.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page);
+int spi_nand_erase_block(uint32_t page);
 
 
 /**
@@ -261,9 +217,7 @@ int spi_nand_erase_block(const struct spi_dt_spec *dev, uint32_t page);
  * @param dev Device SPI configuration data obtained from devicetree.
  * @param device_id Device ID
 */
-int spi_nand_device_id(const struct spi_dt_spec *dev, uint8_t *device_id);
-
-
+int spi_nand_device_id(uint8_t *device_id);
 
 
 

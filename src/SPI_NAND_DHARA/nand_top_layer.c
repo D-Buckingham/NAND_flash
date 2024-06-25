@@ -10,6 +10,7 @@
 #include "nand.h"
 #include "nand_top_layer.h"
 #include "nand_flash_devices.h"
+#include "example_handle.h"
 
 LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
@@ -19,9 +20,6 @@ LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
 //shared externally
-spi_nand_flash_config_t nand_flash_config = {
-    .spi_dev = &spidev_dt,
-};
 
 static spi_nand_flash_device_t spi_nand_flash_device;
 spi_nand_flash_device_t *device_handle = &spi_nand_flash_device;
@@ -48,7 +46,7 @@ static int spi_nand_winbond_init(spi_nand_flash_device_t *dev)
         .miso_len = 2,
         .miso_data = device_id_buf
     };
-    int err = spi_nand_execute_transaction(dev->config.spi_dev, &t);
+    int err = my_nand_handle->transceive(&t);
     if (err != 0) {
         LOG_ERR("Failed to receive device ID, error: %d", err);
         return -1;
@@ -106,7 +104,7 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
         .miso_len = 1,
         .miso_data = &device_id
     };
-    err = spi_nand_execute_transaction(dev->config.spi_dev, &t);
+    err = my_nand_handle->transceive(&t);
     if (err != 0) {
         LOG_ERR("Failed to read Alliance device ID, error: %d", err);
         return -1;
@@ -170,7 +168,7 @@ static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
         .miso_len = 1,
         .miso_data = &device_id
     };
-    err = spi_nand_execute_transaction(dev->config.spi_dev, &t);
+    err = my_nand_handle->transceive(&t);
     if (err != 0) {
         LOG_ERR("Failed to read gigadevice device ID, error: %d", err);
         return -1;
@@ -239,7 +237,7 @@ static int detect_chip(spi_nand_flash_device_t *dev)
         .miso_len = 1,
         .miso_data = &manufacturer_id
     };
-    spi_nand_execute_transaction(dev->config.spi_dev, &t);
+    my_nand_handle->transceive(&t);
 
     switch (manufacturer_id) {
     case SPI_NAND_FLASH_ALLIANCE_MI: // Alliance
@@ -269,14 +267,14 @@ static int detect_chip(spi_nand_flash_device_t *dev)
 static int unprotect_chip(spi_nand_flash_device_t *dev)
 {
     uint8_t status;
-    int ret = spi_nand_read_register(dev->config.spi_dev, REG_PROTECT, &status);
+    int ret = spi_nand_read_register(REG_PROTECT, &status);
     if (ret != 0) {
         LOG_ERR("Failed to read register: %d", ret);
         return ret;
     }
 
     if (status != 0x00) {
-        ret = spi_nand_write_register(dev->config.spi_dev, REG_PROTECT, 0);
+        ret = spi_nand_write_register(REG_PROTECT, 0);
     }
     if (ret != 0) {
         LOG_ERR("Failed to remove protection bit with error code: %d", ret);
@@ -292,7 +290,7 @@ static int unprotect_chip(spi_nand_flash_device_t *dev)
 
 
 
-int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation_time_us, uint8_t *status_out)
+int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out)
 {
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
     if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
@@ -301,7 +299,7 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
 
     while (true) {
         uint8_t status;
-        int err = spi_nand_read_register(device, REG_STATUS, &status);
+        int err = spi_nand_read_register(REG_STATUS, &status);
         if (err != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -325,32 +323,24 @@ int wait_for_ready(const struct spi_dt_spec *device, uint32_t expected_operation
 
 
 
-int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_device_t **handle)
+int spi_nand_flash_init_device(spi_nand_flash_device_t **handle)
 {
     LOG_INF("NAND MAPPING LAYER: Initializing DHARA mapping");
     //Verify SPI device is ready
-    if (!device_is_ready((config->spi_dev)->bus)) {
-        LOG_ERR("SPI device is not ready");
-        return -1;
-    }
+    
+    *handle = device_handle;
 
     // Apply default garbage collection factor if not set
-    if (config->gc_factor == 0) {
-        config->gc_factor = 45;
+    if ((*handle)->gc_factor == 0) {
+        (*handle)->gc_factor = 45;
     }
 
-    // Allocate memory for the NAND flash device structure
-    //*handle = calloc(sizeof(spi_nand_flash_device_t), 1);//TODO check on this //k_calloc leads to bus fault
-
-    *handle = device_handle;
 
     if (*handle == NULL) {
         LOG_ERR("Failed to allocate memory for NAND flash device");
         return -1;
     }
 
-    // Copy the configuration into the device structure
-    memcpy(&(*handle)->config, config, sizeof(spi_nand_flash_config_t));
 
     (*handle)->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
     (*handle)->dhara_nand.log2_page_size = 11; // Assume 2048 bytes per page
@@ -392,7 +382,7 @@ int spi_nand_flash_init_device(spi_nand_flash_config_t *config, spi_nand_flash_d
     k_sem_init(&(*handle)->mutex, 1, 1);
     
 
-    dhara_map_init(&(*handle)->dhara_map, &(*handle)->dhara_nand, (*handle)->work_buffer, config->gc_factor);
+    dhara_map_init(&(*handle)->dhara_map, &(*handle)->dhara_nand, (*handle)->work_buffer, (*handle)->gc_factor);
     
 
     // Resume map to handle power failures
@@ -423,20 +413,20 @@ int spi_nand_erase_chip(spi_nand_flash_device_t *handle)
     k_sem_take(&handle->mutex, K_FOREVER);
 
     for (int i = 0; i < handle->num_blocks; i++) {
-        ret = spi_nand_write_enable(handle->config.spi_dev);
+        ret = spi_nand_write_enable();
         if (ret != 0) {
             LOG_ERR("Failed to enable write for block erase");
             goto end;
         }
 
-        ret = spi_nand_erase_block(handle->config.spi_dev, i * (1 << handle->dhara_nand.log2_ppb));
+        ret = spi_nand_erase_block(i * (1 << handle->dhara_nand.log2_ppb));
         if (ret != 0) {
             LOG_ERR("Failed to erase block");
             goto end;
         }
 
 
-        ret = wait_for_ready(handle->config.spi_dev, handle->erase_block_delay_us, NULL);
+        ret = wait_for_ready(handle->erase_block_delay_us, NULL);
         if (ret != 0) {
             LOG_ERR("Failed to wait for readiness after erase");
             goto end;
@@ -444,7 +434,7 @@ int spi_nand_erase_chip(spi_nand_flash_device_t *handle)
     }
 
     // clear dhara map
-    dhara_map_init(&handle->dhara_map, &handle->dhara_nand, handle->work_buffer, handle->config.gc_factor);
+    dhara_map_init(&handle->dhara_map, &handle->dhara_nand, handle->work_buffer, handle->gc_factor);
     dhara_map_clear(&handle->dhara_map);
 
     k_sem_give(&handle->mutex);

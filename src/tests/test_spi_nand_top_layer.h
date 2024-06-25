@@ -32,10 +32,9 @@ void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_
 /**
  * Waits for the NAND device to be ready.
  *
- * @param[in] dev Pointer to the SPI device specification structure.
  * @return 0 on success, negative error code on failure.
  */
-int wait_and_chill(const struct spi_dt_spec *dev);
+int wait_and_chill();
 
 /**
  * Test function to setup, erase and deinitialize the NAND flash.
