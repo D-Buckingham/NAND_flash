@@ -7,7 +7,7 @@
 3. [Setup and Configuration](#setup-and-configuration)
    - [Hardware Setup](#hardware-setup)
    - [Software Setup](#software-setup)
-      -[Handle Implementation](#handle-implementation) 
+      - [Handle Implementation](#handle-implementation)
 4. [Theory Corner](#theory-corner)
    - [NAND Flash Multistack Implementation](#nand-flash-multistack-implementation)
    - [DHARA](#dhara)
