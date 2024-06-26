@@ -1,15 +1,30 @@
-#include "spi_nand_oper.h"
-#include <zephyr/device.h>
-#include <zephyr/kernel.h>
+#include "../inc/nand_oper.h"
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
 
-int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, spi_nand_transaction_t *transaction)
-{
+
+#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
+uint8_t dummy_byte_value = 0xFF;
+
+LOG_MODULE_REGISTER(handle_example, CONFIG_LOG_DEFAULT_LEVEL);
+
+
+// global handle, include again, keep the name my_nand_handle
+nand_h Global_handle;
+nand_h *my_nand_handle = &Global_handle;
+
+
+
+// Example transceive function
+int my_transceive_function(nand_transaction_t *transaction) {
     //transmitter preparation before sending
     //address bytes + data bytes + the command byte + dummy byte
-	
+    
+	const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
     //handle transmissions of 1 byte 
     //(CMD_WRITE_ENABLE and CMD_WRITE_DISABLE)
@@ -23,7 +38,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
             .count = 1
         };
 
-        return spi_write_dt(spidev_dt, &tx);
+        return spi_write_dt(&spidev_dt, &tx);
     }
 
 
@@ -51,7 +66,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
                 .count = 1
             };
 
-            return spi_write_dt(spidev_dt, &tx);
+            return spi_write_dt(&spidev_dt, &tx);
         }else{
             uint8_t combined_buf[2];
             combined_buf[0] = transaction->command;
@@ -76,7 +91,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
                 .count = 1
             };
             
-            return spi_transceive_dt(spidev_dt, &tx, &rx);
+            return spi_transceive_dt(&spidev_dt, &tx, &rx);
         }
     }
 
@@ -101,7 +116,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
             .count = 1
         };
 
-        return spi_write_dt(spidev_dt, &tx);
+        return spi_write_dt(&spidev_dt, &tx);
     }
 
     //transmissions of more than 4 bytes/ program load
@@ -126,7 +141,7 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
             .count = 2
         };
 
-        return spi_write_dt(spidev_dt, &tx);
+        return spi_write_dt(&spidev_dt, &tx);
     }
 
     if(transaction->miso_len > 0){ //read from cache
@@ -156,18 +171,40 @@ int spi_nand_execute_transaction_default(const struct spi_dt_spec *spidev_dt, sp
             .count = 1
         };
 
-        return spi_transceive_dt(spidev_dt, &tx, &rx);
+        return spi_transceive_dt(&spidev_dt, &tx, &rx);
     }
     return 0;
 }
 
-int main() {
-    struct spi_dt_spec spidev_dt = spi_nand_init();
-    spi_nand_transaction_t transaction;
+// Example log function
+void my_log_function(char *msg, bool is_err, bool has_int_arg, uint32_t arg) {
+    if (is_err) {
+        if (has_int_arg) {
+            LOG_ERR("%s: %d", msg, arg);
+        } else {
+            LOG_ERR("%s", msg);
+        }
+    } else {
+        if (has_int_arg) {
+            LOG_INF("%s: %d", msg, arg);
+        } else {
+            LOG_INF("%s", msg);
+        }
+    }
+}
 
-    // Set the custom transmit function, if not set, it uses the default
-    spi_nand_set_transmit_function(custom_spi_nand_transmit);
 
-    
+// Initialization somewhere in your code
+int init_nand_handle() {
+    // Initialize the handle's function pointers and other members
+    my_nand_handle->transceive = my_transceive_function;  
+    my_nand_handle->log = my_log_function;
+
+    // // Link the input handle to the global handle
+    // my_nand_handle = handle;
     return 0;
 }
+
+SYS_INIT(init_nand_handle, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEVICE);
+
+

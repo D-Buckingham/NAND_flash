@@ -12,8 +12,8 @@
  */
 
 #include "nand.h"
-#include "spi_nand_oper.h"
-#include "nand_top_layer.h"//for the spi_nand_flash_device_t
+#include "../../inc/nand_oper.h" 
+#include "../../inc/nand_top_layer.h"//for the nand_flash_device_t
 
 
 #include <zephyr/drivers/spi.h>
@@ -47,7 +47,7 @@ uint32_t erase_count_indicator = 0;
 /** @brief waiting for finished transaction
  * wait at least the expected time and then check for the status register
  *
- * defined in the nand.c between spi_nand_oper and dhara
+ * defined in the nand.c between nand_oper and dhara
  * used in the top layer and nand.c
  *
  * @param device Device SPI configuration data obtained from devicetree.
@@ -55,7 +55,7 @@ uint32_t erase_count_indicator = 0;
  * @param[out] status_out status register content of current transaction
  * @return 0 on success, -1 if the read out of the register failed.
  */
-static int wait_for_ready_nand(const struct spi_dt_spec *device, uint32_t expected_operation_time_us, uint8_t *status_out)
+static int wait_for_ready_nand(uint32_t expected_operation_time_us, uint8_t *status_out)
 {
 
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
@@ -65,7 +65,7 @@ static int wait_for_ready_nand(const struct spi_dt_spec *device, uint32_t expect
 
     while (true) {
         uint8_t status;
-        int err = spi_nand_read_register(device, REG_STATUS, &status);
+        int err = nand_read_register(REG_STATUS, &status);
         if (err != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -93,26 +93,26 @@ static int wait_for_ready_nand(const struct spi_dt_spec *device, uint32_t expect
  * 
  * This function initiates a read operation for a specified page in the NAND flash
  * and waits until the device is ready or until an error occurs. It leverages the
- * `spi_nand_read_page` function to perform the read operation and checks the device's
+ * `nand_read_page` function to perform the read operation and checks the device's
  * status by calling `wait_for_ready_nand`.
  * 
- * @param device A pointer to the spi_nand_flash_device_t structure representing the NAND flash device.
+ * @param device A pointer to the nand_flash_device_t structure representing the NAND flash device.
  * @param page The page number to read from the NAND flash.
  * @param status_out Pointer to a variable where the status register's value will be stored upon successful read. 
  *                   Can be NULL if the status is not needed.
  * 
  * @return 0 on success, -1 on failure.
  */
-static int read_page_and_wait(struct spi_nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
+static int read_page_and_wait(struct nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
 {
     int err;
-    err = spi_nand_read_page(device -> config.spi_dev, page); 
+    err = nand_read_page(page); 
     if (err != 0) {
         LOG_ERR("Failed to read page %u, error: %d", page, err);
         return -1;
     }
 
-    return wait_for_ready_nand(device -> config.spi_dev,device -> read_page_delay_us, status_out);
+    return wait_for_ready_nand(device -> read_page_delay_us, status_out);
 }
 
 
@@ -121,7 +121,7 @@ static int read_page_and_wait(struct spi_nand_flash_device_t *device, uint32_t p
  * 
  * This function initiates a program operation for a specified page in the NAND flash
  * and waits until the device is ready or until an error occurs. It leverages the
- * `spi_nand_program_execute` function to perform the program operation and checks the device's
+ * `nand_program_execute` function to perform the program operation and checks the device's
  * status by calling `wait_for_ready_nand`.
  * 
  * The function ensures that the programming operation is executed correctly by monitoring
@@ -129,24 +129,24 @@ static int read_page_and_wait(struct spi_nand_flash_device_t *device, uint32_t p
  * specified in `device->program_page_delay_us` to determine the wait period for the device
  * to become ready.
  * 
- * @param device A pointer to the spi_nand_flash_device_t structure representing the NAND flash device.
+ * @param device A pointer to the nand_flash_device_t structure representing the NAND flash device.
  * @param page The page number where the data will be programmed in the NAND flash.
  * @param status_out Pointer to a variable where the status register's value will be stored upon successful programming. 
  *                   Can be NULL if the status is not needed.
  * 
  * @return 0 on success, -1 on failure.
  */
-static int program_execute_and_wait(struct spi_nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
+static int program_execute_and_wait(struct nand_flash_device_t *device, uint32_t page, uint8_t *status_out)
 {
     int err;
 
-    err = spi_nand_program_execute(device -> config.spi_dev, page);
+    err = nand_program_execute(page);
     if (err != 0) {
         LOG_ERR("Failed to execute program on page %u, error: %d", page, err);
         return -1;
     }
 
-    return wait_for_ready_nand(device -> config.spi_dev, device -> program_page_delay_us, status_out);
+    return wait_for_ready_nand( device -> program_page_delay_us, status_out);
 }
 
 
@@ -161,7 +161,7 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
      * a pointer to a parent or enclosing structure by knowing the pointer to a member field and the type of the parent 
      * structure.
     */
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);//struct necessary?
+    nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);//struct necessary?
 
     dhara_page_t first_block_page = b * (1 << n->log2_ppb);
     uint16_t bad_block_indicator;
@@ -173,9 +173,9 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
         return 1; // Assume bad block on error
     }
 
-    // Assuming spi_nand_read function reads 'len' bytes starting from 'offset' to 'buf'
+    // Assuming nand_read function reads 'len' bytes starting from 'offset' to 'buf'
     // And assuming the OOB data can be accessed directly following the main data area
-    ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&bad_block_indicator, dev->page_size, 2);
+    ret = nand_read((uint8_t *)&bad_block_indicator, dev->page_size, 2);
     if (ret != 0) {
         LOG_ERR("Failed to read bad block indicator, err: %d", ret);
         return 1; // Assume bad block on error
@@ -191,32 +191,32 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 //TODO check in datasheet process, erase counter has not to be increased
 void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
 {
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);
+    nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
 
     dhara_page_t first_block_page = b * (1 << n->log2_ppb);
     uint16_t bad_block_indicator = 0;
     LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", b, first_block_page, bad_block_indicator);
 
-    ret = spi_nand_write_enable(dev->config.spi_dev);
+    ret = nand_write_enable();
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return;
     }
 
-    ret = spi_nand_erase_block(dev->config.spi_dev, first_block_page);
+    ret = nand_erase_block(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
         return;
     }
 
-    ret = spi_nand_write_enable(dev->config.spi_dev);
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return;
     }
 
-    ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&bad_block_indicator, dev->page_size, 2);
+    ret = nand_program_load((uint8_t *)&bad_block_indicator, dev->page_size, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
         return;
@@ -238,8 +238,8 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
  */
 int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t *err)
 {
-    LOG_INF("erase_block, block=%u", b);
-    struct spi_nand_flash_device_t *dev = CONTAINER_OF(n, struct spi_nand_flash_device_t, dhara_nand);
+    //LOG_INF("erase_block, block=%u", b);
+    struct nand_flash_device_t *dev = CONTAINER_OF(n, struct nand_flash_device_t, dhara_nand);
     int ret;
     uint32_t ecc_count_indicator = 0;
 
@@ -255,13 +255,13 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     }
 
     // Read the current erase count indicator from the spare area
-    ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
+    ret = nand_read((uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
     if (ret != 0) {
         LOG_ERR("Failed to read erase count from spare area: %d", ret);
         return ret;
     }
 
-    LOG_INF("Current erase count for block at page %u: %u", Erased_block, erase_count_indicator);
+    LOG_INF("Current erase count for block %u: %u", b, erase_count_indicator);
 
     // Increment the erase count
     erase_count_indicator++;
@@ -269,7 +269,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
 
 
     //read out the ECC counter from the first page of each block
-    ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&ecc_count_indicator, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
+    ret = nand_read((uint8_t *)&ecc_count_indicator, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
     if (ret != 0) {
         LOG_ERR("Failed to read erase count from spare area: %d", ret);
         return ret;
@@ -285,19 +285,19 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     
 
 
-    ret = spi_nand_write_enable(dev->config.spi_dev);
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_erase_block(dev->config.spi_dev, first_block_page);
+    ret = nand_erase_block(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
         return -1;
     }
 
-    ret = wait_for_ready_nand(dev->config.spi_dev, dev->erase_block_delay_us, &status);
+    ret = wait_for_ready_nand(dev->erase_block_delay_us, &status);
     if (ret != 0) {
         LOG_ERR("Failed to wait for ready, error: %d", ret);
         return -1;
@@ -324,7 +324,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
 int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *data, dhara_error_t *err)
 {
     LOG_DBG("prog, page=%u", p);
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);
+    nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
     uint8_t status;
     uint16_t used_marker = 0;
@@ -336,26 +336,26 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         return -1;
     }
 
-    ret = spi_nand_write_enable(dev->config.spi_dev);//Enable writing on the SPI NAND device.
+    ret = nand_write_enable();//Enable writing on the SPI NAND device.
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load(dev->config.spi_dev, data, 0, dev->page_size);//Load data into the SPI NAND device's cache.
+    ret = nand_program_load(data, 0, dev->page_size);//Load data into the SPI NAND device's cache.
     if (ret) {
         LOG_ERR("Failed to load program, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&used_marker, dev->page_size + 2, 2);//put a flag there
+    ret = nand_program_load((uint8_t *)&used_marker, dev->page_size + 2, 2);//put a flag there
     if (ret) {
         LOG_ERR("Failed to load used marker, error: %d", ret);
         return -1;
     }
 
     if(Erase_counter_FLAG && Erased_block == p){
-        ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
+        ret = nand_program_load((uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
         if (ret) {
             LOG_ERR("Failed to load erase counter, error: %d", ret);
             return -1;
@@ -363,7 +363,7 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         Erase_counter_FLAG = 0;
 
         //we store the ECC counter as well since it is the first page
-        ret = spi_nand_program_load(dev->config.spi_dev, (uint8_t *)&Total_ECC_counter, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
+        ret = nand_program_load((uint8_t *)&Total_ECC_counter, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
         if (ret) {
             LOG_ERR("Failed to load ECC counter, error: %d", ret);
             return -1;
@@ -392,7 +392,7 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
 
 int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
 {
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);
+    nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
     uint16_t used_marker = 0;
 
@@ -402,7 +402,7 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
         return 0; 
     }
 
-    ret = spi_nand_read(dev->config.spi_dev, (uint8_t *)&used_marker, dev->page_size + 2, 2);
+    ret = nand_read((uint8_t *)&used_marker, dev->page_size + 2, 2);
     if (ret) {
         LOG_ERR("Failed to read OOB area for page %u", p);
         return 0; 
@@ -427,7 +427,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
 {
     LOG_DBG("Read, page=%u, offset=%zu, length=%zu", p, offset, length);
     __ASSERT(p < n->num_blocks * (1 << n->log2_ppb), "Page out of range");
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);
+    nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
     uint8_t status;
 
@@ -446,7 +446,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
         return -1;
     }
 
-    ret = spi_nand_read(dev->config.spi_dev, data, offset, length);
+    ret = nand_read(data, offset, length);
     if (ret != 0) {
         LOG_ERR("Failed to read data from page %u", offset);
         return -1;
@@ -465,7 +465,7 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
 int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t dst, dhara_error_t *err)
 {
     LOG_DBG("Copy, src=%u, dst=%u", src, dst);
-    spi_nand_flash_device_t *dev = CONTAINER_OF(n, spi_nand_flash_device_t, dhara_nand);
+    nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
     uint8_t status;
 
@@ -486,7 +486,7 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     }
 
  
-    ret = spi_nand_write_enable(dev->config.spi_dev);
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write");
         return -1;

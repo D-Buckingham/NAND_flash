@@ -1,9 +1,9 @@
 #pragma once
 
 //Manufacturer IDs (MI) for supported nand flash devices
-#define SPI_NAND_FLASH_GIGADEVICE_MI  0xC8
-#define SPI_NAND_FLASH_ALLIANCE_MI    0x52
-#define SPI_NAND_FLASH_WINBOND_MI     0xEF
+#define NAND_FLASH_GIGADEVICE_MI  0xC8
+#define NAND_FLASH_ALLIANCE_MI    0x52
+#define NAND_FLASH_WINBOND_MI     0xEF
 
 //Device ID (DI) for supported nand flash devices
 

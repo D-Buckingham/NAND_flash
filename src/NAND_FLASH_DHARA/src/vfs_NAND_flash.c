@@ -1,15 +1,13 @@
 #include <zephyr/device.h>
 #include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/drivers/gpio.h>                                                                                                                                                     
-#include <zephyr/drivers/spi.h>
+#include <zephyr/logging/log.h>   
 #include <zephyr/devicetree.h>
 #include <zephyr/fs/fs.h>
 #include <zephyr/storage/disk_access.h>
 #include <ff.h>
 
-#include "vfs_NAND_flash.h"
-#include "diskio_nand.h"
+#include "../inc/vfs_NAND_flash.h"
+#include "../inc/diskio_nand.h"
 
 
 LOG_MODULE_REGISTER(vfs_NAND_flash, CONFIG_LOG_DEFAULT_LEVEL);
