@@ -53,7 +53,27 @@ This guide provides a comprehensive overview of integrating NAND flash memory in
 Adjustments can either be created in the device tree for the SPI or in the overlay.
 
 #### Handle implementation
-There exists an example handle (example_handle.c) that uses SPI to communicate with the actual hardware. The transceive and log functions are kept agnostic and can be adjusted depending on the users need for their communication protocol. If the communication protocol is changed, the device in the DTS configuration needs the labeled *nand_device* to be recognized by the NAND flash multistack implementation. Basically, only the disk layer receives the information from the device tree.
+The handle implementation is demonstrated in an example file, `example_handle.c`, which uses SPI to communicate with the actual hardware. This example is designed to be adaptable to different communication protocols and logging mechanisms. Here are the key points that one needs to take into account if the projects should be embedded in their project:
+
+1. **Example Handle (`example_handle.c`)**:
+   - This file provides a sample implementation of a handle that communicates with the hardware using SPI.
+   - It defines the necessary function pointers for communication (`transceive`) and logging (`log`).
+
+2. **Customizable Functions**:
+   - **Transceive Function**: 
+     - This function handles the transmission and reception of data over the chosen communication protocol (in this case, SPI).
+     - It is designed to be protocol-agnostic, meaning it can be modified to support other communication protocols as needed.
+     - Users can customize this function to suit their specific requirements for data transfer.
+
+   - **Log Function**: 
+     - This function is responsible for logging messages, including errors and informational logs.
+     - It is also designed to be flexible, allowing users to implement their own logging mechanism as per their needs.
+
+3. **Device Tree Configuration**:
+   - For the NAND flash multistack implementation to recognize the device, it must be labeled as `nand_device` in the Device Tree Source (DTS) configuration.
+   - The DTS configuration provides the necessary hardware information to the implementation, ensuring that the correct device is used.
+   - Notably, only the disk layer interacts with the device tree to retrieve this information, ensuring that the rest of the implementation remains agnostic of the specific hardware details.
+
 
 ## Theory Corner
 
