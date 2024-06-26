@@ -52,6 +52,9 @@ This guide provides a comprehensive overview of integrating NAND flash memory in
 
 Adjustments can either be created in the device tree for the SPI or in the overlay.
 
+#### Handle implementation
+There exists an example handle (example_handle.c) that uses SPI to communicate with the actual hardware. The transceive and log functions are kept agnostic and can be adjusted depending on the users need for their communication protocol. If the communication protocol is changed, the device in the DTS configuration needs the labeled *nand_device* to be recognized by the NAND flash multistack implementation. Basically, only the disk layer receives the information from the device tree.
+
 ## Theory Corner
 
 ### NAND Flash Multistack Implementation
