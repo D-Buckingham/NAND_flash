@@ -7,6 +7,7 @@
 3. [Setup and Configuration](#setup-and-configuration)
    - [Hardware Setup](#hardware-setup)
    - [Software Setup](#software-setup)
+      -[Handle Implementation](#handle-implementation) 
 4. [Theory Corner](#theory-corner)
    - [NAND Flash Multistack Implementation](#nand-flash-multistack-implementation)
    - [DHARA](#dhara)
@@ -52,7 +53,7 @@ This guide provides a comprehensive overview of integrating NAND flash memory in
 
 Adjustments can either be created in the device tree for the SPI or in the overlay.
 
-#### Handle implementation
+#### Handle Implementation
 The handle implementation is demonstrated in an example file, `example_handle.c`, which uses SPI to communicate with the actual hardware. This example is designed to be adaptable to different communication protocols and logging mechanisms. Here are the key points that one needs to take into account if the projects should be embedded in their project:
 
 1. **Example Handle (`example_handle.c`)**:
