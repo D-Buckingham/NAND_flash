@@ -5,7 +5,6 @@
 #include <zephyr/logging/log.h>
 
 
-#include "error.h"
 #include "../inc/nand_oper.h"
 #include "../dhara/dhara/nand.h"
 #include "../inc/nand_top_layer.h"

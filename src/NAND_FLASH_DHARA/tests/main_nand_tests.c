@@ -38,7 +38,7 @@ LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 
 #define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
 const struct spi_dt_spec nand_init(void) {
-    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+    const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(nand_device), SPI_OP, 0);
 
     if (!device_is_ready((&spidev_dt)->bus)) {
         LOG_ERR("SPI device is not ready");

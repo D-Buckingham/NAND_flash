@@ -38,7 +38,7 @@ static const struct disk_operations nand_disk_ops = {
 struct disk_info nand_disk = {
     .name = "NAND",
     .ops = &nand_disk_ops,
-    .dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)))
+    .dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(nand_device)))
 };
 
 
@@ -49,7 +49,7 @@ struct disk_info nand_disk = {
 int nand_disk_access_init(struct disk_info *disk) {
     // disk->name = "NAND_DISK";
     // disk->ops = &nand_disk_ops;
-    // disk->dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(spidev)));
+    // disk->dev = DEVICE_DT_GET(DT_BUS(DT_NODELABEL(nand_device)));
     int ret = nand_flash_init_device(&device_handle);
     return ret;
 }

@@ -44,12 +44,12 @@ my_spi_master:&spi4 {
 	pinctrl-names = "default", "sleep";
     cs-gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
     
-    spidev: spi-device@0 {
+    nand_device: spi-device@0 {
         status = "okay";
         compatible = "vnd,spi-device";
         reg = <0>;
         spi-max-frequency = <10000000>;//126000
-        label = "spidev";
+        label = "nand_device";
     };
 };
 

@@ -24,7 +24,7 @@ int my_transceive_function(nand_transaction_t *transaction) {
     //transmitter preparation before sending
     //address bytes + data bytes + the command byte + dummy byte
     
-	const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
+	const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(nand_device), SPI_OP, 0);
 
     //handle transmissions of 1 byte 
     //(CMD_WRITE_ENABLE and CMD_WRITE_DISABLE)

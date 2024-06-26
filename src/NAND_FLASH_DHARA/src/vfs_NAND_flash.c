@@ -36,4 +36,19 @@ int mount_nand_fs(void) {
     return ret;
 }
 
+int unmount_nand_fs(void) {
+    int ret;
+    LOG_INF("VFS Layer: Start Mounting FAT file system");
+
+    // Attempt to mount the file system
+    ret = fs_unmount(&nand_mount_fat);
+    if (ret) {
+        LOG_ERR("VFS Layer: Failed to mount NAND FS (%d)", ret);
+    } else {
+        LOG_INF("VFS Layer: NAND ELM FAT FS mounted");
+    } 
+    return ret;
+}
+
+
 SYS_INIT(mount_nand_fs, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEVICE);

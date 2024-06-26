@@ -21,3 +21,5 @@ extern FATFS fat_fs;
 extern struct fs_mount_t nand_mount_fat;
 
 int mount_nand_fs(void);
+
+int unmount_nand_fs(void);
