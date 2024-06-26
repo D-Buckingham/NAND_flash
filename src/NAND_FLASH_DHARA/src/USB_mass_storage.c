@@ -15,11 +15,11 @@
 
 #include <assert.h>
 
-#include    "nand_top_layer.h"
-#include    "vfs_NAND_flash.h"
-#include    "diskio_nand.h"
-#include    "nand_top_layer.h"
-#include "USB_mass_storage.h"
+#include    "../inc/nand_top_layer.h"
+#include    "../inc/vfs_NAND_flash.h"
+#include    "../inc/diskio_nand.h"
+#include    "../inc/nand_top_layer.h"
+#include "../inc/USB_mass_storage.h"
 
 
 LOG_MODULE_REGISTER(usb_mass, CONFIG_LOG_DEFAULT_LEVEL);
