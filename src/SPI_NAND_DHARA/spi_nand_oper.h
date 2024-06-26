@@ -80,7 +80,7 @@ typedef struct nand_h {
   //uint8_t internal_regs[0x76]; //!< For internal use.???
 } nand_h;
 
-//Prototype, this handle has to be defined in the example_handle.c
+//Prototype, this handle pointer has to be defined in the example_handle.c
 extern nand_h *my_nand_handle;
 //////////////////////////////          Handle END          //////////////////////////////////
 

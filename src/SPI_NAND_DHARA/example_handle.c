@@ -13,8 +13,9 @@ uint8_t dummy_byte_value = 0xFF;
 LOG_MODULE_REGISTER(handle_example, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-// Assume you have a global handle or it's passed around properly
-nand_h *my_nand_handle;
+// global handle, include again, keep the name my_nand_handle
+nand_h Global_handle;
+nand_h *my_nand_handle = &Global_handle;
 
 
 
@@ -194,24 +195,16 @@ void my_log_function(char *msg, bool is_err, bool has_int_arg, uint32_t arg) {
 
 
 // Initialization somewhere in your code
-int init_nand_handle(nand_h *handle) {
+int init_nand_handle() {
     // Initialize the handle's function pointers and other members
-    handle->transceive = my_transceive_function;  // Replace with your actual transceive function
-    handle->log = my_log_function;                // Replace with your actual log function if any
+    my_nand_handle->transceive = my_transceive_function;  
+    my_nand_handle->log = my_log_function;               
+
+    // // Link the input handle to the global handle
+    // my_nand_handle = handle;
     return 0;
 }
 
-
-// const static struct spi_dt_spec spi_nand_init(void) {
-//     const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
-
-//     if (!device_is_ready((&spidev_dt)->bus)) {
-//         LOG_ERR("SPI device is not ready");
-//     }else {
-//         LOG_INF("NAND flash as SPI device initialized!");
-//     }
-
-//     return spidev_dt;
-// }
+SYS_INIT(init_nand_handle, APPLICATION, CONFIG_KERNEL_INIT_PRIORITY_DEVICE);
 
 

@@ -8,7 +8,7 @@
 
 
 // Function to initialize the NAND handle
-int init_nand_handle(nand_h *handle);
+int init_nand_handle(void);
 
 // Example transceive function
 
