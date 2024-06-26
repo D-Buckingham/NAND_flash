@@ -238,7 +238,7 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
  */
 int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t *err)
 {
-    LOG_INF("erase_block, block=%u", b);
+    //LOG_INF("erase_block, block=%u", b);
     struct spi_nand_flash_device_t *dev = CONTAINER_OF(n, struct spi_nand_flash_device_t, dhara_nand);
     int ret;
     uint32_t ecc_count_indicator = 0;
@@ -261,7 +261,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return ret;
     }
 
-    LOG_INF("Current erase count for block at page %u: %u", Erased_block, erase_count_indicator);
+    LOG_INF("Current erase count for block %u: %u", b, erase_count_indicator);
 
     // Increment the erase count
     erase_count_indicator++;
