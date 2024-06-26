@@ -194,11 +194,53 @@ void my_log_function(char *msg, bool is_err, bool has_int_arg, uint32_t arg) {
 }
 
 
+//waiting in non blocking way
+// Structure to hold the wait state
+struct non_blocking_wait {
+    struct k_timer timer;
+    bool completed;
+};
+
+// Timer expiry function
+static void timer_expiry_function(struct k_timer *timer_id) {
+    struct non_blocking_wait *wait = CONTAINER_OF(timer_id, struct non_blocking_wait, timer);
+    wait->completed = true;
+}
+
+// Start a non-blocking wait
+static void start_non_blocking_wait(struct non_blocking_wait *wait, uint32_t usec) {
+    wait->completed = false;
+    k_timer_init(&wait->timer, timer_expiry_function, NULL);
+    k_timer_start(&wait->timer, K_USEC(usec), K_NO_WAIT);
+}
+
+// Check if the wait is completed
+static bool is_non_blocking_wait_completed(struct non_blocking_wait *wait) {
+    return wait->completed;
+}
+
+void my_wait_function(uint32_t microseconds){
+    if(microseconds < 150){
+        k_busy_wait(microseconds);
+    }else{
+        k_sleep(K_MSEC(1));
+        // struct non_blocking_wait wait;
+        // start_non_blocking_wait(&wait, microseconds); 
+
+        // while (!is_non_blocking_wait_completed(&wait)) {
+        //     // Perform other tasks here while waiting
+        //     k_yield(); // Yield to other threads
+        // }
+    }
+}
+
+
 // Initialization somewhere in your code
 int init_nand_handle() {
     // Initialize the handle's function pointers and other members
     my_nand_handle->transceive = my_transceive_function;  
     my_nand_handle->log = my_log_function;
+    my_nand_handle->wait = my_wait_function;
 
     // // Link the input handle to the global handle
     // my_nand_handle = handle;
