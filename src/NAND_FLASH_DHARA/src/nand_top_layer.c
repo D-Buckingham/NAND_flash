@@ -6,11 +6,11 @@
 
 
 #include "error.h"
-#include "nand_oper.h"
-#include "nand.h"
-#include "nand_top_layer.h"
-#include "nand_flash_devices.h"
-#include "example_handle.h"
+#include "../inc/nand_oper.h"
+#include "../dhara/dhara/nand.h"
+#include "../inc/nand_top_layer.h"
+#include "../inc/nand_flash_devices.h"
+#include "../inc/example_handle.h"
 
 LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 

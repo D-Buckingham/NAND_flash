@@ -11,9 +11,9 @@
 
 #include <assert.h>
 
-#include "nand_top_layer.h"
-#include "nand_oper.h"
-#include "health_monitoring.h"
+#include "../inc/nand_top_layer.h"
+#include "../inc/nand_oper.h"
+#include "../inc/health_monitoring.h"
 
 #define ROM_WAIT_THRESHOLD_US 1000
 #define ERASE_COUNTER_SPARE_AREA_OFFSET 16

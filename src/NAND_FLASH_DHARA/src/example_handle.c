@@ -1,4 +1,4 @@
-#include "nand_oper.h"
+#include "../inc/nand_oper.h"
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>

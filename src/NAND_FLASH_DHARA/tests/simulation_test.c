@@ -13,10 +13,10 @@
 #include "test_spi_nand_top_layer.h"
 #include "spi_nand_oper_tests.h"
 #include "nand_top_layer.h"
-#include "../SPI_NAND_DHARA/vfs_NAND_flash.h"
-#include "../SPI_NAND_DHARA/diskio_nand.h"
-#include "../SPI_NAND_DHARA/nand_oper.h"
-#include "../SPI_NAND_DHARA/nand_top_layer.h"
+#include "vfs_NAND_flash.h"
+#include "diskio_nand.h"
+#include "nand_oper.h"
+#include "nand_top_layer.h"
 
 #include "simulation_test.h"
 

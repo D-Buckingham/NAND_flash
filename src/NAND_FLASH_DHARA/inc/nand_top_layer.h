@@ -13,7 +13,7 @@
 
 
 #include <stdint.h>
-#include "map.h"
+#include "../dhara/dhara/map.h"
 
 #include <zephyr/kernel.h>
 

@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 
-#include "nand_oper.h"
-#include "example_handle.h"
+#include "../inc/nand_oper.h"
+#include "../inc/example_handle.h"
 
 /**
  * S5F14G04SND-10LIN

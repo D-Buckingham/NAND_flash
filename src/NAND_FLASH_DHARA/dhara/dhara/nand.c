@@ -12,8 +12,8 @@
  */
 
 #include "nand.h"
-#include "nand_oper.h"
-#include "nand_top_layer.h"//for the nand_flash_device_t
+#include "../../inc/nand_oper.h" 
+#include "../../inc/nand_top_layer.h"//for the nand_flash_device_t
 
 
 #include <zephyr/drivers/spi.h>

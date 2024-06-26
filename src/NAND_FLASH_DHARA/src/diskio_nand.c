@@ -1,7 +1,7 @@
 //#include <fs/fs.h>
-#include "nand_top_layer.h"
+#include "../inc/nand_top_layer.h"
 #include "zephyr/storage/disk_access.h"
-#include "diskio_nand.h"
+#include "../inc/diskio_nand.h"
 
 #include <zephyr/device.h>
 #include <zephyr/types.h>

@@ -6,27 +6,26 @@ project(NAND_flash)
 
 file(GLOB APP_SOURCES
             "src/main.c"
-            "src/SPI_NAND_DHARA/nand_oper.c"
-            "src/SPI_NAND_DHARA/nand_top_layer.c"
-            "dhara/dhara/*.c"
-            "nand_top_layer.c"
-            "src/tests/spi_nand_oper_tests.c"
-            "src/tests/test_spi_nand_top_layer.c"
-            "src/SPI_NAND_DHARA/diskio_nand.c"
-            "src/SPI_NAND_DHARA/vfs_NAND_flash.c"
-            "src/tests/test_disk_access.c"
-            "src/tests/vfs_test.c"
-            "src/tests/main_nand_tests.c"
-            "src/SPI_NAND_DHARA/USB_mass_storage.c"
-            "src/tests/simulation_test.c"
-            "src/SPI_NAND_DHARA/health_monitoring.c"
-            "src/SPI_NAND_DHARA/example_handle.c"
+            "src/NAND_FLASH_DHARA/src/nand_oper.c"
+            "src/NAND_FLASH_DHARA/src/nand_top_layer.c"
+            "src/NAND_FLASH_DHARA/dhara/dhara/*.c"
+            "src/NAND_FLASH_DHARA/tests/spi_nand_oper_tests.c"
+            "src/NAND_FLASH_DHARA/tests/test_spi_nand_top_layer.c"
+            "src/NAND_FLASH_DHARA/src/diskio_nand.c"
+            "src/NAND_FLASH_DHARA/src/vfs_NAND_flash.c"
+            "src/NAND_FLASH_DHARA/tests/test_disk_access.c"
+            "src/NAND_FLASH_DHARA/tests/vfs_test.c"
+            "src/NAND_FLASH_DHARA/tests/main_nand_tests.c"
+            "src/NAND_FLASH_DHARA/src/USB_mass_storage.c"
+            "src/NAND_FLASH_DHARA/tests/simulation_test.c"
+            "src/NAND_FLASH_DHARA/src/health_monitoring.c"
+            "src/NAND_FLASH_DHARA/src/example_handle.c"
            
 )
 
-include_directories(${PROJECT_SOURCE_DIR}/dhara/dhara)
-include_directories(${PROJECT_SOURCE_DIR}/src/SPI_NAND_DHARA)
-include_directories(${PROJECT_SOURCE_DIR}/src/tests)
+include_directories(${PROJECT_SOURCE_DIR}/src/NAND_FLASH_DHARA/dhara/dhara)
+include_directories(${PROJECT_SOURCE_DIR}/src/NAND_FLASH_DHARA/inc)
+include_directories(${PROJECT_SOURCE_DIR}/src/NAND_FLASH_DHARA/tests)
 
 #FILE(GLOB app_sources dhara/dhara/*.c)
 

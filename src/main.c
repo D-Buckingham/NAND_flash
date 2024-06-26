@@ -13,13 +13,13 @@
 #ifndef MAIN
 
 
-#include "SPI_NAND_DHARA/nand_oper.h"
-#include "tests/spi_nand_oper_tests.h"
-#include "tests/test_spi_nand_top_layer.h"
-#include "tests/test_disk_access.h"
+#include "nand_oper.h"
+#include "spi_nand_oper_tests.h"
+#include "test_spi_nand_top_layer.h"
+#include "test_disk_access.h"
 #include "vfs_NAND_flash.h"
-#include "tests/vfs_test.h"
-#include "tests/main_nand_tests.h"
+#include "vfs_test.h"
+#include "main_nand_tests.h"
 #include "USB_mass_storage.h"
 #include "simulation_test.h"
 

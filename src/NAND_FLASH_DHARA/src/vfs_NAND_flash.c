@@ -6,8 +6,8 @@
 #include <zephyr/storage/disk_access.h>
 #include <ff.h>
 
-#include "vfs_NAND_flash.h"
-#include "diskio_nand.h"
+#include "../inc/vfs_NAND_flash.h"
+#include "../inc/diskio_nand.h"
 
 
 LOG_MODULE_REGISTER(vfs_NAND_flash, CONFIG_LOG_DEFAULT_LEVEL);
