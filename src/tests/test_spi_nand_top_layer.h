@@ -26,7 +26,7 @@
  * @param[out] out_handle Pointer to the device handle pointer where the initialized device info will be stored.
  * @param[in] spi_handle Pointer to the SPI device specification structure.
  */
-void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle);
+void setup_nand_flash(nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle);
 
 
 /**
@@ -71,7 +71,7 @@ void fill_buffer(uint32_t seed, uint8_t *dst, size_t count);
  * @param[in] sec_count Number of sectors to test.
  * @return 0 on success, negative error code on failure.
  */
-int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count);
+int do_single_write_test(nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count);
 
 /**
  * Conducts a series of write tests on the NAND flash.

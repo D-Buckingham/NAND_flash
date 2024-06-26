@@ -12,7 +12,7 @@
 #include <assert.h>
 
 #include "nand_top_layer.h"
-#include "spi_nand_oper.h"
+#include "nand_oper.h"
 #include "health_monitoring.h"
 
 #define ROM_WAIT_THRESHOLD_US 1000
@@ -67,7 +67,7 @@ static int wait_for_ready_nand( uint8_t *status_out)
 
     while (true) {
         uint8_t status;
-        int err = spi_nand_read_register(REG_STATUS, &status);
+        int err = nand_read_register(REG_STATUS, &status);
         if (err != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -91,7 +91,7 @@ static int wait_for_ready_nand( uint8_t *status_out)
 static int read_page_and_wait( uint32_t page, uint8_t *status_out)
 {
     int err;
-    err = spi_nand_read_page(page); 
+    err = nand_read_page(page); 
     if (err != 0) {
         LOG_ERR("Failed to read page %u, error: %d", page, err);
         return -1;
@@ -131,7 +131,7 @@ uint32_t read_bad_block_count(void) {
         }
 
         // Read the bad block indicator from the spare area (0x816 and 0x817)
-        ret = spi_nand_read((uint8_t *)&bad_block_indicator, device_handle->page_size, 2);
+        ret = nand_read((uint8_t *)&bad_block_indicator, device_handle->page_size, 2);
         if (ret != 0) {
             LOG_ERR("Failed to read bad block indicator from block %u, err: %d", b, ret);
             // Assume block is bad if read fails
@@ -171,7 +171,7 @@ uint32_t read_erase_count(void){
         }
 
         // Read the bad block indicator from the spare area (0x816 and 0x817)
-        ret = spi_nand_read((uint8_t *)&erase_count_indicator, device_handle->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
+        ret = nand_read((uint8_t *)&erase_count_indicator, device_handle->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read assuming block bad");
             continue;
@@ -207,7 +207,7 @@ uint32_t read_ecc_errors(void) {
         }
 
         // Read the ECC error count from the spare area (0x821 to 0x824)
-        ret = spi_nand_read((uint8_t *)&ecc_error_count, device_handle->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
+        ret = nand_read((uint8_t *)&ecc_error_count, device_handle->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
         if (ret != 0) {
             LOG_ERR("Failed to read ECC error count, assuming block bad");
             continue;

@@ -27,13 +27,13 @@ LOG_MODULE_REGISTER(test_spi_nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
 //put the spi_handle into the spi_nand_flash_device_t struct and initialize the device
-void setup_nand_flash(spi_nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle)
+void setup_nand_flash(nand_flash_device_t **out_handle, const struct spi_dt_spec *spi_handle)
 {
 
 
     
 
-    int ret = spi_nand_flash_init_device(&device_handle);//TODO correctly handled? &
+    int ret = nand_flash_init_device(&device_handle);//TODO correctly handled? &
     if(ret != 0){
         LOG_ERR("Initialization of device on top layer, error: %d", ret);
     }else{
@@ -48,7 +48,7 @@ int wait_and_chill(){
     uint8_t status;
     int ret = 0;
     while (true) {
-        ret = spi_nand_read_register(REG_STATUS, &status);
+        ret = nand_read_register(REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register while waiting");
             ret = -1;
@@ -65,10 +65,10 @@ int wait_and_chill(){
 
 int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
 {
-    // spi_nand_flash_device_t *device_handle = NULL;//to manually erase
+    // nand_flash_device_t *device_handle = NULL;//to manually erase
     // setup_nand_flash(&device_handle, spi);
     int err;
-    err = spi_nand_erase_chip(device_handle);
+    err = nand_erase_chip(device_handle);
     if(err != 0){
         LOG_ERR("Erase chip of device on top layer, error: %d", err);
         return -1;
@@ -77,7 +77,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
     uint32_t sector_size, sector_num;
 
 
-    int ret = spi_nand_flash_get_capacity(device_handle, &sector_num);
+    int ret = nand_flash_get_capacity(device_handle, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
@@ -86,7 +86,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
     }
 
 
-    ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
+    ret = nand_flash_get_sector_size(device_handle, &sector_size);
     if(ret != 0){
         LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
@@ -94,7 +94,7 @@ int test1_setup_erase_deinit_top_layer(const struct spi_dt_spec *spi)
         LOG_INF("size of sector is: %u", sector_size);
     }
 
-    err = spi_nand_flash_deinit_device(device_handle);
+    err = nand_flash_deinit_device(device_handle);
     if(err != 0){
         LOG_ERR("Deinitialize device on top layer, error: %d", err);
         return -1;
@@ -137,7 +137,7 @@ void fill_buffer(uint32_t seed, uint8_t *dst, size_t count){
 
 
 
-int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count)
+int do_single_write_test(nand_flash_device_t *flash, uint32_t start_sec, uint16_t sec_count)
 {
     static uint8_t pattern_buf[2048];
     static uint8_t temp_buf[2048];
@@ -147,13 +147,13 @@ int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uin
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
 
 
-    int ret = spi_nand_flash_get_capacity(flash, &sector_num);
+    int ret = nand_flash_get_capacity(flash, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_flash_get_sector_size(flash, &sector_size);
+    ret = nand_flash_get_sector_size(flash, &sector_size);
     if(ret != 0){
         LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
@@ -170,7 +170,7 @@ int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uin
 
     for (int i = start_sec; i < sec_count; i++) { 
         
-        if(spi_nand_flash_write_sector(flash, pattern_buf, i) != 0){
+        if(nand_flash_write_sector(flash, pattern_buf, i) != 0){
             LOG_ERR("Failed to write sector at index %d", i);
             return -1;
         }
@@ -180,7 +180,7 @@ int do_single_write_test(spi_nand_flash_device_t *flash, uint32_t start_sec, uin
         
         
         
-        if(spi_nand_flash_read_sector(flash, temp_buf, i) != 0){
+        if(nand_flash_read_sector(flash, temp_buf, i) != 0){
             LOG_ERR("Failed to read sector at index %d", i);
             return -1;
         }
@@ -195,14 +195,14 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 {
     
     uint32_t sector_num, sector_size;
-    // spi_nand_flash_device_t *device_handle;
+    // nand_flash_device_t *device_handle;
     // setup_nand_flash(&device_handle, spi);
 
-    if(spi_nand_flash_get_capacity(device_handle, &sector_num) != 0){
+    if(nand_flash_get_capacity(device_handle, &sector_num) != 0){
         LOG_ERR("Unable to retrieve flash capacity");
         return -1;
     }
-    if(spi_nand_flash_get_sector_size(device_handle, &sector_size) != 0){
+    if(nand_flash_get_sector_size(device_handle, &sector_size) != 0){
         LOG_ERR("Unable to get sector size");
         return -1;
     }
@@ -252,7 +252,7 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
         LOG_INF("single write read test 7 successful");
     }
 
-    if(spi_nand_flash_deinit_device(device_handle) != 0){
+    if(nand_flash_deinit_device(device_handle) != 0){
         LOG_ERR("Deinitialize device on top layer");
         return -1;
     }else{
@@ -267,20 +267,20 @@ int test2_writing_tests_top_layer(const struct spi_dt_spec *spi)
 int test_struct_handling(const struct spi_dt_spec *spi){
     static uint8_t pattern_buf[2048];
     static uint8_t temp_buf[2048];
-    // spi_nand_flash_device_t *flash;
+    // nand_flash_device_t *flash;
     // setup_nand_flash(&flash, spi);
 
     uint32_t sector_size, sector_num;
     memset((void *)pattern_buf, 0x00, sizeof(pattern_buf));
     memset((void *)temp_buf, 0x00, sizeof(temp_buf));
 
-    int ret = spi_nand_flash_get_capacity(device_handle, &sector_num);
+    int ret = nand_flash_get_capacity(device_handle, &sector_num);
     if(ret != 0){
         LOG_ERR("Unable to retrieve flash capacity, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_flash_get_sector_size(device_handle, &sector_size);
+    ret = nand_flash_get_sector_size(device_handle, &sector_size);
     if(ret != 0){
         LOG_ERR("Unable to get sector size, error: %d", ret);
         return -1;
@@ -292,7 +292,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
     fill_buffer(PATTERN_SEED, pattern_buf, sector_size);//we store every 4 byte address 4 bytes//(uint8_t*) pattern_buf??
 
 
-    if(spi_nand_flash_write_sector(device_handle, pattern_buf, 2) != 0){
+    if(nand_flash_write_sector(device_handle, pattern_buf, 2) != 0){
         LOG_ERR("Failed to write sector at index %d", 1);
         return -1;
     }
@@ -303,7 +303,7 @@ int test_struct_handling(const struct spi_dt_spec *spi){
         return -1;
     }
 
-    if(spi_nand_flash_read_sector(device_handle, temp_buf, 2) != 0){
+    if(nand_flash_read_sector(device_handle, temp_buf, 2) != 0){
             LOG_ERR("Failed to read sector at index %d", 1);
             return -1;
         }

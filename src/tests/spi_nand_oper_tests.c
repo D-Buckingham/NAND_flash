@@ -4,7 +4,7 @@
 #include <zephyr/drivers/spi.h>
 #include "nand.h"
 
-#include "spi_nand_oper.h"
+#include "nand_oper.h"
 #include "spi_nand_oper_tests.h"
 #include <zephyr/devicetree.h>
 
@@ -19,7 +19,7 @@ static int wait_and_chill(const struct spi_dt_spec *dev){
     uint8_t status;
     int ret = 0;
     while (true) {
-        ret = spi_nand_read_register(REG_STATUS, &status);
+        ret = nand_read_register(REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register while waiting");
             ret = -1;
@@ -60,7 +60,7 @@ int test_read_page_spi_nand(const struct spi_dt_spec *dev){
     }
 
     int err;
-    err = spi_nand_read_page(0x00); 
+    err = nand_read_page(0x00); 
     if (err != 0) {
         LOG_ERR("Test 2: Failed to read page 1 to cache, error: %d",err);
         return -1;
@@ -80,7 +80,7 @@ int test_read_cache_spi_nand(const struct spi_dt_spec *dev){
 
     //assuming data alread read into cash
     uint8_t test_buffer[6] = {0};
-    int ret = spi_nand_read(test_buffer, 0, 6);
+    int ret = nand_read(test_buffer, 0, 6);
     if (ret != 0) {
         LOG_ERR("Test 3: Failed to read into test buffer, err: %d", ret);
         return -1; // Assume page in cash
@@ -102,19 +102,19 @@ int test_load_and_execute_program_spi_nand(const struct spi_dt_spec *dev){
         return -1;
     }
 
-    int ret = spi_nand_write_enable();
+    int ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Test 4: Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load(&data, 0, 1);
+    ret = nand_program_load(&data, 0, 1);
     if (ret != 0) {
         LOG_ERR("Test 4: Failed to load program, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load((uint8_t *)&used_marker, 1 + 2, 2);
+    ret = nand_program_load((uint8_t *)&used_marker, 1 + 2, 2);
     if (ret) {
         LOG_ERR("Test 4: Failed to load used marker, error: %d", ret);
         return -1;
@@ -134,14 +134,14 @@ int test_erase_block_spi_nand(const struct spi_dt_spec *dev){
         return -1;
     }
 
-    int ret = spi_nand_write_enable();
+    int ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Test 5: Failed to enable write, error: %d", ret);
         return -1;
     }
-    spi_nand_read_register(REG_STATUS, &status);//to check in debugging
+    nand_read_register(REG_STATUS, &status);//to check in debugging
 
-    ret = spi_nand_erase_block(0);
+    ret = nand_erase_block(0);
     if (ret != 0) {
         LOG_ERR("Test 5: Failed to erase block 0, error: %d", ret);
         return -1;
@@ -175,11 +175,11 @@ int test_IDs_spi_nand(const struct spi_dt_spec *dev){
     }
 
     uint8_t device_id;
-    int ret = spi_nand_device_id((uint8_t *) &device_id);
+    int ret = nand_device_id((uint8_t *) &device_id);
     if (ret != 0) {
         LOG_ERR("Failed to read device ID");
     } else {
-        LOG_INF("SPI NAND Device ID: 0x%x ", device_id);
+        LOG_INF("NAND Device ID: 0x%x ", device_id);
     }
     return ret;
 }
@@ -203,19 +203,19 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     }
     //usually we would read into cache existing data before changing it.
     //enable write
-    int ret = spi_nand_write_enable();
+    int ret = nand_write_enable();
     if (ret) {
         LOG_ERR("Test 6: Failed to enable write, error: %d", ret);
         return -1;
     }
     //program load into cache
-    ret = spi_nand_program_load(data, 1, length);
+    ret = nand_program_load(data, 1, length);
     if (ret) {
         LOG_ERR("Test 6: Failed to load program, error: %d", ret);
         return -1;
     }
     //program execute into nand array
-    ret = spi_nand_program_execute(page);
+    ret = nand_program_execute(page);
     if (ret != 0) {
         LOG_ERR("Test 6: Failed to execute program on page, error: %d", ret);
         return -1;
@@ -227,7 +227,7 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
         return -1;
     }
     // Read from the register
-    ret = spi_nand_read_page(page); 
+    ret = nand_read_page(page); 
     if (ret != 0) {
         LOG_ERR("Test 6: Failed to read page %u, error: %d", page, ret);
         return -1;
@@ -241,13 +241,13 @@ int test_spi_nand_write_read(const struct spi_dt_spec *dev) {
     }
 
     //read from cache
-    ret = spi_nand_read(readings, 1, length);
+    ret = nand_read(readings, 1, length);
     if (ret != 0) {
         LOG_ERR("Test 6: Failed to read , err: %d", ret);
         return -1; 
     }
 
-    ret = spi_nand_read(read_page, 1, 800);
+    ret = nand_read(read_page, 1, 800);
     if (ret != 0) {
         LOG_ERR("Test 6: Failed to read , err: %d", ret);
         return -1; 
@@ -324,14 +324,14 @@ void log_registers(const struct spi_dt_spec *dev, const char* operation) {
     uint8_t status, protect;
 
     // Log the status register
-    if (spi_nand_read_register(REG_STATUS, &status) == 0) {
+    if (nand_read_register(REG_STATUS, &status) == 0) {
         LOG_INF("%s: Status Register = %02u", operation, status);
     } else {
         LOG_ERR("%s: Failed to read Status Register", operation);
     }
 
     // Log the protection register
-    if (spi_nand_read_register(REG_PROTECT, &protect) == 0) {
+    if (nand_read_register(REG_PROTECT, &protect) == 0) {
         LOG_INF("%s: Protect Register = %02u", operation, protect);
     } else {
         LOG_ERR("%s: Failed to read Protect Register", operation);
@@ -343,10 +343,10 @@ void reread_page(const struct spi_dt_spec *dev, uint32_t page){
     uint8_t status;
     int ret;
 
-    spi_nand_read_register(REG_STATUS, &status);
+    nand_read_register(REG_STATUS, &status);
     LOG_INF("After initial read: Status Register = %02u", status);
     // Check the status register after reading the page
-    while (spi_nand_read_register(REG_STATUS, &status) == 0 && cnt < 10 && status & STAT_ECC1) {
+    while (nand_read_register(REG_STATUS, &status) == 0 && cnt < 10 && status & STAT_ECC1) {
         cnt ++;
         
         // Check if ECC error bit is set
@@ -354,13 +354,13 @@ void reread_page(const struct spi_dt_spec *dev, uint32_t page){
             LOG_INF("ECC error detected, attempting to re-read the page.");
             
             // Attempt to re-read the page
-            ret = spi_nand_read_page(page);
+            ret = nand_read_page(page);
             if (ret != 0) {
                 LOG_ERR("Failed to re-read page %u, error: %d", page, ret);
             }
             wait_and_chill(dev);
             // Check status again after re-read
-            if (spi_nand_read_register(REG_STATUS, &status) == 0) {
+            if (nand_read_register(REG_STATUS, &status) == 0) {
                 LOG_INF("After re-read: Status Register = %02u", status);
                 if (status & STAT_ECC1) {
                     LOG_ERR("ECC error persists after re-read.");
@@ -380,9 +380,9 @@ static uint8_t temp_buf[2175];
 
 //final test, write and read it
 int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
-    LOG_INF("Test 7: testing SPI NAND sector write and read register");
+    LOG_INF("Test 7: testing NAND sector write and read register");
 
-    spi_nand_erase_block(1);
+    nand_erase_block(1);
 
     memset(pattern_buf, 0xFF, 2048);
     memset(temp_buf, 0xFF, 2175);
@@ -406,14 +406,14 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
 
 
-    ret = spi_nand_read_page(page); 
+    ret = nand_read_page(page); 
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
         return -1;
     }
    
     wait_and_chill(dev);
-    ret = spi_nand_write_enable();
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
         return -1;
@@ -423,10 +423,10 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
     
     //We just overwrite existing data in NAND array
     //load data into cache
-    if(spi_nand_program_load(pattern_buf, column_address, 2048) == 0){
+    if(nand_program_load(pattern_buf, column_address, 2048) == 0){
         wait_and_chill(dev);
         //log_registers(dev, "After Program Load");
-        if(spi_nand_program_execute(page) != 0){
+        if(nand_program_execute(page) != 0){
             LOG_ERR("Test7: Failed to write sector at index %d", 1);
             return -1;
         }
@@ -443,7 +443,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
     //read sector into buffer
     // Read from the NAND array the block 0, page 0 everything 
-    ret = spi_nand_read_page(page); 
+    ret = nand_read_page(page); 
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
         return -1;
@@ -462,7 +462,7 @@ int test_spi_nand_sector_write_read(const struct spi_dt_spec *dev) {
 
     //log_registers(dev, "After Page Read in cash");
     //read from cache
-    ret = spi_nand_read(temp_buf, 0, 2175);
+    ret = nand_read(temp_buf, 0, 2175);
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read , err: %d", ret);
         return -1; 
@@ -516,14 +516,14 @@ int check_write_read_cash(const struct spi_dt_spec *dev){
 
 
 
-    ret = spi_nand_read_page(page); 
+    ret = nand_read_page(page); 
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read page %u, error: %d", page, ret);
         return -1;
     }
    
     wait_and_chill(dev);
-    ret = spi_nand_write_enable();
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to enable write, error: %d", ret);
         return -1;
@@ -533,14 +533,14 @@ int check_write_read_cash(const struct spi_dt_spec *dev){
     
     //We just overwrite existing data in NAND array
     //load data into cache
-    if(spi_nand_program_load(pattern_buf, 0, 2048) == 0){
+    if(nand_program_load(pattern_buf, 0, 2048) == 0){
         wait_and_chill(dev);
         //log_registers(dev, "After Program Load");
     }
 
     
 
-    ret = spi_nand_read(temp_buf, 4, 2175);
+    ret = nand_read(temp_buf, 4, 2175);
     if (ret != 0) {
         LOG_ERR("Test 7: Failed to read , err: %d", ret);
         return -1; 
@@ -567,12 +567,12 @@ int test_SPI_NAND_Communicator_all_tests(const struct spi_dt_spec *dev) {
     uint8_t status;
     
 
-    //ret = spi_nand_read_register(dev, REG_PROTECT, &status);//TODO for debugging
+    //ret = nand_read_register(dev, REG_PROTECT, &status);//TODO for debugging
     LOG_INF("Starting all SPI NAND communicator tests");
     
     LOG_INF("Unprotecting chip");
-    spi_nand_write_register(REG_PROTECT, 0);
-    ret = spi_nand_read_register(REG_PROTECT, &status);
+    nand_write_register(REG_PROTECT, 0);
+    ret = nand_read_register(REG_PROTECT, &status);
     if (ret != 0) {
         LOG_ERR("Failed to read REG_PROTECT, error: %d", ret);
     }LOG_INF("Status Protection Register = %u", status);

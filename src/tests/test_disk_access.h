@@ -14,7 +14,6 @@
 
 #include <zephyr/kernel.h>
 #include <Zephyr/device.h>
-#include <Zephyr/drivers/spi.h>
 #include <Zephyr/sys/util.h>
 #include <zephyr/devicetree.h>
 

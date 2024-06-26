@@ -17,7 +17,7 @@
 #include    "nand_top_layer.h"
 #include    "../SPI_NAND_DHARA/vfs_NAND_flash.h"
 #include    "../SPI_NAND_DHARA/diskio_nand.h"
-#include    "../SPI_NAND_DHARA/spi_nand_oper.h"
+#include    "../SPI_NAND_DHARA/nand_oper.h"
 #include    "../SPI_NAND_DHARA/nand_top_layer.h"
 
 #define MAX_PATH_LEN 255
@@ -37,7 +37,7 @@ LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
 /////////////////////////////////////////////       FUNCTIONALITY TESTS START     //////////////////////////
 
 #define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
-const struct spi_dt_spec spi_nand_init(void) {
+const struct spi_dt_spec nand_init(void) {
     const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
 
     if (!device_is_ready((&spidev_dt)->bus)) {
@@ -635,15 +635,8 @@ int top_device_connected(void){
     LOG_INF("Overall, Test 1: Checking initialization on every level");
 
     //device connected?
-    const struct spi_dt_spec spidev_dt = spi_nand_init();//gets pointer to device from DT
-    if (!device_is_ready(spidev_dt.bus)) {
-        LOG_ERR("Device not ready on SPI level");
-        return -1;
-    }else{
-        LOG_INF("Device correctly retrieved from device tree");
-    }
-
-
+    const struct spi_dt_spec spidev_dt = nand_init();//gets pointer to device from DT
+    
     //check if the communication works by reading out the device ID
     res = test_IDs_spi_nand(&spidev_dt);
     if (res != 0) {
@@ -651,12 +644,8 @@ int top_device_connected(void){
         return -1;
     }
 
-
-    //get sector size to validate if dhara map layer works
-    //nand_flash_config.spi_dev = &spidev_dt; //unnecessary
-
-    //spi_nand_flash_init_device(&nand_flash_config, &device_handle); // already initialized
-    res = spi_nand_flash_get_sector_size(device_handle, &sector_size);
+    //nand_flash_init_device(&nand_flash_config, &device_handle); // already initialized
+    res = nand_flash_get_sector_size(device_handle, &sector_size);
     if(res != 0){
         LOG_ERR("Unable to get sector size, error: %d", res);
         return -1;
@@ -1392,32 +1381,32 @@ static int mark_block_as_bad(void)
 
     LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", 0, first_block_page, bad_block_indicator);
 
-    ret = spi_nand_write_enable();
+    ret = nand_write_enable();
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_erase_block(first_block_page);
+    ret = nand_erase_block(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_write_enable();
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load((uint8_t *)&bad_block_indicator, 2048, 2);
+    ret = nand_program_load((uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
         return -1;
     }
 
 
-    ret = spi_nand_program_execute(first_block_page);
+    ret = nand_program_execute(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to execute program on page %u, error: %d", first_block_page, ret);
         return -1;
@@ -1425,7 +1414,7 @@ static int mark_block_as_bad(void)
 
     while (true) {
         uint8_t status;
-        int ret = spi_nand_read_register( REG_STATUS, &status);
+        int ret = nand_read_register( REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -1449,32 +1438,32 @@ static int mark_block_as_good(void)
 
     LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", 0, first_block_page, bad_block_indicator);
 
-    ret = spi_nand_write_enable();
+    ret = nand_write_enable();
     if (ret) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_erase_block(first_block_page);
+    ret = nand_erase_block(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to erase block, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_write_enable();
+    ret = nand_write_enable();
     if (ret != 0) {
         LOG_ERR("Failed to enable write, error: %d", ret);
         return -1;
     }
 
-    ret = spi_nand_program_load((uint8_t *)&bad_block_indicator, 2048, 2);
+    ret = nand_program_load((uint8_t *)&bad_block_indicator, 2048, 2);
     if (ret != 0) {
         LOG_ERR("Failed to program load, error: %d", ret);
         return -1;
     }
 
 
-    ret = spi_nand_program_execute(first_block_page);
+    ret = nand_program_execute(first_block_page);
     if (ret != 0) {
         LOG_ERR("Failed to execute program on page %u, error: %d", first_block_page, ret);
         return -1;
@@ -1482,7 +1471,7 @@ static int mark_block_as_good(void)
 
     while (true) {
         uint8_t status;
-        int ret = spi_nand_read_register(REG_STATUS, &status);
+        int ret = nand_read_register(REG_STATUS, &status);
         if (ret != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -1503,7 +1492,7 @@ int bad_block_test(void){
     int ret;
 
     //first erase chip ==> starting at block 1, dhara mapping remains
-    ret = spi_nand_erase_chip(device_handle);
+    ret = nand_erase_chip(device_handle);
     if(ret != 0){
         LOG_ERR("Erase chip, error: %d", ret);
         return -1;
@@ -1526,7 +1515,7 @@ int bad_block_test(void){
     //look at log if it recognized the bad block
 
     ret = mark_block_as_good();
-    ret = spi_nand_erase_chip(device_handle);
+    ret = nand_erase_chip(device_handle);
     if(ret != 0){
         LOG_ERR("Erase chip, error: %d", ret);
         return -1;
@@ -1722,7 +1711,7 @@ static int check_files(size_t flash_size) {
 int long_term_test(void){
     int rc;
     //first erase chip ==> starting at block 1, dhara mapping remains
-    // rc = spi_nand_erase_chip(device_handle);
+    // rc = nand_erase_chip(device_handle);
     // if(rc != 0){
     //     LOG_ERR("Erase chip, error: %d", rc);
     //     return -1;

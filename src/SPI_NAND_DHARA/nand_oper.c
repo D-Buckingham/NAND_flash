@@ -1,8 +1,8 @@
 /**
- * @file spi_nand_oper.h
+ * @file nand_oper.h
  * @brief Configuring the AS5F14G04SND-10LIN NAND flash
  *
- * This file establishes the SPI communication and stores the predefined commands to interfere 
+ * This file establishes the communication and stores the predefined commands to interfere 
  * with the 913-S5F14G04SND10LIN NAND flash
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "spi_nand_oper.h"
+#include "nand_oper.h"
 #include "example_handle.h"
 
 /**
@@ -28,7 +28,7 @@
 
 
 //address_bytes = 0
-int spi_nand_write_enable(void)
+int nand_write_enable(void)
 {
     nand_transaction_t  t = {
         .command = CMD_WRITE_ENABLE
@@ -49,7 +49,7 @@ int spi_nand_write_enable(void)
 
 //address_bytes = 1
 
-int spi_nand_read_register(uint8_t reg, uint8_t *val)
+int nand_read_register(uint8_t reg, uint8_t *val)
 {
     nand_transaction_t t = {
         .command = CMD_READ_REGISTER,
@@ -70,7 +70,7 @@ int spi_nand_read_register(uint8_t reg, uint8_t *val)
     }
 }
 
-int spi_nand_write_register(uint8_t reg, uint8_t val)
+int nand_write_register(uint8_t reg, uint8_t val)
 {
     nand_transaction_t  t = {
         .command = CMD_SET_REGISTER,
@@ -91,7 +91,7 @@ int spi_nand_write_register(uint8_t reg, uint8_t val)
     }
 }
 
-int spi_nand_device_id(uint8_t *device_id){
+int nand_device_id(uint8_t *device_id){
 
     nand_transaction_t  t = {
         .command = CMD_READ_ID,
@@ -116,7 +116,7 @@ int spi_nand_device_id(uint8_t *device_id){
 
 //address_bytes = 2
 
-int spi_nand_read(uint8_t *data, uint16_t column, uint16_t length)
+int nand_read(uint8_t *data, uint16_t column, uint16_t length)
 {
     nand_transaction_t  t = {
         .command = CMD_READ_FAST,
@@ -139,7 +139,7 @@ int spi_nand_read(uint8_t *data, uint16_t column, uint16_t length)
     }
 }
 
-int spi_nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
+int nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
 {
     nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
@@ -164,7 +164,7 @@ int spi_nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
 
 //address_bytes = 3
 
-int spi_nand_read_page(uint32_t page)
+int nand_read_page(uint32_t page)
 {
     nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
@@ -185,7 +185,7 @@ int spi_nand_read_page(uint32_t page)
     }
 }
 
-int spi_nand_program_execute(uint32_t page)
+int nand_program_execute(uint32_t page)
 {
     nand_transaction_t  t = {
         .command = CMD_PROGRAM_EXECUTE,
@@ -206,7 +206,7 @@ int spi_nand_program_execute(uint32_t page)
     }
 }
 
-int spi_nand_erase_block(uint32_t page)
+int nand_erase_block(uint32_t page)
 {
     nand_transaction_t  t = {
         .command = CMD_ERASE_BLOCK,

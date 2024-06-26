@@ -2,7 +2,7 @@
 #define NAND_HANDLE
 
 #include <stdint.h>
-#include "spi_nand_oper.h"
+#include "nand_oper.h"
 #include "nand_top_layer.h"
 
 

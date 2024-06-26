@@ -1,8 +1,8 @@
 /**
- * @file spi_nand_oper.h
+ * @file nand_oper.h
  * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
  *
- * This file establishes the SPI communication and stores the predefined commands to interfere 
+ * This file establishes the communication and stores the predefined commands to interfere 
  * with the 913-S5F14G04SND10LIN NAND flash
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
@@ -10,8 +10,8 @@
 
 #include "nand_top_layer.h"
 
-#ifndef SPI_NAND_OPER_H
-#define SPI_NAND_OPER_H
+#ifndef NAND_OPER_H
+#define NAND_OPER_H
 
 #pragma once
 
@@ -44,18 +44,18 @@ typedef struct {
 //////////////////////////////          Handle DEFINITION          //////////////////////////////////
 
 /**
- * @brief SPI NAND Device Handle struct.
- * Represents a single SPI NAND device. Holds the hardware-specific interface functions,
+ * @brief NAND Device Handle struct.
+ * Represents a single NAND device. Holds the hardware-specific interface functions,
  * and device configuration.
  */
 typedef struct nand_h {
   // === Interface function pointers. Required. ===
 
   /**
-   * @brief Function pointer for transmitting and receiving SPI NAND transactions.
+   * @brief Function pointer for transmitting and receiving NAND transactions.
    * @warning Required!
    *
-   * @param transaction Pointer to the SPI NAND transaction structure.
+   * @param transaction Pointer to the NAND transaction structure.
    * @return 0 if successful, or a negative error code on failure.
    */
   int (*transceive)(nand_transaction_t *transaction);
@@ -126,98 +126,90 @@ extern nand_h *my_nand_handle;
 
 
 /**
- * @brief Read a register from the SPI NAND device.
+ * @brief Read a register from the NAND device.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param reg Register address to read from.
  * @param val Pointer to variable where read value will be stored.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read_register(uint8_t reg, uint8_t *val);
+int nand_read_register(uint8_t reg, uint8_t *val);
 
 /**
- * @brief Write to a register on the SPI NAND device.
+ * @brief Write to a register on the NAND device.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param reg Register address to write to.
  * @param val Value to write to the register.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_write_register(uint8_t reg, uint8_t val);
+int nand_write_register(uint8_t reg, uint8_t val);
 
 /**
- * @brief Enable writing on the SPI NAND device.
+ * @brief Enable writing on the NAND device.
  *
  * This function must be called before any write operation.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_write_enable(void);
+int nand_write_enable(void);
 
 /**
  * @brief Initiate page read operation to cache.
  *
  * Reads the specified page from NAND to the device's internal cache.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param page Page number to read. 24-bit address consists of 7 dummy bits and 17 page/block address bits
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read_page(uint32_t page);
+int nand_read_page(uint32_t page);
 
 /**
- * @brief Read data from the SPI NAND device's cache.
+ * @brief Read data from the NAND device's cache.
  *
  * Assumes the data has been previously loaded into cache using
- * spi_nand_read_page().
+ * nand_read_page().
  *
- * @param dev Device SPI configuration data obtained from devicetree.
+ * @param dev Device  configuration data obtained from devicetree.
  * @param column Start column (byte) in the page from where to start reading.
  * @param length Number of bytes to read.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_read(uint8_t *data, uint16_t column, uint16_t length);
+int nand_read(uint8_t *data, uint16_t column, uint16_t length);
 
 /**
  * @brief Execute a program operation.
  *
  * Commits the data previously loaded into the device's cache to the NAND array.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param page Page number to program.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_execute(uint32_t page);
+int nand_program_execute(uint32_t page);
 
 /**
- * @brief Load data into the SPI NAND device's cache.
+ * @brief Load data into the NAND device's cache.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param data Pointer to data to be written to cache.
  * @param column Start column (byte) in the page from where to start writing.
  * @param length Number of bytes to write.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_program_load(const uint8_t *data, uint16_t column, uint16_t length);
+int nand_program_load(const uint8_t *data, uint16_t column, uint16_t length);
 
 /**
- * @brief Erase a block on the SPI NAND device.
+ * @brief Erase a block on the NAND device.
  *
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param page Page number within the block to be erased.
  * @return 0 on success, negative error code otherwise.
  */
-int spi_nand_erase_block(uint32_t page);
+int nand_erase_block(uint32_t page);
 
 
 /**
  * @brief Read out device ID
  * 
- * @param dev Device SPI configuration data obtained from devicetree.
  * @param device_id Device ID
 */
-int spi_nand_device_id(uint8_t *device_id);
+int nand_device_id(uint8_t *device_id);
 
 
 
@@ -230,4 +222,4 @@ int spi_nand_device_id(uint8_t *device_id);
 }
 #endif
 
-#endif //SPI_NAND_OPER_H
+#endif //NAND_OPER_H

@@ -1,4 +1,4 @@
-#include "spi_nand_oper.h"
+#include "nand_oper.h"
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>                                                                                                                                                     
 #include <zephyr/drivers/spi.h>
@@ -198,7 +198,7 @@ void my_log_function(char *msg, bool is_err, bool has_int_arg, uint32_t arg) {
 int init_nand_handle() {
     // Initialize the handle's function pointers and other members
     my_nand_handle->transceive = my_transceive_function;  
-    my_nand_handle->log = my_log_function;               
+    my_nand_handle->log = my_log_function;
 
     // // Link the input handle to the global handle
     // my_nand_handle = handle;

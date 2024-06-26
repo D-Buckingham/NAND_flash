@@ -15,7 +15,7 @@
 #include "nand_top_layer.h"
 #include "../SPI_NAND_DHARA/vfs_NAND_flash.h"
 #include "../SPI_NAND_DHARA/diskio_nand.h"
-#include "../SPI_NAND_DHARA/spi_nand_oper.h"
+#include "../SPI_NAND_DHARA/nand_oper.h"
 #include "../SPI_NAND_DHARA/nand_top_layer.h"
 
 #include "simulation_test.h"

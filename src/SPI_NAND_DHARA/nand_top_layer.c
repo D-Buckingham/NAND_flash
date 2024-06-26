@@ -6,7 +6,7 @@
 
 
 #include "error.h"
-#include "spi_nand_oper.h"
+#include "nand_oper.h"
 #include "nand.h"
 #include "nand_top_layer.h"
 #include "nand_flash_devices.h"
@@ -15,29 +15,25 @@
 LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
-#define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
-
-const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
-
 //shared externally
 
-static spi_nand_flash_device_t spi_nand_flash_device;
-spi_nand_flash_device_t *device_handle = &spi_nand_flash_device;
+static nand_flash_device_t nand_flash_device;
+nand_flash_device_t *device_handle = &nand_flash_device;
 
 
 /**
- * @brief Initialize a Winbond SPI NAND device.
+ * @brief Initialize a Winbond NAND device.
  *
- * This function initializes a Winbond SPI NAND flash device by reading its
+ * This function initializes a Winbond NAND flash device by reading its
  * device ID and setting up specific timing parameters based on the device ID.
  * *
- * @param dev Pointer to the SPI NAND device structure.
+ * @param dev Pointer to the NAND device structure.
  *
  * @retval 0 If the initialization is successful.
  * @retval -1 If there was an error during device ID retrieval or if the device ID
  *         is not recognized as a supported Winbond device.
  */
-static int spi_nand_winbond_init(spi_nand_flash_device_t *dev)
+static int nand_winbond_init(nand_flash_device_t *dev)
 {
     uint8_t device_id_buf[2];
     nand_transaction_t t = {
@@ -56,6 +52,8 @@ static int spi_nand_winbond_init(spi_nand_flash_device_t *dev)
     dev->read_page_delay_us = 10;
     dev->erase_block_delay_us = 2500;
     dev->program_page_delay_us = 320;
+    dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
+    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
 
     switch (device_id) {
     case WINBOND_DI_AA20:
@@ -84,16 +82,16 @@ static int spi_nand_winbond_init(spi_nand_flash_device_t *dev)
 /**
  * @brief Initializes a NAND device based on its Alliance Memory device ID.
  *
- * This function reads the device ID using a SPI transaction, then sets
+ * This function reads the device ID using a transaction, then sets
  * device-specific timing parameters and the number of blocks based on the
  * device ID. It supports multiple Alliance Memory NAND flash devices by
  * adjusting configuration parameters accordingly.
  *
- * @param dev Pointer to the SPI NAND flash device structure.
+ * @param dev Pointer to the NAND flash device structure.
  * @return 0 on success, -1 on error with a logged error message.
  */
 
-static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
+static int nand_alliance_init(nand_flash_device_t *dev)
 {
     int err;
     uint8_t device_id;
@@ -112,6 +110,9 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
     //setting up the device
     dev->erase_block_delay_us = 3000;
     dev->program_page_delay_us = 630;
+
+    dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
+    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
     switch (device_id) {
     case ALLIANCE_DI_25: //AS5F31G04SND-08LIN
         LOG_INF("Automatic recognition of AS5F31G04SND-08LIN flash");
@@ -148,17 +149,17 @@ static int spi_nand_alliance_init(spi_nand_flash_device_t *dev)
 }
 
 /**
- * @brief Initializes a GigaDevice SPI NAND flash based on its device ID.
+ * @brief Initializes a GigaDevice NAND flash based on its device ID.
  *
- * This function reads the device ID of a GigaDevice SPI NAND flash and configures
+ * This function reads the device ID of a GigaDevice NAND flash and configures
  * various operational parameters based on the detected device. It sets up the
  * number of blocks, read page delay, erase block delay, and program page delay
  * based on the specific device variant identified by the device ID.
  *
- * @param dev Pointer to the spi_nand_flash_device_t structure representing the SPI NAND device.
+ * @param dev Pointer to the nand_flash_device_t structure representing the NAND device.
  * @return 0 on successful initialization and configuration, -1 on failure with an error logged.
  */
-static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
+static int nand_gigadevice_init(nand_flash_device_t *dev)
 {
     uint8_t device_id;
     int err;
@@ -176,6 +177,9 @@ static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
     dev->read_page_delay_us = 25;
     dev->erase_block_delay_us = 3200;
     dev->program_page_delay_us = 380;
+    dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
+    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
+
     switch (device_id) {
     case GIGADEVICE_DI_51:
         LOG_INF("Automatic recognition of GIGADEVICE_DI_51 flash");
@@ -224,10 +228,10 @@ static int spi_nand_gigadevice_init(spi_nand_flash_device_t *dev)
  * ID and then, based on the ID, calls a specific initialization function to set up device
  * parameters and operational characteristics.
  *
- * @param dev Pointer to the spi_nand_flash_device_t structure representing the SPI NAND device.
+ * @param dev Pointer to the nand_flash_device_t structure representing the NAND device.
  * @return 0 on successful detection and initialization of the chip, -1 on failure with an error logged.
  */
-static int detect_chip(spi_nand_flash_device_t *dev)
+static int detect_chip(nand_flash_device_t *dev)
 {
     uint8_t manufacturer_id;
     nand_transaction_t t = {
@@ -240,12 +244,12 @@ static int detect_chip(spi_nand_flash_device_t *dev)
     my_nand_handle->transceive(&t);
 
     switch (manufacturer_id) {
-    case SPI_NAND_FLASH_ALLIANCE_MI: // Alliance
-        return spi_nand_alliance_init(dev);
-    case SPI_NAND_FLASH_WINBOND_MI: // Winbond
-        return spi_nand_winbond_init(dev);
-    case SPI_NAND_FLASH_GIGADEVICE_MI: // GigaDevice
-        return spi_nand_gigadevice_init(dev);
+    case NAND_FLASH_ALLIANCE_MI: // Alliance
+        return nand_alliance_init(dev);
+    case NAND_FLASH_WINBOND_MI: // Winbond
+        return nand_winbond_init(dev);
+    case NAND_FLASH_GIGADEVICE_MI: // GigaDevice
+        return nand_gigadevice_init(dev);
     default:
         LOG_ERR("Invalid manufacturer ID: %u", manufacturer_id);
         return -1;
@@ -261,20 +265,20 @@ static int detect_chip(spi_nand_flash_device_t *dev)
  * This allows subsequent operations such as erase and program to proceed without being
  * blocked by write protection.
  *
- * @param dev Pointer to the spi_nand_flash_device_t structure representing the SPI NAND device.
+ * @param dev Pointer to the nand_flash_device_t structure representing the NAND device.
  * @return 0 on successful unprotection of the chip, -1 on failure.
  */
-static int unprotect_chip(spi_nand_flash_device_t *dev)
+static int unprotect_chip(nand_flash_device_t *dev)
 {
     uint8_t status;
-    int ret = spi_nand_read_register(REG_PROTECT, &status);
+    int ret = nand_read_register(REG_PROTECT, &status);
     if (ret != 0) {
         LOG_ERR("Failed to read register: %d", ret);
         return ret;
     }
 
     if (status != 0x00) {
-        ret = spi_nand_write_register(REG_PROTECT, 0);
+        ret = nand_write_register(REG_PROTECT, 0);
     }
     if (ret != 0) {
         LOG_ERR("Failed to remove protection bit with error code: %d", ret);
@@ -299,7 +303,7 @@ int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out)
 
     while (true) {
         uint8_t status;
-        int err = spi_nand_read_register(REG_STATUS, &status);
+        int err = nand_read_register(REG_STATUS, &status);
         if (err != 0) {
             LOG_ERR("Error reading NAND status register");
             return -1; 
@@ -323,11 +327,10 @@ int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out)
 
 
 
-int spi_nand_flash_init_device(spi_nand_flash_device_t **handle)
+int nand_flash_init_device(nand_flash_device_t **handle)
 {
     LOG_INF("NAND MAPPING LAYER: Initializing DHARA mapping");
-    //Verify SPI device is ready
-    
+        
     *handle = device_handle;
 
     // Apply default garbage collection factor if not set
@@ -340,10 +343,6 @@ int spi_nand_flash_init_device(spi_nand_flash_device_t **handle)
         LOG_ERR("Failed to allocate memory for NAND flash device");
         return -1;
     }
-
-
-    (*handle)->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
-    (*handle)->dhara_nand.log2_page_size = 11; // Assume 2048 bytes per page
 
     int ret = detect_chip(*handle);
     if (ret != 0) {
@@ -404,7 +403,7 @@ fail:
 
 
 
-int spi_nand_erase_chip(spi_nand_flash_device_t *handle)
+int nand_erase_chip(nand_flash_device_t *handle)
 {
     LOG_WRN("Entire chip is being erased");
     int ret;
@@ -413,13 +412,13 @@ int spi_nand_erase_chip(spi_nand_flash_device_t *handle)
     k_sem_take(&handle->mutex, K_FOREVER);
 
     for (int i = 0; i < handle->num_blocks; i++) {
-        ret = spi_nand_write_enable();
+        ret = nand_write_enable();
         if (ret != 0) {
             LOG_ERR("Failed to enable write for block erase");
             goto end;
         }
 
-        ret = spi_nand_erase_block(i * (1 << handle->dhara_nand.log2_ppb));
+        ret = nand_erase_block(i * (1 << handle->dhara_nand.log2_ppb));
         if (ret != 0) {
             LOG_ERR("Failed to erase block");
             goto end;
@@ -447,7 +446,7 @@ end:
 }
 
 
-int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer, uint16_t sector_id)
+int nand_flash_read_sector(nand_flash_device_t *handle, uint8_t *buffer, uint16_t sector_id)
 {
     dhara_error_t err;
     int ret = 0;
@@ -469,7 +468,7 @@ int spi_nand_flash_read_sector(spi_nand_flash_device_t *handle, uint8_t *buffer,
 }
 
 
-int spi_nand_flash_write_sector(spi_nand_flash_device_t *handle, const uint8_t *buffer, uint16_t sector_id)
+int nand_flash_write_sector(nand_flash_device_t *handle, const uint8_t *buffer, uint16_t sector_id)
 {
     dhara_error_t err;
     int ret = 0; 
@@ -486,7 +485,7 @@ int spi_nand_flash_write_sector(spi_nand_flash_device_t *handle, const uint8_t *
 }
 
 
-int spi_nand_flash_sync(spi_nand_flash_device_t *handle)
+int nand_flash_sync(nand_flash_device_t *handle)
 {
     dhara_error_t err;
     int ret = 0;
@@ -502,20 +501,20 @@ int spi_nand_flash_sync(spi_nand_flash_device_t *handle)
 }
 
 
-int spi_nand_flash_get_capacity(spi_nand_flash_device_t *handle, uint32_t *number_of_sectors)
+int nand_flash_get_capacity(nand_flash_device_t *handle, uint32_t *number_of_sectors)
 {
     *number_of_sectors = dhara_map_capacity(&handle->dhara_map);
     return 0; 
 }
 
 
-int spi_nand_flash_get_sector_size(spi_nand_flash_device_t *handle, uint32_t *sector_size)
+int nand_flash_get_sector_size(nand_flash_device_t *handle, uint32_t *sector_size)
 {
     *sector_size = handle->page_size;
     return 0;
 }
 
-int spi_nand_flash_deinit_device(spi_nand_flash_device_t *handle)
+int nand_flash_deinit_device(nand_flash_device_t *handle)
 {
     if (handle->work_buffer != NULL) {
         free(handle->work_buffer);
