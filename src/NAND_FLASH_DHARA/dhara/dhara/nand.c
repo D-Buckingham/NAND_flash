@@ -16,12 +16,6 @@
 #include "../../inc/nand_top_layer.h"//for the nand_flash_device_t
 
 
-//#include <zephyr/drivers/spi.h>
-// #include <zephyr/device.h>
-// #include <zephyr/kernel.h>
-//#include <zephyr/logging/log.h>
-#include "map.h"
-
 
 #include <string.h>
 #include <stdlib.h>

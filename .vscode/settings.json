@@ -28,7 +28,8 @@
         "time.h": "c",
         "example_handle.h": "c",
         "nand_oper.h": "c",
-        "nand_flash_devices.h": "c"
+        "nand_flash_devices.h": "c",
+        "map.h": "c"
     },
     "nrf-connect.debugging.bindings": {
         "${workspaceFolder}/build": "Launch build"
