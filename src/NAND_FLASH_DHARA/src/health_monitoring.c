@@ -65,9 +65,9 @@ static int wait_for_ready_nand( uint8_t *status_out)
 {
     uint32_t expected_operation_time_us = device_handle->read_page_delay_us;
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
-    if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
-        k_busy_wait(expected_operation_time_us); // busy wait for microseconds
-    }
+    // if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
+    //     k_busy_wait(expected_operation_time_us); // busy wait for microseconds
+    // }
 
     while (true) {
         uint8_t status;
@@ -84,9 +84,9 @@ static int wait_for_ready_nand( uint8_t *status_out)
             break;
         }
 
-        if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
-            k_sleep(K_MSEC(1)); 
-        }
+        // if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
+        //     k_sleep(K_MSEC(1)); 
+        // }
     }
 
     return 0; // Success

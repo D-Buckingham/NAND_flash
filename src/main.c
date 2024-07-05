@@ -45,7 +45,6 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 int  main(void)
 {
 	LOG_INF("My first breath as an IoT device");
-	printk("Hello, Zephyr!\n");
 	//int ret;
 	//const struct spi_dt_spec spidev_dt = nand_init();
 	//static struct disk_info nand_disk;
@@ -67,13 +66,12 @@ int  main(void)
 	//test_vfs_NAND_flash();
 	
 	//initialize_mass_storage_nand(); 
-	//test_all_main_nand_tests();
+	test_all_main_nand_tests();
 	//	mount_nand_fs();
 
 	//to manually erase chip, but first disable the disk initialization in the diskio_nand.c at the bottom
-	//nand_flash_device_t *device_handle = NULL;//to manually erase
-    //setup_nand_flash(&device_handle, &spidev_dt);
-	nand_erase_chip(device_handle);
+	
+	//nand_erase_chip(device_handle);
 
 	//simulate_incoming_data();
 

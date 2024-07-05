@@ -52,10 +52,10 @@ static int wait_for_ready_nand(uint32_t expected_operation_time_us, uint8_t *sta
 {
     //my_nand_handle->log("Start of wait", false, false, 0);
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
-    if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
-        my_nand_handle->wait(expected_operation_time_us);
-        //k_busy_wait(expected_operation_time_us); // busy wait for microseconds
-    }
+    // if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
+    //     my_nand_handle->wait(expected_operation_time_us);
+    //     //k_busy_wait(expected_operation_time_us); // busy wait for microseconds
+    // }
 
     while (true) {
         uint8_t status;
@@ -243,16 +243,18 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     dhara_page_t first_block_page = b * (1 << n->log2_ppb);
     uint8_t status;
 
-
-    /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
-
-#ifdef CONFIG_HEALTH_MONITORING
     //first read out the flags and store them, they will be written to the page
     ret = read_page_and_wait(dev, first_block_page, NULL);
     if (ret) {
         my_nand_handle->log("Failed to read page",true ,true ,first_block_page);
         return -1;
     }
+    
+    my_nand_handle->log("Current block",false ,true ,b);
+    /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
+
+#ifdef CONFIG_HEALTH_MONITORING
+    
 
     ret = nand_read(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);
     if (ret != 0) {
@@ -263,7 +265,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     // Extract the erase count indicator from the buffer
     memcpy(&erase_count_indicator, spare_area_buffer, 4);
 
-    my_nand_handle->log("Current block",false ,true ,b);
+    
     my_nand_handle->log("Current erase count",false ,true ,erase_count_indicator);
     erase_count_indicator++;
     if (erase_count_indicator == 0) { 
