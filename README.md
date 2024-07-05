@@ -70,6 +70,11 @@ The handle implementation is demonstrated in an example file, `example_handle.c`
      - This function is responsible for logging messages, including errors and informational logs.
      - It is also designed to be flexible, allowing users to implement their own logging mechanism as per their needs.
 
+    - **Wait Function**: 
+     - This function is responsible for the waiting in microseconds after requesting data from the NAND flash.
+     - It is also designed to be flexible, allowing users to implement a non blocking waiting function, considering a precision of microseconds.
+
+
 3. **Device Tree Configuration**:
    - For the NAND flash multistack implementation to recognize the device, it must be labeled as `nand_device` in the Device Tree Source (DTS) configuration.
    - The DTS configuration provides the necessary hardware information to the implementation, ensuring that the correct device is used.
