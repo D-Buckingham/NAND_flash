@@ -249,7 +249,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         my_nand_handle->log("Failed to read page",true ,true ,first_block_page);
         return -1;
     }
-    
+
     my_nand_handle->log("Current block",false ,true ,b);
     /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
 
@@ -388,12 +388,8 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
 #ifdef CONFIG_HEALTH_MONITORING
     if(Erase_counter_FLAG && Erased_block == p){
-        ret = nand_program_load(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);//put a flag there
-        if (ret) {
-            my_nand_handle->log("Failed to load erase counter, error",true ,true ,ret);
-            return -1;
-        }
-        memcpy(&erase_count_indicator, spare_area_buffer, 4);
+        
+        memcpy(spare_area_buffer, &erase_count_indicator, 4);//memcpy(&erase_count_indicator, spare_area_buffer, 4);
         Erase_counter_FLAG = 0;
 
         //we store the ECC counter as well since it is the first page
@@ -402,7 +398,12 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         //     my_nand_handle->log("Failed to load ECC counter, error",true ,true ,ret);
         //     return -1;
         // }
-        memcpy(&Total_ECC_counter, spare_area_buffer + 4, 4);
+        memcpy(spare_area_buffer + 4, &Total_ECC_counter, 4);//memcpy(&Total_ECC_counter, spare_area_buffer + 4, 4);
+        ret = nand_program_load(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);//put a flag there
+        if (ret) {
+            my_nand_handle->log("Failed to load erase counter, error",true ,true ,ret);
+            return -1;
+        }
     }
 #endif //CONFIG_HEALTH_MONITORING
     /////////////////////////           HEALTH MONITORING END (OPTIONAL)        ///////////////////////////////////
