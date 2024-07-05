@@ -219,6 +219,7 @@ static bool is_non_blocking_wait_completed(struct non_blocking_wait *wait) {
     return wait->completed;
 }
 
+//reason for simplifying the function with k_busy_wait is the difference in the timing between the customized timer, the k_sleep and the k_busy_wait. issue #23600
 void my_wait_function(uint32_t microseconds){
     if(microseconds < 150){
         k_busy_wait(microseconds);

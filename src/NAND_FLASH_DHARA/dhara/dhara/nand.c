@@ -1,4 +1,4 @@
-//This file has to be renamed and go into the dhara folder
+//This file lives in the dhara folder (git clone https://github.com/dlbeer/dhara.git)
 //rename to nand.c
 
 /**
@@ -16,11 +16,9 @@
 #include "../../inc/nand_top_layer.h"//for the nand_flash_device_t
 
 
-
 #include <string.h>
 #include <stdlib.h>
 
-//LOG_MODULE_REGISTER(dhara_glue, CONFIG_LOG_DEFAULT_LEVEL);
 
 #define ROM_WAIT_THRESHOLD_US 1000
 #define ERASE_COUNTER_SPARE_AREA_OFFSET 16
@@ -34,6 +32,8 @@ size_t Initial_ECC_counter = 0;
 uint32_t Total_ECC_counter = 0;
 
 uint32_t erase_count_indicator = 0;
+
+uint8_t spare_area_buffer[8];
 
 
 //defined in 
@@ -50,7 +50,7 @@ uint32_t erase_count_indicator = 0;
  */
 static int wait_for_ready_nand(uint32_t expected_operation_time_us, uint8_t *status_out)
 {
-
+    //my_nand_handle->log("Start of wait", false, false, 0);
     // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
     if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
         my_nand_handle->wait(expected_operation_time_us);
@@ -72,11 +72,13 @@ static int wait_for_ready_nand(uint32_t expected_operation_time_us, uint8_t *sta
             break;
         }
 
-        if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
-            my_nand_handle->wait(1000);
-            //k_sleep(K_MSEC(1)); 
-        }
+        // if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
+        //     my_nand_handle->wait(1000);
+        //     my_nand_handle->log("NAND: It waited 1 ms", false, false, 0);
+        //     //k_sleep(K_MSEC(1)); 
+        // }
     }
+    //my_nand_handle->log("End of wait", false, false, 0);
 
     return 0; // Success
 }
@@ -242,6 +244,9 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     uint8_t status;
 
 
+    /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
+
+#ifdef CONFIG_HEALTH_MONITORING
     //first read out the flags and store them, they will be written to the page
     ret = read_page_and_wait(dev, first_block_page, NULL);
     if (ret) {
@@ -249,30 +254,51 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    // Read the current erase count indicator from the spare area
-    ret = nand_read((uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
+    ret = nand_read(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);
     if (ret != 0) {
-        my_nand_handle->log("Failed to read erase count from spare area",true ,true ,ret);
+        my_nand_handle->log("Failed to read from spare area", true, true, ret);
         return ret;
     }
 
-    //TODO remove this
-    //LOG_INF("Current erase count for block %u: %u", b, erase_count_indicator);
+    // Extract the erase count indicator from the buffer
+    memcpy(&erase_count_indicator, spare_area_buffer, 4);
+
     my_nand_handle->log("Current block",false ,true ,b);
     my_nand_handle->log("Current erase count",false ,true ,erase_count_indicator);
+    erase_count_indicator++;
+    if (erase_count_indicator == 0) { 
+        erase_count_indicator++; 
+    }
+
+    // Extract the ECC count indicator from the buffer
+    memcpy(&ecc_count_indicator, spare_area_buffer + 4, 4);
+
+
+
+    // // Read the current erase count indicator from the spare area
+    // ret = nand_read((uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);
+    // if (ret != 0) {
+    //     my_nand_handle->log("Failed to read erase count from spare area",true ,true ,ret);
+    //     return ret;
+    // }
+
+    // //TODO remove this
+    // //LOG_INF("Current erase count for block %u: %u", b, erase_count_indicator);
+    // my_nand_handle->log("Current block",false ,true ,b);
+    // my_nand_handle->log("Current erase count",false ,true ,erase_count_indicator);
     
 
-    // Increment the erase count
-    erase_count_indicator++;
-    if (erase_count_indicator == 0){erase_count_indicator++;}
+    // // Increment the erase count
+    // erase_count_indicator++;
+    // if (erase_count_indicator == 0){erase_count_indicator++;}
 
 
-    //read out the ECC counter from the first page of each block
-    ret = nand_read((uint8_t *)&ecc_count_indicator, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
-    if (ret != 0) {
-        my_nand_handle->log("Failed to read erase count from spare area",true ,true ,ret);
-        return ret;
-    }
+    // //read out the ECC counter from the first page of each block
+    // ret = nand_read((uint8_t *)&ecc_count_indicator, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);
+    // if (ret != 0) {
+    //     my_nand_handle->log("Failed to read erase count from spare area",true ,true ,ret);
+    //     return ret;
+    // }
     if(ecc_count_indicator != 0xFFFFFFFF){
         if(Initial_ECC_counter == 0 ){Initial_ECC_counter = ecc_count_indicator;}//Initializing counter
         if(ecc_count_indicator > Initial_ECC_counter + Delta_ECC_counter){//we found a counter value in the NAND flash (larger than the one we locally stored since the last start up)
@@ -283,7 +309,11 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         //LOG_INF("Current total ECC faults found %u:", Total_ECC_counter);
     }
     
+    Erase_counter_FLAG = 1; //setting flag to make sure, that a page is only written to once, not twice partly
+    Erased_block = first_block_page;
 
+#endif // CONFIG_HEALTH_MONITORING
+    /////////////////////////           HEALTH MONITORING END (OPTIONAL)        ///////////////////////////////////
 
     ret = nand_write_enable();
     if (ret != 0) {
@@ -308,8 +338,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         my_nand_handle->log("Erasing failed, indicated by status register",true ,false ,ret);
         return -1;
     }
-    Erase_counter_FLAG = 1; //setting flag to make sure, that a page is only written to once, not twice partly
-    Erased_block = first_block_page;
+    
 
     return 0;
 }
@@ -354,22 +383,27 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         return -1;
     }
 
+    /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
+#ifdef CONFIG_HEALTH_MONITORING
     if(Erase_counter_FLAG && Erased_block == p){
-        ret = nand_program_load((uint8_t *)&erase_count_indicator, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
+        ret = nand_program_load(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);//put a flag there
         if (ret) {
             my_nand_handle->log("Failed to load erase counter, error",true ,true ,ret);
             return -1;
         }
+        memcpy(&erase_count_indicator, spare_area_buffer, 4);
         Erase_counter_FLAG = 0;
 
         //we store the ECC counter as well since it is the first page
-        ret = nand_program_load((uint8_t *)&Total_ECC_counter, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
-        if (ret) {
-            my_nand_handle->log("Failed to load ECC counter, error",true ,true ,ret);
-            return -1;
-        }
-
+        // ret = nand_program_load((uint8_t *)&Total_ECC_counter, dev->page_size + ECC_COUNTER_SPARE_AREA_OFFSET, 4);//put a flag there
+        // if (ret) {
+        //     my_nand_handle->log("Failed to load ECC counter, error",true ,true ,ret);
+        //     return -1;
+        // }
+        memcpy(&Total_ECC_counter, spare_area_buffer + 4, 4);
     }
+#endif //CONFIG_HEALTH_MONITORING
+    /////////////////////////           HEALTH MONITORING END (OPTIONAL)        ///////////////////////////////////
 
     ret = program_execute_and_wait(dev, p, &status);//Execute a program operation. Commits the data previously loaded into the device's cache to the NAND array
     if (ret) {

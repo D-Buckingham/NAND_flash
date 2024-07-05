@@ -18,7 +18,6 @@
 #include    "../inc/nand_top_layer.h"
 #include    "../inc/vfs_NAND_flash.h"
 #include    "../inc/diskio_nand.h"
-#include    "../inc/nand_top_layer.h"
 #include "../inc/USB_mass_storage.h"
 
 

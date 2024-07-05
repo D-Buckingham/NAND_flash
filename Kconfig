@@ -19,3 +19,7 @@ config FS_SAMPLE_CREATE_SOME_ENTRIES
 	  easily add files with use of other device.
 
 source "Kconfig.zephyr"
+
+# Top-level Kconfig file
+source "../src/NAND_FLASH_DHARA/Kconfig"
+

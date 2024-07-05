@@ -1,0 +1,9 @@
+menu "NAND Flash Dhara Configuration"
+
+config HEALTH_MONITORING
+    bool "Enable Health Monitoring"
+    default y
+    help
+      Enable this option to compile the health monitoring part of the code.
+
+endmenu

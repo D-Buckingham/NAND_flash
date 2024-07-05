@@ -127,6 +127,8 @@ int nand_read(uint8_t *data, uint16_t column, uint16_t length)
         .dummy_bytes = 1
     };
     
+    my_nand_handle->log("OPER: Reading start at column", false, true, column);
+    my_nand_handle->log("OPER: Reading length", false, true, length);
 
     if (my_nand_handle && my_nand_handle->transceive) {
         return my_nand_handle->transceive(&t);
@@ -148,7 +150,8 @@ int nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
         .mosi_len = length,//(N+1)*8+24
         .mosi_data = data
     };
-
+    my_nand_handle->log("OPER: Loading start at column", false, true, column);
+    my_nand_handle->log("OPER: Loading length", false, true, length);
     if (my_nand_handle && my_nand_handle->transceive) {
         return my_nand_handle->transceive(&t);
     } else {
@@ -173,7 +176,7 @@ int nand_read_page(uint32_t page)
                    ((page & 0x0000FF00))       |  // Keep A15-A8 in its place
                    ((page & 0x000000FF) << 16)   // Move A7-A0 to the top position
     };
-
+    my_nand_handle->log("OPER: Reading page", false, true, page);
     if (my_nand_handle && my_nand_handle->transceive) {
         return my_nand_handle->transceive(&t);
     } else {
@@ -195,6 +198,7 @@ int nand_program_execute(uint32_t page)
                    ((page & 0x000000FF) << 16)   // Move A7-A0 to the top position
     };
 
+    my_nand_handle->log("OPER: Execution page", false, true, page);
     if (my_nand_handle && my_nand_handle->transceive) {
         return my_nand_handle->transceive(&t);
     } else {

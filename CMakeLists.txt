@@ -31,3 +31,10 @@ include_directories(${PROJECT_SOURCE_DIR}/src/NAND_FLASH_DHARA/tests)
 
 #FILE(GLOB app_sources src/SPI_NAND_DHARA/dhara_glue.c)
 target_sources(app PRIVATE ${APP_SOURCES})
+
+
+# # Ensure Zephyr includes the custom Kconfig
+# set(BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+# list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/src/NAND_FLASH_DHARA)
+# zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/NAND_FLASH_DHARA)
+

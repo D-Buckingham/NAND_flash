@@ -1,3 +1,4 @@
+#ifdef CONFIG_HEALTH_MONITORING
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,9 +16,12 @@
 #include "../inc/nand_oper.h"
 #include "../inc/health_monitoring.h"
 
+
 #define ROM_WAIT_THRESHOLD_US 1000
 #define ERASE_COUNTER_SPARE_AREA_OFFSET 16
-#define ECC_COUNTER_SPARE_AREA_OFFSET 36
+#define ECC_COUNTER_SPARE_AREA_OFFSET 20
+
+
 
 LOG_MODULE_REGISTER(health_monitoring, CONFIG_LOG_DEFAULT_LEVEL);
 
@@ -228,3 +232,5 @@ uint32_t read_ecc_errors(void) {
 
 
 SYS_INIT(display_health, APPLICATION, 60);
+
+#endif //CONFIG_HEALTH_MONITORING
