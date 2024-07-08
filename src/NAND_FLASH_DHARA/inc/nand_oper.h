@@ -76,14 +76,6 @@ typedef struct nand_h {
    * @param arg the integer variable to log if has_int_arg is true.
    */
   void (*log)(char *msg, bool is_err, bool has_int_arg, uint32_t arg);
-
-  /**
-   * @brief Pointer to non blocking waiting function for microseconds.
-   *
-   * @param microseconds the integer variable to log if has_int_arg is true.
-   */
-  void (*wait)(uint32_t microseconds);
-
   //uint8_t internal_regs[0x76]; //!< For internal use.???
 } nand_h;
 

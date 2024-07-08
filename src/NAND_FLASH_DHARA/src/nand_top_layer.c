@@ -295,11 +295,6 @@ static int unprotect_chip(nand_flash_device_t *dev)
 
 int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out)
 {
-    // Assuming ROM_WAIT_THRESHOLD_US is defined somewhere globally
-    if (expected_operation_time_us < ROM_WAIT_THRESHOLD_US) {
-        k_busy_wait(expected_operation_time_us); // busy wait for microseconds
-    }
-
     while (true) {
         uint8_t status;
         int err = nand_read_register(REG_STATUS, &status);
@@ -313,10 +308,6 @@ int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out)
                 *status_out = status;
             }
             break;
-        }
-
-        if (expected_operation_time_us >= ROM_WAIT_THRESHOLD_US) {
-            k_sleep(K_MSEC(1)); // Sleep for 1 millisecond instead of using vTaskDelay
         }
     }
 
