@@ -1,0 +1,1550 @@
+10:52:16:581 -> I: Total Bad Block Count: 4
+10:52:16:582 -> I: Mean Erase Count per Block: 1
+10:52:16:586 -> I: Total ECC Errors: 3658097004
+10:52:16:588 -> I: My first breath as an IoT device
+10:52:16:592 -> I: Overall, Test 1: Checking initialization on every level
+10:52:16:597 -> I: NAND flash as SPI device initialized!
+10:52:16:601 -> I: Test 1: test getting device & manufacturer ID
+10:52:16:605 -> I: NAND Device ID: 0x8f 
+10:52:16:611 -> I: Size of sector is: 2048
+10:52:16:611 -> I: Disk access status = ok
+10:52:16:761 -> /NAND:: bsize = 2048 ; frsize = 16384 ; blocks = 29476 ; bfree = 25791
+10:52:16:767 -> 
+10:52:16:767 -> Listing dir /NAND: ...
+10:52:16:774 -> [FILE] one_eigth_file.txt (size = 60366848)
+10:52:16:778 -> I: Overall Test 1: All modalities sucessful recognized!
+10:52:16:877 -> I: All Functionality tests finished!
+10:52:16:877 -> 
+10:52:16:877 -> Listing dir /NAND: ...
+10:52:16:877 -> [FILE] one_eigth_file.txt (size = 60366848)
+10:52:16:877 -> I: Buffer:
+10:52:16:877 -> I: 45 0e 56 d1 28 63 e6 8d d8 50 6a 93 7c cb c1 50 00 e4 1e 04 dc 7c cf 5e 7c 2b 42 df 0a 50 9a fe 45 80 be d0 77 14 7f fb 
+10:52:16:877 -> I: 5f 37 c9 dc c9 94 a7 9f 66 fd 12 67 b2 2b 76 87 8d 94 cf 5a ed 39 5d 0d d2 ae a0 a0 db ae c0 ef ae 7d b3 ec f0 86 5a 83 
+10:52:16:877 -> I: 69 29 90 7b 02 e4 50 8c ef 45 92 55 2a 2e e0 87 bb fe d7 33 bb 4d 59 0e 49 88 3a 08 89 00 cd 98 14 1e a7 e5 83 e3 a3 bc 
+10:52:16:877 -> I: 1c 84 d1 a7 5c 86 08 ba 6f eb 19 b1 be d3 d6 f9 33 a1 3c 96 45 8b 71 b8 3e f1 0c 7c 4c 9a c7 16 18 1e 43 9d 38 93 4b 44 
+10:52:16:895 -> I: 14 51 4a 2d c8 8f c2 71 cc f6 6f 8b a9 3d 20 d5 28 d5 e5 7f 50 de cb dd d3 e7 a1 f2 c5 8b 20 5f af b0 cb 5e f9 e5 df 60 
+10:52:16:895 -> I: a9 a7 6f e4 cf 21 06 cc 1c e9 9f ca da 09 2d 2d 84 48 2f c4 9a 67 69 42 37 73 c5 52 ab ef 4f f9 7a c5 cd 1d 1e 9d 97 3d 
+10:52:16:895 -> I: 0c f5 b2 0c 0f 23 7e 92 07 be 4e 89 23 d3 e4 6d bd 34 75 26 6e 2a c1 c8 e3 5b 1d a3 10 d8 78 62 2d 36 78 fd 6d 03 18 9f 
+10:52:16:895 -> I: 3e 64 08 05 d4 0c 98 06 84 05 82 bc 07 14 a3 cc 58 76 03 51 e8 20 6d e2 96 24 f4 94 41 7c c6 83 6d 78 9e 44 70 c8 44 2c 
+10:52:16:895 -> I: 20 b2 42 6f 71 d9 4b 89 04 27 40 dd 77 4e 4c a9 e2 33 a5 3e 2e 7b 78 9d 97 e0 17 89 45 1e cd 4e 96 0c 0d cb d5 f7 2a 21 
+10:52:16:895 -> I: 9c 8b c5 58 d6 2f e2 bd c6 a0 50 15 a7 34 ea 17 de b4 cd 4a 66 6a a8 80 78 2b 8d 41 8d df f8 68 44 d3 ba 9a 23 e9 ea 17 
+10:52:16:935 -> I: b8 32 d3 10 6d 45 59 77 e0 bd fd 23 ee 34 4e d1 02 b6 03 e1 21 a3 e0 fe 6b 44 91 c0 43 5e f7 73 85 00 ed 41 0c db 2d 39 
+10:52:16:935 -> I: 14 00 51 cd 39 16 a8 a3 3d 28 a2 0a 44 98 b0 5e aa 45 12 9e 9d 99 60 2c f4 3b 10 07 5d db a5 60 2a 45 73 14 2a a1 78 ff 
+10:52:16:935 -> I: 16 17 cf 27 d1 f9 08 fc a0 5f 6b 34 da 2d 33 0e 64 ef 2e 42 00 03 8b 13 69 99 96 cd 5e 44 d0 ea 83 7a 7c 5e cc 95 86 53 
+10:52:16:938 -> I: d1 45 3a 29 a0 9d 1d 2f 67 ce 89 8d d9 17 de 2b 0b d6 09 cc 73 32 79 be 9b ec 6b 4b 5e 6b f4 03 85 da a0 3b 53 c4 5f c2 
+10:52:16:995 -> I: 62 f0 7b 71 95 00 80 cf 9c 29 c1 d7 44 47 63 80 b7 f6 86 b3 d2 59 78 e0 a4 37 4b b9 d2 3a b5 f1 2a a0 4a a0 21 f7 e6 09 
+10:52:16:995 -> I: 58 99 e9 a3 23 ee 14 31 91 54 23 3d 96 bc c1 0d 97 b1 85 f8 33 b8 49 ae a3 1c f6 22 29 a9 c2 5a 8a 8a 6e c4 1c 0b 15 2b 
+10:52:16:995 -> I: 60 3a 5b 26 37 19 32 0f 21 de 44 c9 86 82 9f 8c 5f 5f 02 94 9a 5d b6 50 e9 47 92 a3 2f d9 60 71 f6 99 51 f5 5f c4 16 e4 
+10:52:16:995 -> I: 43 9e 35 ed 8e c9 83 96 39 e4 45 59 1b 19 00 1f f5 85 72 79 92 d8 ce 09 de 69 85 37 d4 80 c9 1a 16 1d cd 8f 80 12 f8 22 
+10:52:16:995 -> I: f4 6e bb d2 8f ca 27 35 58 e9 9b 3f ea af 86 50 7d eb 20 2e 74 2d e8 e4 ab db 54 b6 c3 a0 22 a9 dc ce 4c 91 91 6b a9 cd 
+10:52:17:005 -> I: 40 90 97 a9 8f 11 6a 50 2b ef 3f 8c 36 68 80 2e e5 b4 f6 bf af d2 3c 9d 60 a8 a2 95 f2 26 ab 8c c0 95 75 18 c6 a8 85 19 
+10:52:17:017 -> I: 56 1e 48 28 25 34 38 b7 5f e2 cd cf 44 91 7f 3f b1 38 ef 79 37 80 a5 10 2e 93 61 93 fe f4 79 11 9b 3c 32 b1 61 9f 84 25 
+10:52:17:026 -> I: 41 04 f6 4a f0 b3 11 73 62 1d c3 b0 19 7a 12 8c 7e 31 28 bc 12 37 ee 50 ea 71 d6 68 19 68 d0 1a 23 28 95 4d 4a 5d f6 97 
+10:52:17:042 -> I: 04 17 d2 b6 ff ba 1a 59 a5 a2 cc c4 83 58 fe f4 9c 8a 39 d3 8e a7 af 4d ed cb ed 1d d0 72 fb 5e c5 d5 c9 49 81 b0 45 8d 
+10:52:17:049 -> I: f1 30 11 65 ba c9 a7 73 9b 45 e1 77 0b 6d 09 9b ad e3 66 a4 a2 ee a7 9b 0c b6 18 9f e1 bd 27 95 6d c0 0a d4 42 70 32 f9 
+10:52:17:059 -> I: 76 95 1c 88 eb 72 47 24 7f e5 a1 e2 47 56 26 24 1c 90 c1 9b 8d 58 0b c5 3a 56 a8 bb 09 87 a8 b6 86 e7 53 a3 8e b6 85 58 
+10:52:17:071 -> I: 64 c9 83 65 63 18 38 9c ab 76 25 03 9a 33 a8 f5 f0 9f 47 2a 9d 89 3e 3a 09 65 55 86 5e 28 bc 17 21 10 42 c0 7c f2 1f 53 
+10:52:17:081 -> I: 86 81 d5 b7 44 62 c7 0f fb 75 3c 91 68 14 c0 c7 40 45 a6 c1 c9 4c f3 bf 20 cc 76 fe b2 5b 8f 15 2b 91 5b e4 6c 84 f6 aa 
+10:52:17:094 -> I: f9 62 64 b6 f2 cd 03 aa 90 06 cd 6d 41 e1 6b 47 4b a5 25 1a 83 e4 99 03 69 16 0f 40 15 e3 35 a2 18 2c b2 a9 1d 4d 4f 8e 
+10:52:17:105 -> I: 9a ba a2 e7 39 89 ce 50 ec df d2 77 84 a1 99 68 00 d6 de 39 e1 9e a3 a7 75 57 bd b9 60 ff d2 d5 60 4b 9c 7f 24 6a 5d 42 
+10:52:17:116 -> I: 89 5f 89 51 20 91 28 91 38 b1 1b 30 93 d0 2f d9 77 ab 4a 6f 0b 0b 09 ea 5e c2 20 32 72 db 1d 5b c4 b3 f0 38 59 00 05 a1 
+10:52:17:125 -> I: 87 6b 50 ad 87 b2 40 5c 32 bd e2 7e 80 3b 31 9d a8 8d cc 61 8d 02 06 ca 37 15 53 82 83 ee 06 67 2c 6c 04 95 37 c4 6b ee 
+10:52:17:136 -> I: c0 70 59 be 73 e0 b6 74 0d c4 c8 84 db 81 31 c1 56 76 b3 c4 01 78 06 35 ca 8d 92 61 b2 f2 18 7e a1 81 5e 1f 2a bb 9c 01 
+10:52:17:147 -> I: 30 6e 13 e1 b8 19 06 8f 46 7f d2 46 08 38 d0 b6 0a d7 f2 52 21 bb 39 bf 1b 08 0c 9e b7 dc f3 3c a6 cb d2 42 74 4f 69 b4 
+10:52:17:159 -> I: c2 98 45 7b 58 b2 13 c2 38 50 88 aa 3d 54 f1 c0 95 00 72 3f 36 92 40 d5 19 95 9b ae 55 14 ea f5 f5 f2 7b 75 fd b6 47 37 
+10:52:17:171 -> I: e1 ba f1 df d4 d2 47 85 f5 cd 29 01 11 47 ef 8c 60 4a c6 18 91 69 ef 76 5a 86 d5 5a 09 c6 a6 cd 6e 5e d3 d3 46 4f ce 98 
+10:52:17:199 -> I: 00 c4 d8 d2 38 6e be 87 a0 6f ba 1d 4d 09 e7 cd 97 23 ab e0 59 7c 10 ed c9 d1 aa 09 fd 0d 5c a0 b9 ab cd 88 5e 63 2d a8 
+10:52:17:204 -> I: 6a da 3c b5 9c 09 77 1b 60 6c 5e bc 4c f2 ff 85 f1 b8 94 da f3 9f ae f9 ba 46 81 d6 3f 58 eb e0 d9 f2 b9 e9 7c 83 a3 1c 
+10:52:17:209 -> I: 50 e4 67 19 85 26 72 e2 a3 92 25 af 2b 0f 1d 4b 96 da 2c 40 d6 31 45 8a af fc 9a 8c d5 3a 03 46 ca f3 61 15 a8 61 df 82 
+10:52:17:214 -> I: ef 77 2d 32 31 02 4a 1c 38 b0 54 16 9e 73 92 be 74 5a 8e f0 75 3f ec d6 d6 e9 1b 2d 16 9d 1a eb dc e7 8d 89 95 e0 cb 67 
+10:52:17:227 -> I: 3e a1 55 64 cf 27 a2 a7 94 d7 d9 99 11 98 a0 ec ff 06 a5 ba af ea 4c 84 01 89 ff 85 6f f8 d9 36 56 98 f3 ec 9f bf 2e da 
+10:52:17:241 -> I: 7b e9 a1 f6 41 ea 7c a0 31 81 5d 64 8d d5 d8 65 28 f4 ea e0 d6 a8 00 33 a1 18 ea 1b 7d fb 43 ac b5 f8 3f 17 7c 16 26 14 
+10:52:17:268 -> I: 97 8d fc 9a c3 cd 4f 34 e9 74 2b 6e 64 84 cc 3f 0d c4 76 fd 4f d3 b1 86 0e a7 88 62 1c e7 bb 8f 7a 5d a7 05 1b 8a 5e f5 
+10:52:17:268 -> I: 47 d1 e5 54 b0 76 75 0d b4 e3 e8 36 b2 5a 7a 3e ac 15 22 4a 57 b5 fb 92 1d 2e fc 01 d4 74 b7 e4 52 14 50 40 cd ec 90 b1 
+10:52:17:271 -> I: 3a e8 2d f9 36 a4 3e 6b 2c 26 ca 03 3c 0b 7a eb 9c 4a 1f 13 5f 06 05 4a c2 4d 86 9a c9 f9 bc 38 2c f6 63 f8 9e ae ac bb 
+10:52:17:300 -> I: c8 c8 a9 39 b8 4d ce cf cc 0f c7 5b 1f 37 d5 4f 94 5b 50 c1 2c 7a 4f 43 5c 68 60 60 1b 41 ee 4c 6a 3b 9d c9 8a 5e b8 eb 
+10:52:17:300 -> I: 14 f5 50 0e 24 dc 87 d9 ab af f6 3a 71 41 05 95 40 55 46 cc 8e db 16 fc d5 54 89 71 4c 46 5a 81 52 94 c3 ec ee 14 3c 58 
+10:52:17:313 -> I: 6c 13 0a ec 89 38 ad af 52 16 0e 3d c1 93 8d c4 b9 c4 a6 8b 66 d8 5f 77 b1 aa ec b2 25 aa c3 a3 5f 73 3b 52 58 86 da 65 
+10:52:17:319 -> I: 6b cf 15 0d ac ff 83 0f d8 60 ca c1 15 5b 29 71 8e 21 60 97 5a 79 87 cb c6 9e 1e b2 32 b5 8c 72 20 f3 ae e8 ac 1d 5a 09 
+10:52:17:328 -> I: 21 65 bc c4 64 28 04 e7 53 14 91 ba c7 d8 7c f1 43 0e ff 54 59 dd e2 0d 26 c7 ac c1 c3 34 15 fd cf bd 80 00 2c 5b 4d 39 
+10:52:17:385 -> I: 53 d8 d6 9c 09 fb 11 1d 72 b1 ac b7 7a c2 c7 85 a8 ed f0 c7 d9 bf c8 a7 86 49 a4 54 10 6e a8 c6 ad fc 7f 99 e1 5a 18 14 
+10:52:17:385 -> I: 88 ab 48 c7 30 01 9f d0 ae e9 fc 5b f8 4f 02 89 73 21 90 c7 7d e6 26 03 23 58 e1 58 f0 1a bb 2c ef 1c 13 14 7b 33 f6 25 
+10:52:17:385 -> I: 71 a4 7a 0a 88 73 3f 43 
+10:52:17:473 -> I: Current block: 1477
+10:52:17:473 -> I: Current erase count: 1
+10:52:17:473 -> I: Current total ECC faults found: 0
+10:52:17:592 -> I: Current block: 1478
+10:52:17:599 -> I: Current erase count: 1
+10:52:17:599 -> I: Current total ECC faults found: 0
+10:52:17:776 -> I: Current block: 1479
+10:52:17:778 -> I: Current erase count: 1
+10:52:17:780 -> I: Current total ECC faults found: 0
+10:52:17:961 -> I: Current block: 1480
+10:52:17:963 -> I: Current erase count: 1
+10:52:17:966 -> I: Current total ECC faults found: 0
+10:52:18:146 -> I: Current block: 1481
+10:52:18:148 -> I: Current erase count: 1
+10:52:18:152 -> I: Current total ECC faults found: 0
+10:52:18:332 -> I: Current block: 1482
+10:52:18:333 -> I: Current erase count: 1
+10:52:18:336 -> I: Current total ECC faults found: 0
+10:52:18:516 -> I: Current block: 1483
+10:52:18:543 -> I: Current erase count: 1
+10:52:18:543 -> I: Current total ECC faults found: 0
+10:52:18:701 -> I: Current block: 1484
+10:52:18:702 -> I: Current erase count: 1
+10:52:18:704 -> I: Current total ECC faults found: 0
+10:52:18:886 -> I: Current block: 1485
+10:52:18:888 -> I: Current erase count: 1
+10:52:18:890 -> I: Current total ECC faults found: 0
+10:52:19:084 -> I: Current block: 1486
+10:52:19:085 -> I: Current erase count: 1
+10:52:19:085 -> I: Current total ECC faults found: 0
+10:52:19:254 -> I: Current block: 1487
+10:52:19:265 -> I: Current erase count: 1
+10:52:19:265 -> I: Current total ECC faults found: 0
+10:52:19:438 -> I: Current block: 1488
+10:52:19:447 -> I: Current erase count: 1
+10:52:19:447 -> I: Current total ECC faults found: 0
+10:52:19:632 -> I: Current block: 1489
+10:52:19:637 -> I: Current erase count: 1
+10:52:19:637 -> I: Current total ECC faults found: 0
+10:52:19:809 -> I: Current block: 1490
+10:52:19:812 -> I: Current erase count: 1
+10:52:19:836 -> I: Current total ECC faults found: 0
+10:52:19:992 -> I: Current block: 1491
+10:52:20:012 -> I: Current erase count: 1
+10:52:20:012 -> I: Current total ECC faults found: 0
+10:52:20:178 -> I: Current block: 1492
+10:52:20:188 -> I: Current erase count: 1
+10:52:20:188 -> I: Current total ECC faults found: 0
+10:52:20:362 -> I: Current block: 1493
+10:52:20:370 -> I: Current erase count: 1
+10:52:20:370 -> I: Current total ECC faults found: 0
+10:52:20:547 -> I: Current block: 1494
+10:52:20:555 -> I: Current erase count: 1
+10:52:20:555 -> I: Current total ECC faults found: 0
+10:52:20:731 -> I: Current block: 1495
+10:52:20:733 -> I: Current erase count: 1
+10:52:20:737 -> I: Current total ECC faults found: 0
+10:52:20:916 -> I: Current block: 1496
+10:52:20:919 -> I: Current erase count: 1
+10:52:20:922 -> I: Current total ECC faults found: 0
+10:52:21:100 -> I: Current block: 1497
+10:52:21:102 -> I: Current erase count: 1
+10:52:21:105 -> I: Current total ECC faults found: 0
+10:52:21:286 -> I: Current block: 1498
+10:52:21:288 -> I: Current erase count: 1
+10:52:21:291 -> I: Current total ECC faults found: 0
+10:52:21:470 -> I: Current block: 1499
+10:52:21:472 -> I: Current erase count: 1
+10:52:21:476 -> I: Current total ECC faults found: 0
+10:52:21:656 -> I: Current block: 1500
+10:52:21:657 -> I: Current erase count: 1
+10:52:21:660 -> I: Current total ECC faults found: 0
+10:52:21:840 -> I: Current block: 1501
+10:52:21:842 -> I: Current erase count: 1
+10:52:21:844 -> I: Current total ECC faults found: 0
+10:52:22:025 -> I: Current block: 1502
+10:52:22:027 -> I: Current erase count: 1
+10:52:22:029 -> I: Current total ECC faults found: 0
+10:52:22:208 -> I: Current block: 1503
+10:52:22:210 -> I: Current erase count: 1
+10:52:22:213 -> I: Current total ECC faults found: 0
+10:52:22:393 -> I: Current block: 1504
+10:52:22:394 -> I: Current erase count: 1
+10:52:22:398 -> I: Current total ECC faults found: 0
+10:52:22:577 -> I: Current block: 1505
+10:52:22:579 -> I: Current erase count: 1
+10:52:22:581 -> I: Current total ECC faults found: 0
+10:52:22:763 -> I: Current block: 1506
+10:52:22:777 -> I: Current erase count: 1
+10:52:22:777 -> I: Current total ECC faults found: 0
+10:52:22:948 -> I: Current block: 1507
+10:52:22:981 -> I: Current erase count: 1
+10:52:22:981 -> I: Current total ECC faults found: 0
+10:52:23:133 -> I: Current block: 1508
+10:52:23:161 -> I: Current erase count: 1
+10:52:23:161 -> I: Current total ECC faults found: 0
+10:52:23:332 -> I: Current block: 1509
+10:52:23:346 -> I: Current erase count: 1
+10:52:23:346 -> I: Current total ECC faults found: 0
+10:52:23:504 -> I: Current block: 1510
+10:52:23:532 -> I: Current erase count: 1
+10:52:23:532 -> I: Current total ECC faults found: 0
+10:52:23:760 -> I: Current block: 1511
+10:52:23:783 -> I: Current erase count: 1
+10:52:23:783 -> I: Current total ECC faults found: 0
+10:52:23:880 -> I: Current block: 1512
+10:52:24:187 -> I: Current erase count: 1
+10:52:24:187 -> I: Current total ECC faults found: 0
+10:52:24:204 -> I: Current block: 1513
+10:52:24:204 -> I: Current erase count: 1
+10:52:24:204 -> I: Current total ECC faults found: 0
+10:52:24:258 -> I: Current block: 1514
+10:52:24:258 -> I: Current erase count: 1
+10:52:24:258 -> I: Current total ECC faults found: 0
+10:52:24:425 -> I: Current block: 1515
+10:52:24:427 -> I: Current erase count: 1
+10:52:24:437 -> I: Current total ECC faults found: 0
+10:52:24:609 -> I: Current block: 1516
+10:52:24:611 -> I: Current erase count: 1
+10:52:24:614 -> I: Current total ECC faults found: 0
+10:52:24:793 -> I: Current block: 1517
+10:52:24:796 -> I: Current erase count: 1
+10:52:24:799 -> I: Current total ECC faults found: 0
+10:52:24:978 -> I: Current block: 1518
+10:52:24:980 -> I: Current erase count: 1
+10:52:24:983 -> I: Current total ECC faults found: 0
+10:52:25:161 -> I: Current block: 1519
+10:52:25:163 -> I: Current erase count: 1
+10:52:25:167 -> I: Current total ECC faults found: 0
+10:52:25:348 -> I: Current block: 1520
+10:52:25:349 -> I: Current erase count: 1
+10:52:25:352 -> I: Current total ECC faults found: 0
+10:52:25:531 -> I: Current block: 1521
+10:52:25:534 -> I: Current erase count: 1
+10:52:25:537 -> I: Current total ECC faults found: 0
+10:52:25:716 -> I: Current block: 1522
+10:52:25:720 -> I: Current erase count: 1
+10:52:25:722 -> I: Current total ECC faults found: 0
+10:52:25:899 -> I: Current block: 1523
+10:52:25:913 -> I: Current erase count: 1
+10:52:25:913 -> I: Current total ECC faults found: 0
+10:52:26:086 -> I: Current block: 1524
+10:52:26:117 -> I: Current erase count: 1
+10:52:26:117 -> I: Current total ECC faults found: 0
+10:52:26:270 -> I: Current block: 1525
+10:52:26:272 -> I: Current erase count: 1
+10:52:26:275 -> I: Current total ECC faults found: 0
+10:52:26:455 -> I: Current block: 1526
+10:52:26:458 -> I: Current erase count: 1
+10:52:26:461 -> I: Current total ECC faults found: 0
+10:52:26:638 -> I: Current block: 1527
+10:52:26:642 -> I: Current erase count: 1
+10:52:26:645 -> I: Current total ECC faults found: 0
+10:52:26:825 -> I: Current block: 1528
+10:52:26:827 -> I: Current erase count: 1
+10:52:26:830 -> I: Current total ECC faults found: 0
+10:52:27:008 -> I: Current block: 1529
+10:52:27:010 -> I: Current erase count: 1
+10:52:27:013 -> I: Current total ECC faults found: 0
+10:52:27:193 -> I: Current block: 1530
+10:52:27:195 -> I: Current erase count: 1
+10:52:27:198 -> I: Current total ECC faults found: 0
+10:52:27:377 -> I: Current block: 1531
+10:52:27:380 -> I: Current erase count: 1
+10:52:27:430 -> I: Current total ECC faults found: 0
+10:52:27:564 -> I: Current block: 1532
+10:52:27:577 -> I: Current erase count: 1
+10:52:27:577 -> I: Current total ECC faults found: 0
+10:52:27:747 -> I: Current block: 1533
+10:52:27:750 -> I: Current erase count: 1
+10:52:27:759 -> I: Current total ECC faults found: 0
+10:52:27:932 -> I: Current block: 1534
+10:52:27:967 -> I: Current erase count: 1
+10:52:27:967 -> I: Current total ECC faults found: 0
+10:52:28:115 -> I: Current block: 1535
+10:52:28:117 -> I: Current erase count: 1
+10:52:28:121 -> I: Current total ECC faults found: 0
+10:52:28:300 -> I: Current block: 1536
+10:52:28:303 -> I: Current erase count: 1
+10:52:28:305 -> I: Current total ECC faults found: 0
+10:52:28:499 -> I: Current block: 1537
+10:52:28:500 -> I: Current erase count: 1
+10:52:28:500 -> I: Current total ECC faults found: 0
+10:52:28:670 -> I: Current block: 1538
+10:52:28:672 -> I: Current erase count: 1
+10:52:28:674 -> I: Current total ECC faults found: 0
+10:52:28:853 -> I: Current block: 1539
+10:52:28:855 -> I: Current erase count: 1
+10:52:28:858 -> I: Current total ECC faults found: 0
+10:52:29:097 -> I: Current block: 1540
+10:52:29:099 -> I: Current erase count: 1
+10:52:29:099 -> I: Current total ECC faults found: 0
+10:52:29:223 -> I: Current block: 1541
+10:52:29:224 -> I: Current erase count: 1
+10:52:29:228 -> I: Current total ECC faults found: 0
+10:52:29:407 -> I: Current block: 1542
+10:52:29:408 -> I: Current erase count: 1
+10:52:29:411 -> I: Current total ECC faults found: 0
+10:52:29:591 -> I: Current block: 1543
+10:52:29:593 -> I: Current erase count: 1
+10:52:29:595 -> I: Current total ECC faults found: 0
+10:52:29:775 -> I: Current block: 1544
+10:52:29:777 -> I: Current erase count: 1
+10:52:29:779 -> I: Current total ECC faults found: 0
+10:52:29:960 -> I: Current block: 1545
+10:52:29:961 -> I: Current erase count: 1
+10:52:29:964 -> I: Current total ECC faults found: 0
+10:52:30:154 -> I: Current block: 1546
+10:52:30:154 -> I: Current erase count: 1
+10:52:30:154 -> I: Current total ECC faults found: 0
+10:52:30:329 -> I: Current block: 1547
+10:52:30:331 -> I: Current erase count: 1
+10:52:30:333 -> I: Current total ECC faults found: 0
+10:52:30:514 -> I: Current block: 1548
+10:52:30:516 -> I: Current erase count: 1
+10:52:30:519 -> I: Current total ECC faults found: 0
+10:52:30:700 -> I: Current block: 1549
+10:52:30:702 -> I: Current erase count: 1
+10:52:30:705 -> I: Current total ECC faults found: 0
+10:52:30:884 -> I: Current block: 1550
+10:52:30:886 -> I: Current erase count: 1
+10:52:30:889 -> I: Current total ECC faults found: 0
+10:52:31:068 -> I: Current block: 1551
+10:52:31:070 -> I: Current erase count: 1
+10:52:31:072 -> I: Current total ECC faults found: 0
+10:52:31:254 -> I: Current block: 1552
+10:52:31:264 -> I: Current erase count: 1
+10:52:31:266 -> I: Current total ECC faults found: 0
+10:52:31:437 -> I: Current block: 1553
+10:52:31:439 -> I: Current erase count: 1
+10:52:31:441 -> I: Current total ECC faults found: 0
+10:52:31:622 -> I: Current block: 1554
+10:52:31:623 -> I: Current erase count: 1
+10:52:31:627 -> I: Current total ECC faults found: 0
+10:52:31:806 -> I: Current block: 1555
+10:52:31:808 -> I: Current erase count: 1
+10:52:31:811 -> I: Current total ECC faults found: 0
+10:52:31:991 -> I: Current block: 1556
+10:52:31:992 -> I: Current erase count: 1
+10:52:31:995 -> I: Current total ECC faults found: 0
+10:52:32:176 -> I: Current block: 1557
+10:52:32:177 -> I: Current erase count: 1
+10:52:32:180 -> I: Current total ECC faults found: 0
+10:52:32:362 -> I: Current block: 1558
+10:52:32:364 -> I: Current erase count: 1
+10:52:32:366 -> I: Current total ECC faults found: 0
+10:52:32:545 -> I: Current block: 1559
+10:52:32:547 -> I: Current erase count: 1
+10:52:32:550 -> I: Current total ECC faults found: 0
+10:52:32:730 -> I: Current block: 1560
+10:52:32:732 -> I: Current erase count: 1
+10:52:32:734 -> I: Current total ECC faults found: 0
+10:52:32:915 -> I: Current block: 1561
+10:52:32:916 -> I: Current erase count: 1
+10:52:32:919 -> I: Current total ECC faults found: 0
+10:52:33:100 -> I: Current block: 1562
+10:52:33:102 -> I: Current erase count: 1
+10:52:33:104 -> I: Current total ECC faults found: 0
+10:52:33:284 -> I: Current block: 1563
+10:52:33:286 -> I: Currentrent total ECC faults found: 0
+ erase count: 1
+10:52:33:288 -> I: Cur10:52:33:469 -> I: Current block: 1564
+10:52:33:470 -> I: Current erase count: 1
+10:52:33:473 -> I: Current total ECC faults found: 0
+10:52:33:653 -> I: Current block: 1565
+10:52:33:654 -> I: Current erase count: 1
+10:52:33:658 -> I: Current total ECC faults found: 0
+10:52:33:839 -> I: Current block: 1566
+10:52:33:841 -> I: Current erase count: 1
+10:52:33:843 -> I: Current total ECC faults found: 0
+10:52:34:022 -> I: Current block: 1567
+10:52:34:024 -> I: Current erase count: 1
+10:52:34:026 -> I: Current total ECC faults found: 0
+10:52:34:207 -> I: Current block: 1568
+10:52:34:208 -> I: Current erase count: 1
+10:52:34:211 -> I: Current total ECC faults found: 0
+10:52:34:403 -> I: Current block: 1569
+10:52:34:403 -> I: Current erase count: 1
+10:52:34:403 -> I: Current total ECC faults found: 0
+10:52:34:576 -> I: Current block: 1570
+10:52:34:577 -> I: Current erase count: 1
+10:52:34:581 -> I: Current total ECC faults found: 0
+10:52:34:761 -> I: Current block: 1571
+10:52:34:763 -> I: Current erase count: 1
+10:52:34:765 -> I: Current total ECC faults found: 0
+10:52:34:958 -> I: Current block: 1572
+10:52:34:958 -> I: Current erase count: 1
+10:52:34:958 -> I: Current total ECC faults found: 0
+10:52:35:129 -> I: Current block: 1573
+10:52:35:130 -> I: Current erase count: 1
+10:52:35:133 -> I: Current total ECC faults found: 0
+10:52:35:314 -> I: Current block: 1574
+10:52:35:316 -> I: Current erase count: 1
+10:52:35:318 -> I: Current total ECC faults found: 0
+10:52:35:499 -> I: Current block: 1575
+10:52:35:500 -> I: Current erase count: 1
+10:52:35:504 -> I: Current total ECC faults found: 0
+10:52:35:684 -> I: Current block: 1576
+10:52:35:685 -> I: Current erase count: 1
+10:52:35:688 -> I: Current total ECC faults found: 0
+10:52:35:869 -> I: Current block: 1577
+10:52:35:871 -> I: Current erase count: 1
+10:52:35:872 -> I: Current total ECC faults found: 0
+10:52:36:053 -> I: Current block: 1578
+10:52:36:054 -> I: Current erase count: 1
+10:52:36:057 -> I: Current total ECC faults found: 0
+10:52:36:238 -> I: Current block: 1579
+10:52:36:240 -> I: Current erase count: 1
+10:52:36:242 -> I: Current total ECC faults found: 0
+10:52:36:423 -> I: Current block: 1580
+10:52:36:435 -> I: Current erase count: 1
+10:52:36:435 -> I: Current total ECC faults found: 0
+10:52:36:640 -> I: Current block: 1581
+10:52:36:651 -> I: Current erase count: 1
+10:52:36:651 -> I: Current total ECC faults found: 0
+10:52:36:792 -> I: Current block: 1582
+10:52:36:802 -> I: Current erase count: 1
+10:52:36:802 -> I: Current total ECC faults found: 0
+10:52:36:975 -> I: Current block: 1583
+10:52:36:981 -> I: Current erase count: 1
+10:52:36:981 -> I: Current total ECC faults found: 0
+10:52:37:202 -> I: Current block: 1584
+10:52:37:233 -> I: Current erase count: 1
+10:52:37:233 -> I: Current total ECC faults found: 0
+10:52:37:345 -> I: Current block: 1585
+10:52:37:358 -> I: Current erase count: -1
+10:52:37:527 -> I: Current block: 1586
+10:52:37:534 -> I: Current erase count: 1
+10:52:37:534 -> I: Current total ECC faults found: 0
+10:52:37:711 -> I: Current block: 1587
+10:52:37:751 -> I: Current erase count: 1
+10:52:37:751 -> I: Current total ECC faults found: 0
+10:52:37:897 -> I: Current block: 1588
+10:52:37:903 -> I: Current erase count: 1
+10:52:37:903 -> I: Current total ECC faults found: 0
+10:52:38:081 -> I: Current block: 1589
+10:52:38:083 -> I: Current erase count: 1
+10:52:38:085 -> I: Current total ECC faults found: 0
+10:52:38:266 -> I: Current block: 1590
+10:52:38:296 -> I: Current erase count: 1
+10:52:38:296 -> I: Current total ECC faults found: 0
+10:52:38:463 -> I: Current block: 1591
+10:52:38:548 -> I: Current erase count: 1
+10:52:38:548 -> I: Current total ECC faults found: 0
+10:52:38:655 -> I: Current block: 1592
+10:52:38:655 -> I: Current erase count: 1
+10:52:38:655 -> I: Current total ECC faults found: 0
+10:52:38:890 -> I: Current block: 1593
+10:52:38:904 -> I: Current erase count: 1
+10:52:38:904 -> I: Current total ECC faults found: 0
+10:52:39:014 -> I: Current block: 1594
+10:52:39:029 -> I: Current erase count: 1
+10:52:39:029 -> I: Current total ECC faults found: 0
+10:52:39:192 -> I: Current block: 1595
+10:52:39:199 -> I: Current erase count: 1
+10:52:39:199 -> I: Current total ECC faults found: 0
+10:52:39:374 -> I: Current block: 1596
+10:52:39:499 -> I: Current erase count: 1
+10:52:39:499 -> I: Current total ECC faults found: 0
+10:52:39:559 -> I: Current block: 1597
+10:52:39:626 -> I: Current erase count: 1
+10:52:39:626 -> I: Current total ECC faults found: 0
+10:52:39:744 -> I: Current block: 1598
+10:52:39:792 -> I: Current erase count: 1
+10:52:39:792 -> I: Current total ECC faults found: 0
+10:52:39:929 -> I: Current block: 1599
+10:52:39:991 -> I: Current erase count: 1
+10:52:39:991 -> I: Current total ECC faults found: 0
+10:52:40:131 -> I: Current block: 1600
+10:52:40:142 -> I: Current erase count: 1
+10:52:40:142 -> I: Current total ECC faults found: 0
+10:52:40:320 -> I: Current block: 1601
+10:52:40:366 -> I: Current erase count: 1
+10:52:40:366 -> I: Current total ECC faults found: 0
+10:52:40:481 -> I: Current block: 1602
+10:52:40:493 -> I: Current erase count: 1
+10:52:40:493 -> I: Current total ECC faults found: 0
+10:52:40:667 -> I: Current block: 1603
+10:52:40:693 -> I: Current erase count: 1
+10:52:40:693 -> I: Current total ECC faults found: 0
+10:52:40:851 -> I: Current block: 1604
+10:52:40:868 -> I: Current erase count: 1
+10:52:40:868 -> I: Current total ECC faults found: 0
+10:52:41:036 -> I: Current block: 1605
+10:52:41:038 -> I: Current erase count: 1
+10:52:41:041 -> I: Current total ECC faults found: 0
+10:52:41:220 -> I: Current block: 1606
+10:52:41:222 -> I: Current erase count: 1
+10:52:41:224 -> I: Current total ECC faults found: 0
+10:52:41:404 -> I: Current block: 1607
+10:52:41:406 -> I: Current erase count: 1
+10:52:41:410 -> I: Current total ECC faults found: 0
+10:52:41:589 -> I: Current block: 1608
+10:52:41:591 -> I: Current erase count: 1
+10:52:41:594 -> I: Current total ECC faults found: 0
+10:52:41:776 -> I: Current block: 1609
+10:52:41:778 -> I: Current erase count: 1
+10:52:41:780 -> I: Current total ECC faults found: 0
+10:52:41:960 -> I: Current block: 1610
+10:52:41:971 -> I: Current erase count: 1
+10:52:41:971 -> I: Current total ECC faults found: 0
+10:52:42:161 -> I: Current block: 1611
+10:52:42:178 -> I: Current erase count: 1
+10:52:42:178 -> I: Current total ECC faults found: 0
+10:52:42:335 -> I: Current block: 1612
+10:52:42:365 -> I: Current erase count: 1
+10:52:42:365 -> I: Current total ECC faults found: 0
+10:52:42:517 -> I: Current block: 1613
+10:52:42:539 -> I: Current erase count: 1
+10:52:42:539 -> I: Current total ECC faults found: 0
+10:52:42:709 -> I: Current block: 1614
+10:52:42:737 -> I: Current erase count: 1
+10:52:42:737 -> I: Current total ECC faults found: 0
+10:52:42:908 -> I: Current block: 1615
+10:52:42:948 -> I: Current erase count: 1
+10:52:42:948 -> I: Current total ECC faults found: 0
+10:52:43:072 -> I: Current block: 1616
+10:52:43:081 -> I: Current erase count: 1
+10:52:43:081 -> I: Current total ECC faults found: 0
+10:52:43:257 -> I: Current block: 1617
+10:52:43:263 -> I: Current erase count: 1
+10:52:43:263 -> I: Current total ECC faults found: 0
+10:52:43:449 -> I: Current block: 1618
+10:52:43:450 -> I: Current erase count: 1
+10:52:43:450 -> I: Current total ECC faults found: 0
+10:52:43:626 -> I: Current block: 1619
+10:52:43:628 -> I: Current erase count: 1
+10:52:43:631 -> I: Current total ECC faults found: 0
+10:52:43:811 -> I: Current block: 1620
+10:52:43:813 -> I: Current erase count: 1
+10:52:43:815 -> I: Current total ECC faults found: 0
+10:52:43:995 -> I: Current block: 1621
+10:52:43:997 -> I: Current erase count: 1
+10:52:44:000 -> I: Current total ECC faults found: 0
+10:52:44:180 -> I: Current block: 1622
+10:52:44:182 -> I: Current erase count: 1
+10:52:44:186 -> I: Current total ECC faults found: 0
+10:52:44:364 -> I: Current block: 1623
+10:52:44:366 -> I: Current erase count: 1
+10:52:44:369 -> I: Current total ECC faults found: 0
+10:52:44:549 -> I: Current block: 1624
+10:52:44:560 -> I: Current erase count: 1
+10:52:44:560 -> I: Current total ECC faults found: 0
+10:52:44:733 -> I: Current block: 1625
+10:52:44:735 -> I: Current erase count: 1
+10:52:44:738 -> I: Current total ECC faults found: 0
+10:52:44:919 -> I: Current block: 1626
+10:52:44:927 -> I: Current erase count: 1
+10:52:44:927 -> I: Current total ECC faults found: 0
+10:52:45:261 -> I: Current block: 1627
+10:52:45:278 -> I: Current erase count: 1
+10:52:45:278 -> I: Current total ECC faults found: 0
+10:52:45:288 -> I: Current block: 1628
+10:52:45:297 -> I: Current erase count: 1
+10:52:45:297 -> I: Current total ECC faults found: 0
+10:52:45:473 -> I: Current block: 1629
+10:52:45:475 -> I: Current erase count: 1
+10:52:45:477 -> I: Current total ECC faults found: 0
+10:52:45:658 -> I: Current block: 1630
+10:52:45:660 -> I: Current erase count: 1
+10:52:45:701 -> I: Current total ECC faults found: 0
+10:52:45:934 -> I: Current block: 1631
+10:52:45:934 -> I: Current erase count: 1
+10:52:45:934 -> I: Current total ECC faults found: 0
+10:52:46:026 -> I: Current block: 1632
+10:52:46:035 -> I: Current erase count: 1
+10:52:46:035 -> I: Current total ECC faults found: 0
+10:52:46:210 -> I: Current block: 1633
+10:52:46:233 -> I: Current erase count: 1
+10:52:46:233 -> I: Current total ECC faults found: 0
+10:52:46:395 -> I: Current block: 1634
+10:52:46:397 -> I: Current erase count: 1
+10:52:46:400 -> I: Current total ECC faults found: 0
+10:52:46:580 -> I: Current block: 1635
+10:52:46:587 -> I: Current erase count: 1
+10:52:46:587 -> I: Current total ECC faults found: 0
+10:52:46:764 -> I: Current block: 1636
+10:52:46:766 -> I: Current erase count: 1
+10:52:46:769 -> I: Current total ECC faults found: 0
+10:52:46:948 -> I: Current block: 1637
+10:52:46:960 -> I: Current erase count: 1
+10:52:46:960 -> I: Current total ECC faults found: 0
+10:52:47:132 -> I: Current block: 1638
+10:52:47:141 -> I: Current erase count: 1
+10:52:47:141 -> I: Current total ECC faults found: 0
+10:52:47:317 -> I: Current block: 1639
+10:52:47:319 -> I: Current erase count: 1
+10:52:47:321 -> I: Current total ECC faults found: 0
+10:52:47:502 -> I: Current block: 1640
+10:52:47:504 -> I: Current erase count: 1
+10:52:47:507 -> I: Current total ECC faults found: 0
+10:52:47:686 -> I: Current block: 1641
+10:52:47:688 -> I: Current erase count: 1
+10:52:47:691 -> I: Current total ECC faults found: 0
+10:52:47:871 -> I: Current block: 1642
+10:52:47:873 -> I: Current erase count: 1
+10:52:47:875 -> I: Current total ECC faults found: 0
+10:52:48:056 -> I: Current block: 1643
+10:52:48:058 -> I: Current erase count: 1
+10:52:48:061 -> I: Current total ECC faults found: 0
+10:52:48:241 -> I: Current block: 1644
+10:52:48:243 -> I: Current erase count: 1
+10:52:48:246 -> I: Current total ECC faults found: 0
+10:52:48:426 -> I: Current block: 1645
+10:52:48:428 -> I: Current erase count: 1
+10:52:48:430 -> I: Current total ECC faults found: 0
+10:52:48:611 -> I: Current block: 1646
+10:52:48:614 -> I: Current erase count: 1
+10:52:48:664 -> I: Current total ECC faults found: 0
+10:52:48:793 -> I: Current block: 1647
+10:52:48:795 -> I: Current erase count: 1
+10:52:48:797 -> I: Current total ECC faults found: 0
+10:52:48:979 -> I: Current block: 1648
+10:52:48:981 -> I: Current erase count: 1
+10:52:48:984 -> I: Current total ECC faults found: 0
+10:52:49:163 -> I: Current block: 1649
+10:52:49:190 -> I: Current erase count: 1
+10:52:49:190 -> I: Current total ECC faults found: 0
+10:52:49:348 -> I: Current block: 1650
+10:52:49:350 -> I: Current erase count: 1
+10:52:49:352 -> I: Current total ECC faults found: 0
+10:52:49:532 -> I: Current block: 1651
+10:52:49:534 -> I: Current erase count: 1
+10:52:49:536 -> I: Current total ECC faults found: 0
+10:52:49:720 -> I: Current block: 1652
+10:52:49:721 -> I: Current erase count: 1
+10:52:49:722 -> I: Current total ECC faults found: 0
+10:52:49:902 -> I: Current block: 1653
+10:52:49:904 -> I: Current erase count: 1
+10:52:49:906 -> I: Current total ECC faults found: 0
+10:52:50:087 -> I: Current block: 1654
+10:52:50:089 -> I: Current erase count: 1
+10:52:50:091 -> I: Current total ECC faults found: 0
+10:52:50:270 -> I: Current block: 1655
+10:52:50:272 -> I: Current erase count: 1
+10:52:50:274 -> I: Current total ECC faults found: 0
+10:52:50:455 -> I: Current block: 1656
+10:52:50:457 -> I: Current erase count: 1
+10:52:50:460 -> I: Current total ECC faults found: 0
+10:52:50:640 -> I: Current block: 1657
+10:52:50:642 -> I: Current erase count: 1
+10:52:50:644 -> I: Current total ECC faults found: 0
+10:52:50:825 -> I: Current block: 1658
+10:52:50:827 -> I: Current erase count: 1
+10:52:50:829 -> I: Current total ECC faults found: 0
+10:52:51:008 -> I: Current block: 1659
+10:52:51:010 -> I: Current erase count: 1
+10:52:51:013 -> I: Current total ECC faults found: 0
+10:52:51:194 -> I: Current block: 1660
+10:52:51:196 -> I: Current erase count: 1
+10:52:51:199 -> I: Current total ECC faults found: 0
+10:52:51:379 -> I: Current block: 1661
+10:52:51:381 -> I: Current erase count: 1
+10:52:51:383 -> I: Current total ECC faults found: 0
+10:52:51:564 -> I: Current block: 1662
+10:52:51:566 -> I: Current erase count: 1
+10:52:51:568 -> I: Current total ECC faults found: 0
+10:52:51:747 -> I: Current block: 1663
+10:52:51:749 -> I: Current erase count: 1
+10:52:51:752 -> I: Current total ECC faults found: 0
+10:52:51:932 -> I: Current block: 1664
+10:52:51:934 -> I: Current erase count: 1
+10:52:51:936 -> I: Current total ECC faults found: 0
+10:52:52:117 -> I: Current block: 1665
+10:52:52:119 -> I: Current erase count: 1
+10:52:52:121 -> I: Current total ECC faults found: 0
+10:52:52:301 -> I: Current block: 1666
+10:52:52:332 -> I: Current erase count: 1
+10:52:52:332 -> I: Current total ECC faults found: 0
+10:52:52:486 -> I: Current block: 1667
+10:52:52:489 -> I: Current erase count: 1
+10:52:52:496 -> I: Current total ECC faults found: 0
+10:52:52:670 -> I: Current block: 1668
+10:52:52:685 -> I: Current erase count: 1
+10:52:52:685 -> I: Current total ECC faults found: 0
+10:52:52:856 -> I: Current block: 1669
+10:52:52:858 -> I: Current erase count: 1
+10:52:52:871 -> I: Current total ECC faults found: 0
+10:52:53:040 -> I: Current block: 1670
+10:52:53:042 -> I: Current erase count: 1
+10:52:53:045 -> I: Current total ECC faults found: 0
+10:52:53:224 -> I: Current block: 1671
+10:52:53:226 -> I: Current erase count: 1
+10:52:53:237 -> I: Current total ECC faults found: 0
+10:52:53:409 -> I: Current block: 1672
+10:52:53:412 -> I: Current erase count: 1
+10:52:53:417 -> I: Current total ECC faults found: 0
+10:52:53:598 -> I: Current block: 1673
+10:52:53:611 -> I: Current erase count: 1
+10:52:53:611 -> I: Current total ECC faults found: 0
+10:52:53:778 -> I: Current block: 1674
+10:52:53:780 -> I: Current erase count: 1
+10:52:53:784 -> I: Current total ECC faults found: 0
+10:52:53:966 -> I: Current block: 1675
+10:52:53:982 -> I: Current erase count: 1
+10:52:53:982 -> I: Current total ECC faults found: 0
+10:52:54:172 -> I: Current block: 1676
+10:52:54:189 -> I: Current erase count: 1
+10:52:54:189 -> I: Current total ECC faults found: 0
+10:52:54:334 -> I: Current block: 1677
+10:52:54:359 -> I: Current erase count: 1
+10:52:54:359 -> I: Current total ECC faults found: 0
+10:52:54:518 -> I: Current block: 1678
+10:52:54:520 -> I: Current erase count: 1
+10:52:54:523 -> I: Current total ECC faults found: 0
+10:52:54:702 -> I: Current block: 1679
+10:52:54:703 -> I: Current erase count: 1
+10:52:54:706 -> I: Current total ECC faults found: 0
+10:52:54:887 -> I: Current block: 1680
+10:52:54:889 -> I: Current erase count: 1
+10:52:54:891 -> I: Current total ECC faults found: 0
+10:52:55:071 -> I: Current block: 1681
+10:52:55:073 -> I: Current erase count: 1
+10:52:55:075 -> I: Current total ECC faults found: 0
+10:52:55:279 -> I: Current block: 1682
+10:52:55:280 -> I: Current erase count: 1
+10:52:55:280 -> I: Current total ECC faults found: 0
+10:52:55:440 -> I: Current block: 1683
+10:52:55:458 -> I: Current erase count: 1
+10:52:55:458 -> I: Current total ECC faults found: 0
+10:52:55:626 -> I: Current block: 1684
+10:52:55:644 -> I: Current erase count: 1
+10:52:55:644 -> I: Current total ECC faults found: 0
+10:52:55:832 -> I: Current block: 1685
+10:52:55:839 -> I: Current erase count: 1
+10:52:55:839 -> I: Current total ECC faults found: 0
+10:52:55:996 -> I: Current block: 1686
+10:52:56:023 -> I: Current erase count: 1
+10:52:56:023 -> I: Current total ECC faults found: 0
+10:52:56:185 -> I: Current block: 1687
+10:52:56:197 -> I: Current erase count: 1
+10:52:56:197 -> I: Current total ECC faults found: 0
+10:52:56:372 -> I: Current block: 1688
+10:52:56:373 -> I: Current erase count: 1
+10:52:56:373 -> I: Current total ECC faults found: 0
+10:52:56:550 -> I: Current block: 1689
+10:52:56:551 -> I: Current erase count: 1
+10:52:56:553 -> I: Current total ECC faults found: 0
+10:52:56:734 -> I: Current block: 1690
+10:52:56:736 -> I: Current erase count: 1
+10:52:56:739 -> I: Current total ECC faults found: 0
+10:52:56:923 -> I: Current block: 1691
+10:52:56:924 -> I: Current erase count: 1
+10:52:56:924 -> I: Current total ECC faults found: 0
+10:52:57:103 -> I: Current block: 1692
+10:52:57:105 -> I: Current erase count: 1
+10:52:57:107 -> I: Current total ECC faults found: 0
+10:52:57:287 -> I: Current block: 1693
+10:52:57:289 -> I: Current erase count: 1
+10:52:57:292 -> I: Current total ECC faults found: 0
+10:52:57:474 -> I: Current block: 1694
+10:52:57:479 -> I: Current erase count: 1
+10:52:57:514 -> I: Current total ECC faults found: 0
+10:52:57:657 -> I: Current block: 1695
+10:52:57:687 -> I: Current erase count: 1
+10:52:57:687 -> I: Current total ECC faults found: 0
+10:52:57:841 -> I: Current block: 1696
+10:52:57:859 -> I: Current erase count: 1
+10:52:57:859 -> I: Current total ECC faults found: 0
+10:52:58:026 -> I: Current block: 1697
+10:52:58:028 -> I: Current erase count: 1
+10:52:58:032 -> I: Current total ECC faults found: 0
+10:52:58:211 -> I: Current block: 1698
+10:52:58:212 -> I: Current erase count: 1
+10:52:58:216 -> I: Current total ECC faults found: 0
+10:52:58:395 -> I: Current block: 1699
+10:52:58:400 -> I: Current erase count: 1
+10:52:58:412 -> I: Current total ECC faults found: 0
+10:52:58:580 -> I: Current block: 1700
+10:52:58:586 -> I: Current erase count: 1
+10:52:58:586 -> I: Current total ECC faults found: 0
+10:52:58:765 -> I: Current block: 1701
+10:52:58:777 -> I: Current erase count: 1
+10:52:58:777 -> I: Current total ECC faults found: 0
+10:52:58:949 -> I: Current block: 1702
+10:52:58:952 -> I: Current erase count: 1
+10:52:58:954 -> I: Current total ECC faults found: 0
+10:52:59:134 -> I: Current block: 1703
+10:52:59:136 -> I: Current erase count: 1
+10:52:59:141 -> I: Current total ECC faults found: 0
+10:52:59:319 -> I: Current block: 1704
+10:52:59:321 -> I: Current erase count: 1
+10:52:59:323 -> I: Current total ECC faults found: 0
+10:52:59:503 -> I: Current block: 1705
+10:52:59:505 -> I: Current erase count: 1
+10:52:59:507 -> I: Current total ECC faults found: 0
+10:52:59:689 -> I: Current block: 1706
+10:52:59:690 -> I: Current erase count: 1
+10:52:59:692 -> I: Current total ECC faults found: 0
+10:52:59:873 -> I: Current block: 1707
+10:52:59:874 -> I: Current erase count: 1
+10:52:59:877 -> I: Current total ECC faults found: 0
+10:53:00:058 -> I: Current block: 1708
+10:53:00:059 -> I: Current erase count: 1
+10:53:00:061 -> I: Current total ECC faults found: 0
+10:53:00:242 -> I: Current block: 1709
+10:53:00:244 -> I: Current erase count: 1
+10:53:00:247 -> I: Current total ECC faults found: 0
+10:53:00:426 -> I: Current block: 1710
+10:53:00:428 -> I: Current erase count: 1
+10:53:00:431 -> I: Current total ECC faults found: 0
+10:53:00:610 -> I: Current block: 1711
+10:53:00:612 -> I: Current erase count: 1
+10:53:00:614 -> I: Current total ECC faults found: 0
+10:53:00:796 -> I: Current block: 1712
+10:53:00:798 -> I: Current erase count: 1
+10:53:00:800 -> I: Current total ECC faults found: 0
+10:53:00:980 -> I: Current block: 1713
+10:53:00:982 -> I: Current erase count: 1
+10:53:00:985 -> I: Current total ECC faults found: 0
+10:53:01:165 -> I: Current block: 1714
+10:53:01:167 -> I: Current erase count: 1
+10:53:01:170 -> I: Current total ECC faults found: 0
+10:53:01:351 -> I: Current block: 1715
+10:53:01:351 -> I: Current erase count: 1
+10:53:01:354 -> I: Current total ECC faults found: 0
+10:53:01:536 -> I: Current block: 1716
+10:53:01:537 -> I: Current erase count: 1
+10:53:01:539 -> I: Current total ECC faults found: 0
+10:53:01:734 -> I: Current block: 1717
+10:53:01:734 -> I: Current erase count: 1
+10:53:01:734 -> I: Current total ECC faults found: 0
+10:53:01:905 -> I: Current block: 1718
+10:53:01:906 -> I: Current erase count: 1
+10:53:01:909 -> I: Current total ECC faults found: 0
+10:53:02:089 -> I: Current block: 1719
+10:53:02:090 -> I: Current erase count: 1
+10:53:02:092 -> I: Current total ECC faults found: 0
+10:53:02:275 -> I: Current block: 1720
+10:53:02:276 -> I: Current erase count: 1
+10:53:02:278 -> I: Current total ECC faults found: 0
+10:53:02:458 -> I: Current block: 1721
+10:53:02:460 -> I: Current erase count: 1
+10:53:02:462 -> I: Current total ECC faults found: 0
+10:53:02:644 -> I: Current block: 1722
+10:53:02:645 -> I: Current erase count: 1
+10:53:02:647 -> I: Current total ECC faults found: 0
+10:53:02:828 -> I: Current block: 1723
+10:53:02:829 -> I: Current erase count: 1
+10:53:02:831 -> I: Current total ECC faults found: 0
+10:53:03:022 -> I: Current block: 1724
+10:53:03:023 -> I: Current erase count: 1
+10:53:03:025 -> I: Current total ECC faults found: 0
+10:53:03:207 -> I: Current block: 1725
+10:53:03:207 -> I: Current erase count: 1
+10:53:03:210 -> I: Current total ECC faults found: 0
+10:53:03:392 -> I: Current block: 1726
+10:53:03:392 -> I: Current erase count: 1
+10:53:03:395 -> I: Current total ECC faults found: 0
+10:53:03:574 -> I: Current block: 1727
+10:53:03:576 -> I: Current erase count: 1
+10:53:03:578 -> I: Current total ECC faults found: 0
+10:53:03:759 -> I: Current block: 1728
+10:53:03:760 -> I: Current erase count: 1
+10:53:03:763 -> I: Current total ECC faults found: 0
+10:53:03:953 -> I: Current block: 1729
+10:53:03:964 -> I: Current erase count: 1
+10:53:03:964 -> I: Current total ECC faults found: 0
+10:53:04:130 -> I: Current block: 1730
+10:53:04:131 -> I: Current erase count: 1
+10:53:04:133 -> I: Current total ECC faults found: 0
+10:53:04:314 -> I: Current block: 1731
+10:53:04:315 -> I: Current erase count: 1
+10:53:04:317 -> I: Current total ECC faults found: 0
+10:53:04:498 -> I: Current block: 1732
+10:53:04:499 -> I: Current erase count: 1
+10:53:04:502 -> I: Current total ECC faults found: 0
+10:53:04:683 -> I: Current block: 1733
+10:53:04:684 -> I: Current erase count: 1
+10:53:04:688 -> I: Current total ECC faults found: 0
+10:53:04:868 -> I: Current block: 1734
+10:53:04:869 -> I: Current erase count: 1
+10:53:04:871 -> I: Current total ECC faults found: 0
+10:53:05:052 -> I: Current block: 1735
+10:53:05:053 -> I: Current erase count: 1
+10:53:05:055 -> I: Current total ECC faults found: 0
+10:53:05:236 -> I: Current block: 1736
+10:53:05:237 -> I: Current erase count: 1
+10:53:05:240 -> I: Current total ECC faults found: 0
+10:53:05:421 -> I: Current block: 1737
+10:53:05:446 -> I: Current erase count: 1
+10:53:05:446 -> I: Current total ECC faults found: 0
+10:53:05:606 -> I: Current block: 1738
+10:53:05:607 -> I: Current erase count: 1
+10:53:05:609 -> I: Current total ECC faults found: 0
+10:53:05:790 -> I: Current block: 1739
+10:53:05:791 -> I: Current erase count: 1
+10:53:05:794 -> I: Current total ECC faults found: 0
+10:53:05:980 -> I: Current block: 1740
+10:53:05:981 -> I: Current erase count: 1
+10:53:05:981 -> I: Current total ECC faults found: 0
+10:53:06:160 -> I: Current block: 1741
+10:53:06:161 -> I: Current erase count: 1
+10:53:06:164 -> I: Current total ECC faults found: 0
+10:53:06:344 -> I: Current block: 1742
+10:53:06:345 -> I: Current erase count: 1
+10:53:06:348 -> I: Current total ECC fau 0
+lts found:10:53:06:528 -> I: Current block: 1743
+10:53:06:529 -> I: Current erase count: 1
+10:53:06:531 -> I: Current total ECC faults found: 0
+10:53:06:713 -> I: Current block: 1744
+10:53:06:714 -> I: Current erase count: 1
+10:53:06:716 -> I: Current total ECC faults found: 0
+10:53:06:896 -> I: Current block: 1745
+10:53:06:898 -> I: Current erase count: 1
+10:53:06:901 -> I: Current total ECC faults found: 0
+10:53:07:085 -> I: Current block: 1746
+10:53:07:086 -> I: Current erase count: 1
+10:53:07:088 -> I: Current total ECC faults found: 0
+10:53:07:267 -> I: Current block: 1747
+10:53:07:269 -> I: Current erase count: 1
+10:53:07:271 -> I: Current total ECC faults found: 0
+10:53:07:452 -> I: Current block: 1748
+10:53:07:454 -> I: Current erase count: 1
+10:53:07:456 -> I: Current total ECC faults found: 0
+10:53:07:636 -> I: Current block: 1749
+10:53:07:638 -> I: Current erase count: 1
+10:53:07:641 -> I: Current total ECC faults found: 0
+10:53:07:828 -> I: Current block: 1750
+10:53:07:829 -> I: Current erase count: 1
+10:53:07:831 -> I: Current total ECC faults found: 0
+10:53:08:012 -> I: Current block: 1751
+10:53:08:012 -> I: Current erase count: 1
+10:53:08:015 -> I: Current total ECC faults found: 0
+10:53:08:197 -> I: Current block: 1752
+10:53:08:198 -> I: Current erase count: 1
+10:53:08:200 -> I: Current total ECC faults found: 0
+10:53:08:381 -> I: Current block: 1753
+10:53:08:382 -> I: Current erase count: 1
+10:53:08:384 -> I: Current total ECC faults found: 0
+10:53:08:567 -> I: Current block: 1754
+10:53:08:568 -> I: Current erase count: 1
+10:53:08:570 -> I: Current total ECC faults found: 0
+10:53:08:751 -> I: Current block: 1755
+10:53:08:752 -> I: Current erase count: 1
+10:53:08:755 -> I: Current total ECC faults found: 0
+10:53:08:936 -> I: Current block: 1756
+10:53:08:937 -> I: Current erase count: 1
+10:53:08:939 -> I: Current total ECC faults found: 0
+10:53:09:120 -> I: Current block: 1757
+10:53:09:121 -> I: Current erase count: 1
+10:53:09:123 -> I: Current total ECC faults found: 0
+10:53:09:305 -> I: Current block: 1758
+10:53:09:306 -> I: Current erase count: 1
+10:53:09:308 -> I: Current total ECC faults found: 0
+10:53:09:489 -> I: Current block: 1759
+10:53:09:490 -> I: Current erase count: 1
+10:53:09:493 -> I: Current total ECC faults found: 0
+10:53:09:673 -> I: Current block: 1760
+10:53:09:674 -> I: Current erase count: 1
+10:53:09:700 -> I: Current total ECC faults found: 0
+10:53:09:858 -> I: Current block: 1761
+10:53:09:859 -> I: Current erase count: 1
+10:53:09:861 -> I: Current total ECC faults found: 0
+10:53:10:043 -> I: Current block: 1762
+10:53:10:044 -> I: Current erase count: 1
+10:53:10:046 -> I: Current total ECC faults found: 0
+10:53:10:234 -> I: Current block: 1763
+10:53:10:234 -> I: Current erase count: 1
+10:53:10:234 -> I: Current total ECC faults found: 0
+10:53:10:412 -> I: Current block: 1764
+10:53:10:413 -> I: Current erase count: 1
+10:53:10:416 -> I: Current total ECC faults found: 0
+10:53:10:597 -> I: Current block: 1765
+10:53:10:598 -> I: Current erase count: 1
+10:53:10:601 -> I: Current total ECC faults found: 0
+10:53:10:782 -> I: Current block: 1766
+10:53:10:783 -> I: Current erase count: 1
+10:53:10:786 -> I: Current total ECC faults found: 0
+10:53:10:966 -> I: Current block: 1767
+10:53:10:967 -> I: Current erase count: 1
+10:53:10:970 -> I: Current total ECC faults found: 0
+10:53:11:151 -> I: Current block: 1768
+10:53:11:192 -> I: Current erase count: 1
+10:53:11:226 -> I: Current total ECC faults found: 0
+10:53:11:335 -> I: Current block: 1769
+10:53:11:337 -> I: Current erase count: 1
+10:53:11:340 -> I: Current total ECC faults found: 0
+10:53:11:520 -> I: Current block: 1770
+10:53:11:521 -> I: Current erase count: 1
+10:53:11:524 -> I: Current total ECC faults found: 0
+10:53:11:705 -> I: Current block: 1771
+10:53:11:706 -> I: Current erase count: 1
+10:53:11:709 -> I: Current total ECC faults found: 0
+10:53:11:890 -> I: Current block: 1772
+10:53:11:891 -> I: Current erase count: 1
+10:53:11:893 -> I: Current total ECC faults found: 0
+10:53:12:074 -> I: Current block: 1773
+10:53:12:075 -> I: Current erase count: 1
+10:53:12:077 -> I: Current total ECC faults found: 0
+10:53:12:257 -> I: Current block: 1774
+10:53:12:259 -> I: Current erase count: 1
+10:53:12:262 -> I: Current total ECC faults found: 0
+10:53:12:442 -> I: Current block: 1775
+10:53:12:443 -> I: Current erase count: 1
+10:53:12:445 -> I: Current total ECC faults found: 0
+10:53:12:627 -> I: Current block: 1776
+10:53:12:628 -> I: Current erase count: 1
+10:53:12:630 -> I: Current total ECC faults found: 0
+10:53:12:811 -> I: Current block: 1777
+10:53:12:812 -> I: Current erase count: 1
+10:53:12:815 -> I: Current total ECC faults found: 0
+10:53:12:996 -> I: Current block: 1778
+10:53:12:997 -> I: Current erase count: 1
+10:53:13:000 -> I: Current total ECC faults found: 0
+10:53:13:181 -> I: Current block: 1779
+10:53:13:181 -> I: Current erase count: 1
+10:53:13:185 -> I: Current total ECC faults found: 0
+10:53:13:367 -> I: Current block: 1780
+10:53:13:368 -> I: Current erase count: 1
+10:53:13:370 -> I: Current total ECC faults found: 0
+10:53:13:551 -> I: Current block: 1781
+10:53:13:552 -> I: Current erase count: 1
+10:53:13:555 -> I: Current total ECC faults found: 0
+10:53:13:736 -> I: Current block: 1782
+10:53:13:737 -> I: Current erase count: 1
+10:53:13:739 -> I: Current total ECC faults found: 0
+10:53:13:933 -> I: Current block: 1783
+10:53:13:934 -> I: Current erase count: 1
+10:53:13:934 -> I: Current total ECC faults found: 0
+10:53:14:105 -> I: Current block: 1784
+10:53:14:106 -> I: Current erase count: 1
+10:53:14:109 -> I: Current total ECC faults found: 0
+10:53:14:289 -> I: Current block: 1785
+10:53:14:290 -> I: Current erase count: 1
+10:53:14:293 -> I: Current total ECC faults found: 0
+10:53:14:476 -> I: Current block: 1786
+10:53:14:476 -> I: Current erase count: 1
+10:53:14:477 -> I: Current total ECC faults found: 0
+10:53:14:656 -> I: Current block: 1787
+10:53:14:658 -> I: Current erase count: 1
+10:53:14:661 -> I: Current total ECC faults found: 0
+10:53:14:843 -> I: Current block: 1788
+10:53:14:844 -> I: Current erase count: 1
+10:53:14:848 -> I: Current total ECC faults found: 0
+10:53:15:028 -> I: Current block: 1789
+10:53:15:029 -> I: Current erase count: 1
+10:53:15:031 -> I: Current total ECC faults found: 0
+10:53:15:213 -> I: Current block: 1790
+10:53:15:214 -> I: Current erase count: 1
+10:53:15:216 -> I: Current total ECC faults found: 0
+10:53:15:396 -> I: Current block: 1791
+10:53:15:397 -> I: Current erase count: 1
+10:53:15:399 -> I: Current total ECC faults found: 0
+10:53:15:580 -> I: Current block: 1792
+10:53:15:582 -> I: Current erase count: 1
+10:53:15:584 -> I: Current total ECC faults found: 0
+10:53:15:766 -> I: Current block: 1793
+10:53:15:767 -> I: Current erase count: 1
+10:53:15:769 -> I: Current total ECC faults found: 0
+10:53:15:951 -> I: Current block: 1794
+10:53:15:952 -> I: Current erase count: 1
+10:53:15:954 -> I: Current total ECC faults found: 0
+10:53:16:135 -> I: Current block: 1795
+10:53:16:136 -> I: Current erase count: 1
+10:53:16:138 -> I: Current total ECC faults found: 0
+10:53:16:320 -> I: Current block: 1796
+10:53:16:321 -> I: Current erase count: 1
+10:53:16:323 -> I: Current total ECC faults found: 0
+10:53:16:505 -> I: Current block: 1797
+10:53:16:506 -> I: Current erase count: 1
+10:53:16:509 -> I: Current total ECC faults found: 0
+10:53:16:690 -> I: Current block: 1798
+10:53:16:691 -> I: Current erase count: 1
+10:53:16:694 -> I: Current total ECC faults found: 0
+10:53:16:874 -> I: Current block: 1799
+10:53:16:875 -> I: Current erase count: 1
+10:53:16:878 -> I: Current total ECC faults found: 0
+10:53:17:059 -> I: Current block: 1800
+10:53:17:060 -> I: Current erase count: 1
+10:53:17:062 -> I: Current total ECC faults found: 0
+10:53:17:244 -> I: Current block: 1801
+10:53:17:245 -> I: Current erase count: 1
+10:53:17:247 -> I: Current total ECC faults found: 0
+10:53:17:428 -> I: Current block: 1802
+10:53:17:429 -> I: Current erase count: 1
+10:53:17:432 -> I: Current total ECC faults found: 0
+10:53:17:613 -> I: Current block: 1803
+10:53:17:639 -> I: Current erase count: 1
+10:53:17:640 -> I: Current total ECC faults found: 0
+10:53:17:797 -> I: Current block: 1804
+10:53:17:798 -> I: Current erase count: 1
+10:53:17:801 -> I: Current total ECC faults found: 0
+10:53:17:983 -> I: Current block: 1805
+10:53:17:984 -> I: Current erase count: 1
+10:53:17:986 -> I: Current total ECC faults found: 0
+10:53:18:167 -> I: Current block: 1806
+10:53:18:168 -> I: Current erase count: 1
+10:53:18:171 -> I: Current total ECC faults found: 0
+10:53:18:350 -> I: Current block: 1807
+10:53:18:351 -> I: Current erase count: 1
+10:53:18:354 -> I: Current total ECC faults found: 0
+10:53:18:535 -> I: Current block: 1808
+10:53:18:536 -> I: Current erase count: 1
+10:53:18:539 -> I: Current total ECC faults found: 0
+10:53:18:720 -> I: Current block: 1809
+10:53:18:721 -> I: Current erase count: 1
+10:53:18:723 -> I: Current total ECC faults found: 0
+10:53:18:905 -> I: Current block: 1810
+10:53:18:906 -> I: Current erase count: 1
+10:53:18:909 -> I: Current total ECC faults found: 0
+10:53:19:089 -> I: Current block: 1811
+10:53:19:090 -> I: Current erase count: 1
+10:53:19:092 -> I: Current total ECC faults found: 0
+10:53:19:274 -> I: Current block: 1812
+10:53:19:275 -> I: Current erase count: 1
+10:53:19:277 -> I: Current total ECC faults found: 0
+10:53:19:458 -> I: Current block: 1813
+10:53:19:459 -> I: Current erase count: 1
+10:53:19:461 -> I: Current total ECC faults found: 0
+10:53:19:644 -> I: Current block: 1814
+10:53:19:646 -> I: Current erase count: 1
+10:53:19:648 -> I: Current total ECC faults found: 0
+10:53:19:828 -> I: Current block: 1815
+10:53:19:829 -> I: Current erase count: 1
+10:53:19:832 -> I: Current total ECC faults found: 0
+10:53:20:013 -> I: Current block: 1816
+10:53:20:014 -> I: Current erase count: 1
+10:53:20:017 -> I: Current total ECC faults found: 0
+10:53:20:198 -> I: Current block: 1817
+10:53:20:199 -> I: Current erase count: 1
+10:53:20:202 -> I: Current total ECC faults found: 0
+10:53:20:383 -> I: Current block: 1818
+10:53:20:384 -> I: Current erase count: 1
+10:53:20:386 -> I: Current total ECC faults found: 0
+10:53:20:567 -> I: Current block: 1819
+10:53:20:568 -> I: Current erase count: 1
+10:53:20:570 -> I: Current total ECC faults found: 0
+10:53:20:771 -> I: Current block: 1820
+10:53:20:772 -> I: Current erase count: 1
+10:53:20:772 -> I: Current total ECC faults found: 0
+10:53:20:936 -> I: Current block: 1821
+10:53:20:937 -> I: Current erase count: 1
+10:53:20:940 -> I: Current total ECC faults found: 0
+10:53:21:121 -> I: Current block: 1822
+10:53:21:123 -> I: Current erase count: 1
+10:53:21:125 -> I: Current total ECC faults found: 0
+10:53:21:304 -> I: Current block: 1823
+10:53:21:305 -> I: Current erase count: 1
+10:53:21:307 -> I: Current total ECC faults found: 0
+10:53:21:489 -> I: Current block: 1824
+10:53:21:490 -> I: Current erase count: 1
+10:53:21:492 -> I: Current total ECC faults found: 0
+10:53:21:673 -> I: Current block: 1825
+10:53:21:674 -> I: Current erase count: 1
+10:53:21:677 -> I: Current total ECC faults found: 0
+10:53:21:857 -> I: Current block: 1826
+10:53:21:858 -> I: Current erase count: 1
+10:53:21:861 -> I: Current total ECC faults found: 0
+10:53:22:042 -> I: Current block: 1827
+10:53:22:043 -> I: Current erase count: 1
+10:53:22:045 -> I: Current total ECC faults found: 0
+10:53:22:227 -> I: Current block: 1828
+10:53:22:228 -> I: Current erase count: 1
+10:53:22:230 -> I: Current total ECC faults found: 0
+10:53:22:411 -> I: Current block: 1829
+10:53:22:412 -> I: Current erase count: 1
+10:53:22:414 -> I: Current total ECC faults found: 0
+10:53:22:596 -> I: Current block: 1830
+10:53:22:597 -> I: Current erase count: 1
+10:53:22:600 -> I: Current total ECC faults found: 0
+10:53:22:781 -> I: Current block: 1831
+10:53:22:782 -> I: Current erase count: 1
+10:53:22:784 -> I: Current total ECC faults found: 0
+10:53:22:965 -> I: Current block: 1832
+10:53:22:966 -> I: Current erase count: 1
+10:53:22:969 -> I: Current total ECC faults found: 0
+10:53:23:150 -> I: Current block: 1833
+10:53:23:151 -> I: Current erase count: 1
+10:53:23:154 -> I: Current total ECC faults found: 0
+10:53:23:333 -> I: Current block: 1834
+10:53:23:335 -> I: Current erase count: 1
+10:53:23:338 -> I: Current total ECC faults found: 0
+10:53:23:519 -> I: Current block: 1835
+10:53:23:520 -> I: Current erase count: 1
+10:53:23:523 -> I: Current total ECC faults found: 0
+10:53:23:704 -> I: Current block: 1836
+10:53:23:705 -> I: Current erase count: 1
+10:53:23:708 -> I: Current total ECC faults found: 0
+10:53:23:888 -> I: Current block: 1837
+10:53:23:889 -> I: Current erase count: 1
+10:53:23:892 -> I: Current total ECC faults found: 0
+10:53:24:073 -> I: Current block: 1838
+10:53:24:074 -> I: Current erase count: 1
+10:53:24:077 -> I: Current total ECC faults found: 0
+10:53:24:256 -> I: Current block: 1839
+10:53:24:257 -> I: Current erase count: 1
+10:53:24:260 -> I: Current total ECC faults found: 0
+10:53:24:442 -> I: Current block: 1840
+10:53:24:443 -> I: Current erase count: 1
+10:53:24:446 -> I: Current total ECC faults found: 0
+10:53:24:626 -> I: Current block: 1841
+10:53:24:627 -> I: Current erase count: 1
+10:53:24:630 -> I: Current total ECC faults found: 0
+10:53:24:811 -> I: Current block: 1842
+10:53:24:812 -> I: Current erase count: 1
+10:53:24:815 -> I: Current total ECC faults found: 0
+10:53:25:015 -> I: Current block: 1843
+10:53:25:015 -> I: Current erase count: 1
+10:53:25:015 -> I: Current total ECC faults found: 0
+10:53:25:181 -> I: Current block: 1844
+10:53:25:182 -> I: Current erase count: 1
+10:53:25:185 -> I: Current total ECC faults found: 0
+10:53:25:364 -> I: Current block: 1845
+10:53:25:366 -> I: Current erase count: 1
+10:53:25:368 -> I: Current total ECC faults found: 0
+10:53:25:549 -> I: Current block: 1846
+10:53:25:551 -> I: Current erase count: 1
+10:53:25:553 -> I: Current total ECC faults found: 0
+10:53:25:734 -> I: Current block: 1847
+10:53:25:735 -> I: Current erase count: 1
+10:53:25:737 -> I: Current total ECC faults found: 0
+10:53:25:920 -> I: Current block: 1848
+10:53:25:921 -> I: Current erase count: 1
+10:53:25:923 -> I: Current total ECC faults found: 0
+10:53:26:103 -> I: Current block: 1849
+10:53:26:105 -> I: Current erase count: 1
+10:53:26:108 -> I: Current total ECC faults found: 0
+10:53:26:289 -> I: Current block: 1850
+10:53:26:290 -> I: Current erase count: 1
+10:53:26:293 -> I: Current total ECC faults found: 0
+10:53:26:473 -> I: Current block: 1851
+10:53:26:474 -> I: Current erase count: 1
+10:53:26:477 -> I: Current total ECC faults found: 0
+10:53:26:659 -> I: Current block: 1852
+10:53:26:660 -> I: Current erase count: 1
+10:53:26:662 -> I: Current total ECC faults found: 0
+10:53:26:843 -> I: Current block: 1853
+10:53:26:844 -> I: Current erase count: 1
+10:53:26:846 -> I: Current total ECC faults found: 0
+10:53:27:028 -> I: Current block: 1854
+10:53:27:029 -> I: Current erase count: 1
+10:53:27:032 -> I: Current total ECC faults found: 0
+10:53:27:211 -> I: Current block: 1855
+10:53:27:212 -> I: Current erase count: 1
+10:53:27:215 -> I: Current total ECC faults found: 0
+10:53:27:396 -> I: Current block: 1856
+10:53:27:397 -> I: Current erase count: 1
+10:53:27:399 -> I: Current total ECC faults found: 0
+10:53:27:581 -> I: Current block: 1857
+10:53:27:582 -> I: Current erase count: 1
+10:53:27:585 -> I: Current total ECC faults found: 0
+10:53:27:766 -> I: Current block: 1858
+10:53:27:767 -> I: Current erase count: 1
+10:53:27:769 -> I: Current total ECC faults found: 0
+10:53:27:950 -> I: Current block: 1859
+10:53:27:951 -> I: Current erase count: 1
+10:53:27:954 -> I: Current total ECC faults found: 0
+10:53:28:134 -> I: Current block: 1860
+10:53:28:136 -> I: Current erase count: 1
+10:53:28:138 -> I: Current total ECC faults found: 0
+10:53:28:320 -> I: Current block: 1861
+10:53:28:321 -> I: Current erase count: 1
+10:53:28:324 -> I: Current total ECC faults found: 0
+10:53:28:505 -> I: Current block: 1862
+10:53:28:506 -> I: Current erase count: 1
+10:53:28:508 -> I: Current total ECC faults found: 0
+10:53:28:688 -> I: Current block: 1863
+10:53:28:689 -> I: Current erase count: 1
+10:53:28:692 -> I: Current total ECC faults found: 0
+10:53:28:873 -> I: Current block: 1864
+10:53:28:874 -> I: Current erase count: 1
+10:53:28:876 -> I: Current total ECC faults found: 0
+10:53:29:058 -> I: Current block: 1865
+10:53:29:059 -> I: Current erase count: 1
+10:53:29:062 -> I: Current total ECC faults found: 0
+10:53:29:257 -> I: Current block: 1866
+10:53:29:258 -> I: Current erase count: 1
+10:53:29:258 -> I: Current total ECC faults found: 0
+10:53:29:427 -> I: Current block: 1867
+10:53:29:428 -> I: Current erase count: 1
+10:53:29:431 -> I: Current total ECC faults found: 0
+10:53:29:612 -> I: Current block: 1868
+10:53:29:613 -> I: Current erase count: 1
+10:53:29:615 -> I: Current total ECC faults found: 0
+10:53:29:796 -> I: Current block: 1869
+10:53:29:797 -> I: Current erase count: 1
+10:53:29:800 -> I: Current total ECC faults found: 0
+10:53:29:981 -> I: Current block: 1870
+10:53:29:982 -> I: Current erase count: 1
+10:53:29:985 -> I: Current total ECC faults found: 0
+10:53:30:164 -> I: Current block: 1871
+10:53:30:165 -> I: Current erase count: 1
+10:53:30:167 -> I: Current total ECC faults found: 0
+10:53:30:349 -> I: Current block: 1872
+10:53:30:350 -> I: Current erase count: 1
+10:53:30:352 -> I: Current total ECC faults found: 0
+10:53:30:533 -> I: Current block: 1873
+10:53:30:534 -> I: Current erase count: 1
+10:53:30:537 -> I: Current total ECC faults found: 0
+10:53:30:719 -> I: Current block: 1874
+10:53:30:720 -> I: Current erase count: 1
+10:53:30:723 -> I: Current total ECC faults found: 0
+10:53:30:903 -> I: Current block: 1875
+10:53:30:904 -> I: Current erase count: 1
+10:53:30:906 -> I: Current total ECC faults found: 0
+10:53:31:088 -> I: Current block: 1876
+10:53:31:089 -> I: Current erase count: 1
+10:53:31:091 -> I: Current total ECC faults found: 0
+10:53:31:272 -> I: Current block: 1877
+10:53:31:274 -> I: Current erase count: 1
+10:53:31:276 -> I: Current total ECC faults found: 0
+10:53:31:458 -> I: Current block: 1878
+10:53:31:459 -> I: Current erase count: 1
+10:53:31:461 -> I: Current total ECC faults found: 0
+10:53:31:642 -> I: Current block: 1879
+10:53:31:643 -> I: Current erase count: 1
+10:53:31:645 -> I: Current total ECC faults found: 0
+10:53:31:827 -> I: Current block: 1880
+10:53:31:828 -> I: Current erase count: 1
+10:53:31:830 -> I: Current total ECC faults found: 0
+10:53:32:011 -> I: Current block: 1881
+10:53:32:012 -> I: Current erase count: 1
+10:53:32:015 -> I: Current total ECC faults found: 0
+10:53:32:197 -> I: Current block: 1882
+10:53:32:198 -> I: Current erase count: 1
+10:53:32:201 -> I: Current total ECC faults found: 0
+10:53:32:381 -> I: Current block: 1883
+10:53:32:382 -> I: Current erase count: 1
+10:53:32:385 -> I: Current total ECC faults found: 0
+10:53:32:565 -> I: Current block: 1884
+10:53:32:567 -> I: Current erase count: 1
+10:53:32:570 -> I: Current total ECC faults found: 0
+10:53:32:751 -> I: Current block: 1885
+10:53:32:752 -> I: Current erase count: 1
+10:53:32:754 -> I: Current total ECC faults found: 0
+10:53:32:936 -> I: Current block: 1886
+10:53:32:962 -> I: Current erase count: 1
+10:53:32:962 -> I: Current total ECC faults found: 0
+10:53:33:125 -> I: Current block: 1887
+10:53:33:126 -> I: Current erase count: 1
+10:53:33:129 -> I: Current total ECC faults found: 0
+10:53:33:310 -> I: Current block: 1888
+10:53:33:311 -> I: Current erase count: 1
+10:53:33:314 -> I: Current total ECC faults found: 0
+10:53:33:495 -> I: Current block: 1889
+10:53:33:496 -> I: Current erase count: 1
+10:53:33:498 -> I: Current total ECC faults found: 0
+10:53:33:679 -> I: Current block: 1890
+10:53:33:680 -> I: Current erase count: 1
+10:53:33:682 -> I: Current total ECC faults found: 0
+10:53:33:864 -> I: Current block: 1891
+10:53:33:865 -> I: Current erase count: 1
+10:53:33:868 -> I: Current total ECC faults found: 0
+10:53:34:049 -> I: Current block: 1892
+10:53:34:050 -> I: Current erase count: 1
+10:53:34:053 -> I: Current total ECC faults found: 0
+10:53:34:233 -> I: Current block: 1893
+10:53:34:234 -> I: Current erase count: 1
+10:53:34:237 -> I: Current total ECC faults found: 0
+10:53:34:418 -> I: Current block: 1894
+10:53:34:419 -> I: Current erase count: 1
+10:53:34:421 -> I: Current total ECC faults found: 0
+10:53:34:603 -> I: Current block: 1895
+10:53:34:604 -> I: Current erase count: 1
+10:53:34:607 -> I: Current total ECC faults found: 0
+10:53:34:787 -> I: Current block: 1896
+10:53:34:788 -> I: Current erase count: 1
+10:53:34:791 -> I: Current total ECC faults found: 0
+10:53:34:972 -> I: Current block: 1897
+10:53:34:973 -> I: Current erase count: 1
+10:53:34:975 -> I: Current total ECC faults found: 0
+10:53:35:156 -> I: Current block: 1898
+10:53:35:157 -> I: Current erase count: 1
+10:53:35:160 -> I: Current total ECC faults found: 0
+10:53:35:342 -> I: Current block: 1899
+10:53:35:343 -> I: Current erase count: 1
+10:53:35:345 -> I: Current total ECC faults found: 0
+10:53:35:525 -> I: Current block: 1900
+10:53:35:528 -> I: Current erase count: 1
+10:53:35:530 -> I: Current total ECC faults found: 0
+10:53:35:711 -> I: Current block: 1901
+10:53:35:712 -> I: Current erase count: 1
+10:53:35:715 -> I: Current total ECC faults found: 0
+10:53:35:896 -> I: Current block: 1902
+10:53:35:897 -> I: Current erase count: 1
+10:53:35:899 -> I: Current total ECC faults found: 0
+10:53:36:079 -> I: Current block: 1903
+10:53:36:080 -> I: Current erase count: 1
+10:53:36:083 -> I: Current total ECC faults found: 0
+10:53:36:264 -> I: Current block: 1904
+10:53:36:265 -> I: Current erase count: 1
+10:53:36:268 -> I: Current total ECC faults found: 0
+10:53:36:448 -> I: Current block: 1905
+10:53:36:449 -> I: Current erase count: 1
+10:53:36:452 -> I: Current total ECC faults found: 0
+10:53:36:633 -> I: Current block: 1906
+10:53:36:634 -> I: Current erase count: 1
+10:53:36:636 -> I: Current total ECC faults found: 0
+10:53:36:817 -> I: Current block: 1907
+10:53:36:818 -> I: Current erase count: 1
+10:53:36:820 -> I: Current total ECC faults found: 0
+10:53:37:003 -> I: Current block: 1908
+10:53:37:004 -> I: Current erase count: 1
+10:53:37:006 -> I: Current total ECC faults found: 0
+10:53:37:187 -> I: Current block: 1909
+10:53:37:188 -> I: Current erase count: 1
+10:53:37:215 -> I: Current total ECC faults found: 0
+10:53:37:371 -> I: Current block: 1910
+10:53:37:373 -> I: Current erase count: 1
+10:53:37:376 -> I: Current total ECC faults found: 0
+10:53:37:556 -> I: Current block: 1911
+10:53:37:557 -> I: Current erase count: 1
+10:53:37:560 -> I: Current total ECC faults found: 0
+10:53:37:740 -> I: Current block: 1912
+10:53:37:742 -> I: Current erase count: 1
+10:53:37:745 -> I: Current total ECC faults found: 0
+10:53:37:926 -> I: Current block: 1913
+10:53:37:927 -> I: Current erase count: 1
+10:53:37:929 -> I: Current total ECC faults found: 0
+10:53:38:111 -> I: Current block: 1914
+10:53:38:112 -> I: Current erase count: 1
+10:53:38:114 -> I: Current total ECC faults found: 0
+10:53:38:295 -> I: Current block: 1915
+10:53:38:296 -> I: Current erase count: 1
+10:53:38:298 -> I: Current total ECC faults found: 0
+10:53:38:481 -> I: Current block: 1916
+10:53:38:482 -> I: Current erase count: 1
+10:53:38:485 -> I: Current total ECC faults found: 0
+10:53:38:665 -> I: Current block: 1917
+10:53:38:666 -> I: Current erase count: 1
+10:53:38:668 -> I: Current total ECC faults found: 0
+10:53:38:849 -> I: Current block: 1918
+10:53:38:851 -> I: Current erase count: 1
+10:53:38:853 -> I: Current total ECC faults found: 0
+10:53:39:033 -> I: Current block: 1919
+10:53:39:034 -> I: Current erase count: 1
+10:53:39:036 -> I: Current total ECC faults found: 0
+10:53:39:216 -> I: Current block: 1920
+10:53:39:218 -> I: Current erase count: 1
+10:53:39:221 -> I: Current total ECC faults found: 0
+10:53:39:401 -> I: Current block: 1921
+10:53:39:403 -> I: Current erase count: 1
+10:53:39:406 -> I: Current total ECC faults found: 0
+10:53:39:585 -> I: Current block: 1922
+10:53:39:587 -> I: Current erase count: 1
+10:53:39:590 -> I: Current total ECC faults found: 0
+10:53:39:771 -> I: Current block: 1923
+10:53:39:772 -> I: Current erase count: 1
+10:53:39:775 -> I: Current total ECC faults found: 0
+10:53:39:955 -> I: Current block: 1924
+10:53:39:956 -> I: Current erase count: 1
+10:53:39:961 -> I: Current total ECC faults found: 0
+10:53:40:140 -> I: Current block: 1925
+10:53:40:142 -> I: Current erase count: 1
+10:53:40:145 -> I: Current total ECC faults found: 0
+10:53:40:325 -> I: Current block: 1926
+10:53:40:326 -> I: Current erase count: 1
+10:53:40:329 -> I: Current total ECC faults found: 0
+10:53:40:508 -> I: Current block: 1927
+10:53:40:509 -> I: Current erase count: 1
+10:53:40:512 -> I: Current total ECC faults found: 0
+10:53:40:693 -> I: Current block: 1928
+10:53:40:694 -> I: Current erase count: 1
+10:53:40:698 -> I: Current total ECC faults found: 0
+10:53:40:878 -> I: Current block: 1929
+10:53:40:880 -> I: Current erase count: 1
+10:53:40:881 -> I: Current total ECC faults found: 0
+10:53:41:063 -> I: Current block: 1930
+10:53:41:064 -> I: Current erase count: 1
+10:53:41:067 -> I: Current total ECC faults found: 0
+10:53:41:247 -> I: Current block: 1931
+10:53:41:249 -> I: Current erase count: 1
+10:53:41:251 -> I: Current total ECC faults found: 0
+10:53:41:432 -> I: Current block: 1932
+10:53:41:462 -> I: Current erase count: 1
+10:53:41:463 -> I: Current total ECC faults found: 0
+10:53:41:616 -> I: Current block: 1933
+10:53:41:618 -> I: Current erase count: 1
+10:53:41:621 -> I: Current total ECC faults found: 0
+10:53:41:801 -> I: Current block: 1934
+10:53:41:803 -> I: Current erase count: 1
+10:53:41:805 -> I: Current total ECC faults found: 0
+10:53:41:996 -> I: Current block: 1935
+10:53:41:996 -> I: Current erase count: 1
+10:53:41:996 -> I: Current total ECC faults found: 0
+10:53:42:171 -> I: Current block: 1936
+10:53:42:172 -> I: Current erase count: 1
+10:53:42:174 -> I: Current total ECC faults found: 0
+10:53:42:355 -> I: Current block: 1937
+10:53:42:356 -> I: Current erase count: 1
+10:53:42:359 -> I: Current total ECC faults found: 0
+10:53:42:540 -> I: Current block: 1938
+10:53:42:541 -> I: Current erase count: 1
+10:53:42:544 -> I: Current total ECC faults found: 0
+10:53:42:724 -> I: Current block: 1939
+10:53:42:725 -> I: Current erase count: 1
+10:53:42:728 -> I: Current total ECC faults found: 0
+10:53:42:909 -> I: Current block: 1940
+10:53:42:910 -> I: Current erase count: 1
+10:53:42:913 -> I: Current total ECC faults found: 0
+10:53:43:093 -> I: Current block: 1941
+10:53:43:094 -> I: Current erase count: 1
+10:53:43:097 -> I: Current total ECC faults found: 0
+10:53:43:279 -> I: Current block: 1942
+10:53:43:280 -> I: Current erase count: 1
+10:53:43:282 -> I: Current total ECC faults found: 0
+10:53:43:462 -> I: Current block: 1943
+10:53:43:463 -> I: Current erase count: 1
+10:53:43:466 -> I: Current total ECC faults found: 0
+10:53:43:648 -> I: Current block: 1944
+10:53:43:649 -> I: Current erase count: 1
+10:53:43:652 -> I: Current total ECC faults found: 0
+10:53:43:832 -> I: Current block: 1945
+10:53:43:833 -> I: Current erase count: 1
+10:53:43:836 -> I: Current total ECC faults found: 0
+10:53:44:017 -> I: Current block: 1946
+10:53:44:018 -> I: Current erase count: 1
+10:53:44:021 -> I: Current total ECC faults found: 0
+10:53:44:201 -> I: Current block: 1947
+10:53:44:202 -> I: Current erase count: 1
+10:53:44:205 -> I: Current total ECC faults found: 0
+10:53:44:386 -> I: Current block: 1948
+10:53:44:387 -> I: Current erase count: 1
+10:53:44:389 -> I: Current total ECC faults found: 0
+10:53:44:569 -> I: Current block: 1949
+10:53:44:571 -> I: Current erase count: 1
+10:53:44:574 -> I: Current total ECC faults found: 0
+10:53:44:757 -> I: Current block: 1950
+10:53:44:757 -> I: Current erase count: 1
+10:53:44:761 -> I: Current total ECC faults found: 0
+10:53:44:940 -> I: Current block: 1951
+10:53:44:941 -> I: Current erase count: 1
+10:53:44:943 -> I: Current total ECC faults found: 0
+10:53:45:124 -> I: Current block: 1952
+10:53:45:125 -> I: Current erase count: 1
+10:53:45:128 -> I: Current total ECC faults found: 0
+10:53:45:309 -> I: Current block: 1953
+10:53:45:310 -> I: Current erase count: 1
+10:53:45:312 -> I: Current total ECC faults found: 0
+10:53:45:494 -> I: Current block: 1954
+10:53:45:495 -> I: Current erase count: 1
+10:53:45:498 -> I: Current total ECC faults found: 0
+10:53:45:679 -> I: Current block: 1955
+10:53:45:680 -> I: Current erase count: 1
+10:53:45:683 -> I: Current total ECC faults found: 0
+10:53:45:863 -> I: Current block: 1956
+10:53:45:864 -> I: Current erase count: 1
+10:53:45:867 -> I: Current total ECC faults found: 0
+10:53:46:048 -> I: Current block: 1957
+10:53:46:049 -> I: Current erase count: 1
+10:53:46:052 -> I: Current total ECC faults found: 0
+10:53:46:233 -> I: Current block: 1958
+10:53:46:234 -> I: Current erase count: 1
+10:53:46:236 -> I: Current total ECC faults found: 0
+10:53:46:416 -> I: Current block: 1959
+10:53:46:418 -> I: Current erase count: 1
+10:53:46:421 -> I: Current total ECC faults found: 0
+10:53:46:601 -> I: Current block: 1960
+10:53:46:603 -> I: Current erase count: 1
+10:53:46:605 -> I: Current total ECC faults found: 0
+10:53:46:806 -> I: Current block: 1961
+10:53:46:806 -> I: Current erase count: 1
+10:53:46:806 -> I: Current total ECC faults found: 0
+10:53:46:971 -> I: Current block: 1962
+10:53:46:972 -> I: Current erase count: 1
+10:53:46:975 -> I: Current total ECC faults found: 0
+10:53:47:155 -> I: Current block: 1963
+10:53:47:156 -> I: Current erase count: 1
+10:53:47:159 -> I: Current total ECC faults found: 0
+10:53:47:340 -> I: Current block: 1964
+10:53:47:341 -> I: Current erase count: 1
+10:53:47:344 -> I: Current total ECC faults found: 0
+10:53:47:524 -> I: Current block: 1965
+10:53:47:527 -> I: Current erase count: 1
+10:53:47:529 -> I: Current total ECC faults found: 0
+10:53:47:709 -> I: Current block: 1966
+10:53:47:710 -> I: Current erase count: 1
+10:53:47:714 -> I: Current total ECC faults found: 0
+10:53:47:893 -> I: Current block: 1967
+10:53:47:894 -> I: Current erase count: 1
+10:53:47:897 -> I: Current total ECC faults found: 0
+10:53:48:077 -> I: Current block: 1968
+10:53:48:078 -> I: Current erase count: 1
+10:53:48:080 -> I: Current total ECC faults found: 0
+10:53:48:132 -> I: File /NAND:/one_eigth_file.txt written successfully
+10:53:48:136 -> 
+10:53:48:136 -> I: Starting to ckeck files for data corruption

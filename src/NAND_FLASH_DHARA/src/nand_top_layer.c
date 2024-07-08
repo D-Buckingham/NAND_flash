@@ -178,7 +178,6 @@ static int nand_gigadevice_init(nand_flash_device_t *dev)
     dev->program_page_delay_us = 380;
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
     dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
-
     switch (device_id) {
     case GIGADEVICE_DI_51:
         LOG_INF("Automatic recognition of GIGADEVICE_DI_51 flash");
@@ -241,6 +240,8 @@ static int detect_chip(nand_flash_device_t *dev)
         .miso_data = &manufacturer_id
     };
     my_nand_handle->transceive(&t);
+
+    dev->gc_factor = 12;//after investigation this factor is the most fitting for the motion tracker
 
     switch (manufacturer_id) {
     case NAND_FLASH_ALLIANCE_MI: // Alliance
@@ -325,7 +326,7 @@ int nand_flash_init_device(nand_flash_device_t **handle)
 
     // Apply default garbage collection factor if not set
     if ((*handle)->gc_factor == 0) {
-        (*handle)->gc_factor = 45;
+        (*handle)->gc_factor = 15;
     }
 
 

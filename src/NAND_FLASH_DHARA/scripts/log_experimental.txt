@@ -1,0 +1,2300 @@
+I: Preinit
+*** Booting Zephyr OS build zephyr-v3.5.0 ***
+I: DISK LAYER: Initializing NAND disk
+I: DISK LAYER: Node successfully linked!
+I: VFS Layer: Start Mounting FAT file system
+I: NAND MAPPING LAYER: Initializing DHARA mapping
+I: NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash
+I: No valid stored state, reinitializing map
+I: The sector size is: 2048
+I: NAND MAPPING LAYER: Initializing DHARA mapping
+I: NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash
+I: No valid stored state, reinitializing map
+I: The sector size is: 2048
+I: The sector count (capacity) is: 222744
+I: 00:00:00:500 - Current block: : 0
+I: Current erase count: -1
+I: 00:00:00:712 - Current block: : 1
+I: Current erase count: -1
+I: 00:00:00:919 - Current block: : 2
+I: Current erase count: -1
+I: 00:00:01:127 - Current block: : 3
+I: Current erase count: -1
+I: 00:00:01:334 - Current block: : 4
+I: Current erase count: -1
+I: NAND MAPPING LAYER: Initializing DHARA mapping
+I: NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash
+I: The sector size is: 2048
+I: VFS Layer: NAND ELM FAT FS mounted
+I: Health Monitoring NAND Flash:
+I: Total Bad Block Count: 4
+I: Mean Erase Count per Block: 0
+I: Total ECC Errors: 2568761346
+I: My first breath as an IoT device
+I: Overall, Test 1: Checking initialization on every level
+I: NAND flash as SPI device initialized!
+I: Test 1: test getting device & manufacturer ID
+I: NAND Device ID: 0x8f 
+I: Size of sector is: 2048
+I: Disk access status = ok
+/NAND:: bsize = 2048 ; frsize = 16384 ; blocks = 27808 ; bfree = 27808
+
+Listing dir /NAND: ...
+I: Overall Test 1: All modalities sucessful recognized!
+I: All Functionality tests finished!
+
+Listing dir /NAND: ...
+I: 00:00:06:111 - Current block: : 5
+I: Current erase count: -1
+I: 00:00:06:319 - Current block: : 6
+I: Current erase count: -1
+I: 00:00:06:527 - Current block: : 7
+I: Current erase count: -1
+I: 00:00:06:735 - Current block: : 8
+I: Current erase count: -1
+I: 00:00:06:944 - Current block: : 9
+I: Current erase count: -1
+I: 00:00:07:152 - Current block: : 10
+I: Current erase count: -1
+I: 00:00:07:360 - Current block: : 11
+I: Current erase count: -1
+I: 00:00:07:569 - Current block: : 12
+I: Current erase count: -1
+I: 00:00:07:778 - Current block: : 13
+I: Current erase count: -1
+I: 00:00:07:986 - Current block: : 14
+I: Current erase count: -1
+I: 00:00:08:195 - Current block: : 15
+I: Current erase count: -1
+I: 00:00:08:403 - Current block: : 16
+I: Current erase count: -1
+I: 00:00:08:612 - Current block: : 17
+I: Current erase count: -1
+I: 00:00:08:820 - Current block: : 18
+I: Current erase count: -1
+I: 00:00:09:029 - Current block: : 19
+I: Current erase count: -1
+I: 00:00:09:238 - Current block: : 20
+I: Current erase count: -1
+I: 00:00:09:447 - Current block: : 21
+I: Current erase count: -1
+I: 00:00:09:655 - Current block: : 22
+I: Current erase count: -1
+I: 00:00:09:864 - Current block: : 23
+I: Current erase count: -1
+I: 00:00:10:072 - Current block: : 24
+I: Current erase count: -1
+I: 00:00:10:281 - Current block: : 25
+I: Current erase count: -1
+I: 00:00:10:489 - Current block: : 26
+I: Current erase count: -1
+I: 00:00:10:698 - Current block: : 27
+I: Current erase count: -1
+I: 00:00:10:906 - Current block: : 28
+I: Current erase count: -1
+I: 00:00:11:115 - Current block: : 29
+I: Current erase count: -1
+I: 00:00:11:323 - Current block: : 30
+I: Current erase count: -1
+I: 00:00:11:532 - Current block: : 31
+I: Current erase count: -1
+I: 00:00:11:740 - Current block: : 32
+I: Current erase count: -1
+I: 00:00:11:949 - Current block: : 33
+I: Current erase count: -1
+I: 00:00:12:157 - Current block: : 34
+I: Current erase count: -1
+I: 00:00:12:365 - Current block: : 35
+I: Current erase count: -1
+I: 00:00:12:575 - Current block: : 36
+I: Current erase count: -1
+I: 00:00:12:783 - Current block: : 37
+I: Current erase count: -1
+I: 00:00:12:991 - Current block: : 38
+I: Current erase count: -1
+I: 00:00:13:200 - Current block: : 39
+I: Current erase count: -1
+I: 00:00:13:408 - Current block: : 40
+I: Current erase count: -1
+I: 00:00:13:617 - Current block: : 41
+I: Current erase count: -1
+I: 00:00:13:826 - Current block: : 42
+I: Current erase count: -1
+I: 00:00:14:034 - Current block: : 43
+I: Current erase count: -1
+I: 00:00:14:243 - Current block: : 44
+I: Current erase count: -1
+I: 00:00:14:451 - Current block: : 45
+I: Current erase count: -1
+I: 00:00:14:660 - Current block: : 46
+I: Current erase count: -1
+I: 00:00:14:868 - Current block: : 47
+I: Current erase count: -1
+I: 00:00:15:077 - Current block: : 48
+I: Current erase count: -1
+I: 00:00:15:285 - Current block: : 49
+I: Current erase count: -1
+I: 00:00:15:494 - Current block: : 50
+I: Current erase count: -1
+I: 00:00:15:702 - Current block: : 51
+I: Current erase count: -1
+I: 00:00:15:911 - Current block: : 52
+I: Current erase count: -1
+I: 00:00:16:120 - Current block: : 53
+I: Current erase count: -1
+I: 00:00:16:328 - Current block: : 54
+I: Current erase count: -1
+I: 00:00:16:537 - Current block: : 55
+I: Current erase count: -1
+I: 00:00:16:746 - Current block: : 56
+I: Current erase count: -1
+I: 00:00:16:954 - Current block: : 57
+I: Current erase count: -1
+I: 00:00:17:163 - Current block: : 58
+I: Current erase count: -1
+I: 00:00:17:371 - Current block: : 59
+I: Current erase count: -1
+I: 00:00:17:580 - Current block: : 60
+I: Current erase count: -1
+I: 00:00:17:788 - Current block: : 61
+I: Current erase count: -1
+I: 00:00:17:997 - Current block: : 62
+I: Current erase count: -1
+I: 00:00:18:206 - Current block: : 63
+I: Current erase count: -1
+I: 00:00:18:414 - Current block: : 64
+I: Current erase count: -1
+I: 00:00:18:623 - Current block: : 65
+I: Current erase count: -1
+I: 00:00:18:832 - Current block: : 66
+I: Current erase count: -1
+I: 00:00:19:041 - Current block: : 67
+I: Current erase count: -1
+I: 00:00:19:249 - Current block: : 68
+I: Current erase count: -1
+I: 00:00:19:457 - Current block: : 69
+I: Current erase count: -1
+I: 00:00:19:665 - Current block: : 70
+I: Current erase count: -1
+I: 00:00:19:874 - Current block: : 71
+I: Current erase count: -1
+I: 00:00:20:083 - Current block: : 72
+I: Current erase count: -1
+I: 00:00:20:291 - Current block: : 73
+I: Current erase count: -1
+I: 00:00:20:500 - Current block: : 74
+I: Current erase count: -1
+I: 00:00:20:708 - Current block: : 75
+I: Current erase count: -1
+I: 00:00:20:917 - Current block: : 76
+I: Current erase count: -1
+I: 00:00:21:126 - Current block: : 77
+I: Current erase count: -1
+I: 00:00:21:334 - Current block: : 78
+I: Current erase count: -1
+I: 00:00:21:543 - Current block: : 79
+I: Current erase count: -1
+I: 00:00:21:751 - Current block: : 80
+I: Current erase count: -1
+I: 00:00:21:960 - Current block: : 81
+I: Current erase count: -1
+I: 00:00:22:169 - Current block: : 82
+I: Current erase count: -1
+I: 00:00:22:377 - Current block: : 83
+I: Current erase count: -1
+I: 00:00:22:586 - Current block: : 84
+I: Current erase count: -1
+I: 00:00:22:795 - Current block: : 85
+I: Current erase count: -1
+I: 00:00:23:004 - Current block: : 86
+I: Current erase count: -1
+I: 00:00:23:212 - Current block: : 87
+I: Current erase count: -1
+I: 00:00:23:421 - Current block: : 88
+I: Current erase count: -1
+I: 00:00:23:629 - Current block: : 89
+I: Current erase count: -1
+I: 00:00:23:838 - Current block: : 90
+I: Current erase count: -1
+I: 00:00:24:047 - Current block: : 91
+I: Current erase count: -1
+I: 00:00:24:256 - Current block: : 92
+I: Current erase count: -1
+I: 00:00:24:465 - Current block: : 93
+I: Current erase count: -1
+I: 00:00:24:674 - Current block: : 94
+I: Current erase count: -1
+I: 00:00:24:883 - Current block: : 95
+I: Current erase count: -1
+I: 00:00:25:091 - Current block: : 96
+I: Current erase count: -1
+I: 00:00:25:299 - Current block: : 97
+I: Current erase count: -1
+I: 00:00:25:508 - Current block: : 98
+I: Current erase count: -1
+I: 00:00:25:717 - Current block: : 99
+I: Current erase count: -1
+I: 00:00:25:925 - Current block: : 100
+I: Current erase count: -1
+I: 00:00:26:133 - Current block: : 101
+I: Current erase count: -1
+I: 00:00:26:343 - Current block: : 102
+I: Current erase count: -1
+I: 00:00:26:551 - Current block: : 103
+I: Current erase count: -1
+I: 00:00:26:760 - Current block: : 104
+I: Current erase count: -1
+I: 00:00:26:969 - Current block: : 105
+I: Current erase count: -1
+I: 00:00:27:177 - Current block: : 106
+I: Current erase count: -1
+I: 00:00:27:386 - Current block: : 107
+I: Current erase count: -1
+I: 00:00:27:594 - Current block: : 108
+I: Current erase count: -1
+I: 00:00:27:803 - Current block: : 109
+I: Current erase count: -1
+I: 00:00:28:012 - Current block: : 110
+I: Current erase count: -1
+I: 00:00:28:220 - Current block: : 111
+I: Current erase count: -1
+I: 00:00:28:429 - Current block: : 112
+I: Current erase count: -1
+I: 00:00:28:637 - Current block: : 113
+I: Current erase count: -1
+I: 00:00:28:845 - Current block: : 114
+I: Current erase count: -1
+I: 00:00:29:054 - Current block: : 115
+I: Current erase count: -1
+I: 00:00:29:262 - Current block: : 116
+I: Current erase count: -1
+I: 00:00:29:471 - Current block: : 117
+I: Current erase count: -1
+I: 00:00:29:680 - Current block: : 118
+I: Current erase count: -1
+I: 00:00:29:889 - Current block: : 119
+I: Current erase count: -1
+I: 00:00:30:097 - Current block: : 120
+I: Current erase count: -1
+I: 00:00:30:305 - Current block: : 121
+I: Current erase count: -1
+I: 00:00:30:514 - Current block: : 122
+I: Current erase count: -1
+I: 00:00:30:722 - Current block: : 123
+I: Current erase count: -1
+I: 00:00:30:931 - Current block: : 124
+I: Current erase count: -1
+I: 00:00:31:139 - Current block: : 125
+I: Current erase count: -1
+I: 00:00:31:348 - Current block: : 126
+I: Current erase count: -1
+I: 00:00:31:556 - Current block: : 127
+I: Current erase count: -1
+I: 00:00:31:765 - Current block: : 128
+I: Current erase count: -1
+I: 00:00:31:973 - Current block: : 129
+I: Current erase count: -1
+I: 00:00:32:181 - Current block: : 130
+I: Current erase count: -1
+I: 00:00:32:389 - Current block: : 131
+I: Current erase count: -1
+I: 00:00:32:598 - Current block: : 132
+I: Current erase count: -1
+I: 00:00:32:806 - Current block: : 133
+I: Current erase count: -1
+I: 00:00:33:014 - Current block: : 134
+I: Current erase count: -1
+I: 00:00:33:222 - Current block: : 135
+I: Current erase count: -1
+I: 00:00:33:430 - Current block: : 136
+I: Current erase count: -1
+I: 00:00:33:639 - Current block: : 137
+I: Current erase count: -1
+I: 00:00:33:847 - Current block: : 138
+I: Current erase count: -1
+I: 00:00:34:055 - Current block: : 139
+I: Current erase count: -1
+I: 00:00:34:263 - Current block: : 140
+I: Current erase count: -1
+I: 00:00:34:471 - Current block: : 141
+I: Current erase count: -1
+I: 00:00:34:693 - Current block: : 142
+I: Current erase count: -1
+I: 00:00:34:902 - Current block: : 143
+I: Current erase count: -1
+I: 00:00:35:110 - Current block: : 144
+I: Current erase count: -1
+I: 00:00:35:318 - Current block: : 145
+I: Current erase count: -1
+I: 00:00:35:526 - Current block: : 146
+I: Current erase count: -1
+I: 00:00:35:734 - Current block: : 147
+I: Current erase count: -1
+I: 00:00:35:943 - Current block: : 148
+I: Current erase count: -1
+I: 00:00:36:151 - Current block: : 149
+I: Current erase count: -1
+I: 00:00:36:359 - Current block: : 150
+I: Current erase count: -1
+I: 00:00:36:567 - Current block: : 151
+I: Current erase count: -1
+I: 00:00:36:776 - Current block: : 152
+I: Current erase count: -1
+I: 00:00:36:984 - Current block: : 153
+I: Current erase count: -1
+I: 00:00:37:192 - Current block: : 154
+I: Current erase count: -1
+I: 00:00:37:400 - Current block: : 155
+I: Current erase count: -1
+I: 00:00:37:609 - Current block: : 156
+I: Current erase count: -1
+I: 00:00:37:817 - Current block: : 157
+I: Current erase count: -1
+I: 00:00:38:025 - Current block: : 158
+I: Current erase count: -1
+I: 00:00:38:233 - Current block: : 159
+I: Current erase count: -1
+I: 00:00:38:442 - Current block: : 160
+I: Current erase count: -1
+I: 00:00:38:650 - Current block: : 161
+I: Current erase count: -1
+I: 00:00:38:859 - Current block: : 162
+I: Current erase count: -1
+I: 00:00:39:067 - Current block: : 163
+I: Current erase count: -1
+I: 00:00:39:275 - Current block: : 164
+I: Current erase count: -1
+I: 00:00:39:484 - Current block: : 165
+I: Current erase count: -1
+I: 00:00:39:692 - Current block: : 166
+I: Current erase count: -1
+I: 00:00:39:900 - Current block: : 167
+I: Current erase count: -1
+I: 00:00:40:108 - Current block: : 168
+I: Current erase count: -1
+I: 00:00:40:317 - Current block: : 169
+I: Current erase count: -1
+I: 00:00:40:525 - Current block: : 170
+I: Current erase count: -1
+I: 00:00:40:733 - Current block: : 171
+I: Current erase count: -1
+I: 00:00:40:941 - Current block: : 172
+I: Current erase count: -1
+I: 00:00:41:149 - Current block: : 173
+I: Current erase count: -1
+I: 00:00:41:358 - Current block: : 174
+I: Current erase count: -1
+I: 00:00:41:566 - Current block: : 175
+I: Current erase count: -1
+I: 00:00:41:774 - Current block: : 176
+I: Current erase count: -1
+I: 00:00:41:982 - Current block: : 177
+I: Current erase count: -1
+I: 00:00:42:191 - Current block: : 178
+I: Current erase count: -1
+I: 00:00:42:399 - Current block: : 179
+I: Current erase count: -1
+I: 00:00:42:607 - Current block: : 180
+I: Current erase count: -1
+I: 00:00:42:815 - Current block: : 181
+I: Current erase count: -1
+I: 00:00:43:024 - Current block: : 182
+I: Current erase count: -1
+I: 00:00:43:232 - Current block: : 183
+I: Current erase count: -1
+I: 00:00:43:440 - Current block: : 184
+I: Current erase count: -1
+I: 00:00:43:648 - Current block: : 185
+I: Current erase count: -1
+I: 00:00:43:857 - Current block: : 186
+I: Current erase count: -1
+I: 00:00:44:065 - Current block: : 187
+I: Current erase count: -1
+I: 00:00:44:273 - Current block: : 188
+I: Current erase count: -1
+I: 00:00:44:482 - Current block: : 189
+I: Current erase count: -1
+I: 00:00:44:690 - Current block: : 190
+I: Current erase count: -1
+I: 00:00:44:898 - Current block: : 191
+I: Current erase count: -1
+I: 00:00:45:107 - Current block: : 192
+I: Current erase count: -1
+I: 00:00:45:315 - Current block: : 193
+I: Current erase count: -1
+I: 00:00:45:523 - Current block: : 194
+I: Current erase count: -1
+I: 00:00:45:731 - Current block: : 195
+I: Current erase count: -1
+I: 00:00:45:939 - Current block: : 196
+I: Current erase count: -1
+I: 00:00:46:148 - Current block: : 197
+I: Current erase count: -1
+I: 00:00:46:356 - Current block: : 198
+I: Current erase count: -1
+I: 00:00:46:564 - Current block: : 199
+I: Current erase count: -1
+I: 00:00:46:772 - Current block: : 200
+I: Current erase count: -1
+I: 00:00:46:981 - Current block: : 201
+I: Current erase count: -1
+I: 00:00:47:189 - Current block: : 202
+I: Current erase count: -1
+I: 00:00:47:397 - Current block: : 203
+I: Current erase count: -1
+I: 00:00:47:605 - Current block: : 204
+I: Current erase count: -1
+I: 00:00:47:813 - Current block: : 205
+I: Current erase count: -1
+I: 00:00:48:021 - Current block: : 206
+I: Current erase count: -1
+I: 00:00:48:230 - Current block: : 207
+I: Current erase count: -1
+I: 00:00:48:438 - Current block: : 208
+I: Current erase count: -1
+I: 00:00:48:646 - Current block: : 209
+I: Current erase count: -1
+I: 00:00:48:854 - Current block: : 210
+I: Current erase count: -1
+I: 00:00:49:062 - Current block: : 211
+I: Current erase count: -1
+I: 00:00:49:270 - Current block: : 212
+I: Current erase count: -1
+I: 00:00:49:479 - Current block: : 213
+I: Current erase count: -1
+I: 00:00:49:687 - Current block: : 214
+I: Current erase count: -1
+I: 00:00:49:895 - Current block: : 215
+I: Current erase count: -1
+I: 00:00:50:103 - Current block: : 216
+I: Current erase count: -1
+I: 00:00:50:311 - Current block: : 217
+I: Current erase count: -1
+I: 00:00:50:520 - Current block: : 218
+I: Current erase count: -1
+I: 00:00:50:728 - Current block: : 219
+I: Current erase count: -1
+I: 00:00:50:936 - Current block: : 220
+I: Current erase count: -1
+I: 00:00:51:144 - Current block: : 221
+I: Current erase count: -1
+I: 00:00:51:353 - Current block: : 222
+I: Current erase count: -1
+I: 00:00:51:561 - Current block: : 223
+I: Current erase count: -1
+I: 00:00:51:769 - Current block: : 224
+I: Current erase count: -1
+I: 00:00:51:977 - Current block: : 225
+I: Current erase count: -1
+I: 00:00:52:185 - Current block: : 226
+I: Current erase count: -1
+I: 00:00:52:394 - Current block: : 227
+I: Current erase count: -1
+I: 00:00:52:603 - Current block: : 228
+I: Current erase count: -1
+I: 00:00:52:811 - Current block: : 229
+I: Current erase count: -1
+I: 00:00:53:020 - Current block: : 230
+I: Current erase count: -1
+I: 00:00:53:228 - Current block: : 231
+I: Current erase count: -1
+I: 00:00:53:436 - Current block: : 232
+I: Current erase count: -1
+I: 00:00:53:645 - Current block: : 233
+I: Current erase count: -1
+I: 00:00:53:853 - Current block: : 234
+I: Current erase count: -1
+I: 00:00:54:061 - Current block: : 235
+I: Current erase count: -1
+I: 00:00:54:269 - Current block: : 236
+I: Current erase count: -1
+I: 00:00:54:477 - Current block: : 237
+I: Current erase count: -1
+I: 00:00:54:685 - Current block: : 238
+I: Current erase count: -1
+I: 00:00:54:894 - Current block: : 239
+I: Current erase count: -1
+I: 00:00:55:102 - Current block: : 240
+I: Current erase count: -1
+I: 00:00:55:310 - Current block: : 241
+I: Current erase count: -1
+I: 00:00:55:518 - Current block: : 242
+I: Current erase count: -1
+I: 00:00:55:727 - Current block: : 243
+I: Current erase count: -1
+I: 00:00:55:935 - Current block: : 244
+I: Current erase count: -1
+I: 00:00:56:143 - Current block: : 245
+I: Current erase count: -1
+I: 00:00:56:351 - Current block: : 246
+I: Current erase count: -1
+I: 00:00:56:559 - Current block: : 247
+I: Current erase count: -1
+I: 00:00:56:768 - Current block: : 248
+I: Current erase count: -1
+I: 00:00:56:976 - Current block: : 249
+I: Current erase count: -1
+I: 00:00:57:185 - Current block: : 250
+I: Current erase count: -1
+I: 00:00:57:393 - Current block: : 251
+I: Current erase count: -1
+I: 00:00:57:601 - Current block: : 252
+I: Current erase count: -1
+I: 00:00:57:809 - Current block: : 253
+I: Current erase count: -1
+I: 00:00:58:017 - Current block: : 254
+I: Current erase count: -1
+I: 00:00:58:226 - Current block: : 255
+I: Current erase count: -1
+I: 00:00:58:434 - Current block: : 256
+I: Current erase count: -1
+I: 00:00:58:642 - Current block: : 257
+I: Current erase count: -1
+I: 00:00:58:850 - Current block: : 258
+I: Current erase count: -1
+I: 00:00:59:058 - Current block: : 259
+I: Current erase count: -1
+I: 00:00:59:266 - Current block: : 260
+I: Current erase count: -1
+I: 00:00:59:475 - Current block: : 261
+I: Current erase count: -1
+I: 00:00:59:683 - Current block: : 262
+I: Current erase count: -1
+I: 00:00:59:891 - Current block: : 263
+I: Current erase count: -1
+I: 00:01:00:100 - Current block: : 264
+I: Current erase count: -1
+I: 00:01:00:308 - Current block: : 265
+I: Current erase count: -1
+I: 00:01:00:516 - Current block: : 266
+I: Current erase count: -1
+I: 00:01:00:724 - Current block: : 267
+I: Current erase count: -1
+I: 00:01:00:932 - Current block: : 268
+I: Current erase count: -1
+I: 00:01:01:140 - Current block: : 269
+I: Current erase count: -1
+I: 00:01:01:348 - Current block: : 270
+I: Current erase count: -1
+I: 00:01:01:556 - Current block: : 271
+I: Current erase count: -1
+I: 00:01:01:764 - Current block: : 272
+I: Current erase count: -1
+I: 00:01:01:972 - Current block: : 273
+I: Current erase count: -1
+I: 00:01:02:181 - Current block: : 274
+I: Current erase count: -1
+I: 00:01:02:389 - Current block: : 275
+I: Current erase count: -1
+I: 00:01:02:597 - Current block: : 276
+I: Current erase count: -1
+I: 00:01:02:805 - Current block: : 277
+I: Current erase count: -1
+I: 00:01:03:025 - Current block: : 278
+I: Current erase count: -1
+I: 00:01:03:233 - Current block: : 279
+I: Current erase count: -1
+I: 00:01:03:441 - Current block: : 280
+I: Current erase count: -1
+I: 00:01:03:649 - Current block: : 281
+I: Current erase count: -1
+I: 00:01:03:858 - Current block: : 282
+I: Current erase count: -1
+I: 00:01:04:066 - Current block: : 283
+I: Current erase count: -1
+I: 00:01:04:274 - Current block: : 284
+I: Current erase count: -1
+I: 00:01:04:482 - Current block: : 285
+I: Current erase count: -1
+I: 00:01:04:690 - Current block: : 286
+I: Current erase count: -1
+I: 00:01:04:898 - Current block: : 287
+I: Current erase count: -1
+I: 00:01:05:106 - Current block: : 288
+I: Current erase count: -1
+I: 00:01:05:314 - Current block: : 289
+I: Current erase count: -1
+I: 00:01:05:523 - Current block: : 290
+I: Current erase count: -1
+I: 00:01:05:731 - Current block: : 291
+I: Current erase count: -1
+I: 00:01:05:939 - Current block: : 292
+I: Current erase count: -1
+I: 00:01:06:147 - Current block: : 293
+I: Current erase count: -1
+I: 00:01:06:356 - Current block: : 294
+I: Current erase count: -1
+I: 00:01:06:564 - Current block: : 295
+I: Current erase count: -1
+I: 00:01:06:773 - Current block: : 296
+I: Current erase count: -1
+I: 00:01:06:980 - Current block: : 297
+I: Current erase count: -1
+I: 00:01:07:189 - Current block: : 298
+I: Current erase count: -1
+I: 00:01:07:397 - Current block: : 299
+I: Current erase count: -1
+I: 00:01:07:605 - Current block: : 300
+I: Current erase count: -1
+I: 00:01:07:813 - Current block: : 301
+I: Current erase count: -1
+I: 00:01:08:021 - Current block: : 302
+I: Current erase count: -1
+I: 00:01:08:229 - Current block: : 303
+I: Current erase count: -1
+I: 00:01:08:437 - Current block: : 304
+I: Current erase count: -1
+I: 00:01:08:645 - Current block: : 305
+I: Current erase count: -1
+I: 00:01:08:853 - Current block: : 306
+I: Current erase count: -1
+I: 00:01:09:061 - Current block: : 307
+I: Current erase count: -1
+I: 00:01:09:269 - Current block: : 308
+I: Current erase count: -1
+I: 00:01:09:478 - Current block: : 309
+I: Current erase count: -1
+I: 00:01:09:686 - Current block: : 310
+I: Current erase count: -1
+I: 00:01:09:894 - Current block: : 311
+I: Current erase count: -1
+I: 00:01:10:102 - Current block: : 312
+I: Current erase count: -1
+I: 00:01:10:310 - Current block: : 313
+I: Current erase count: -1
+I: 00:01:10:518 - Current block: : 314
+I: Current erase count: -1
+I: 00:01:10:726 - Current block: : 315
+I: Current erase count: -1
+I: 00:01:10:935 - Current block: : 316
+I: Current erase count: -1
+I: 00:01:11:143 - Current block: : 317
+I: Current erase count: -1
+I: 00:01:11:351 - Current block: : 318
+I: Current erase count: -1
+I: 00:01:11:559 - Current block: : 319
+I: Current erase count: -1
+I: 00:01:11:767 - Current block: : 320
+I: Current erase count: -1
+I: 00:01:11:975 - Current block: : 321
+I: Current erase count: -1
+I: 00:01:12:183 - Current block: : 322
+I: Current erase count: -1
+I: 00:01:12:391 - Current block: : 323
+I: Current erase count: -1
+I: 00:01:12:600 - Current block: : 324
+I: Current erase count: -1
+I: 00:01:12:808 - Current block: : 325
+I: Current erase count: -1
+I: 00:01:13:016 - Current block: : 326
+I: Current erase count: -1
+I: 00:01:13:224 - Current block: : 327
+I: Current erase count: -1
+I: 00:01:13:432 - Current block: : 328
+I: Current erase count: -1
+I: 00:01:13:641 - Current block: : 329
+I: Current erase count: -1
+I: 00:01:13:849 - Current block: : 330
+I: Current erase count: -1
+I: 00:01:14:057 - Current block: : 331
+I: Current erase count: -1
+I: 00:01:14:265 - Current block: : 332
+I: Current erase count: -1
+I: 00:01:14:473 - Current block: : 333
+I: Current erase count: -1
+I: 00:01:14:681 - Current block: : 334
+I: Current erase count: -1
+I: 00:01:14:890 - Current block: : 335
+I: Current erase count: -1
+I: 00:01:15:098 - Current block: : 336
+I: Current erase count: -1
+I: 00:01:15:306 - Current block: : 337
+I: Current erase count: -1
+I: 00:01:15:515 - Current block: : 338
+I: Current erase count: -1
+I: 00:01:15:723 - Current block: : 339
+I: Current erase count: -1
+I: 00:01:15:931 - Current block: : 340
+I: Current erase count: -1
+I: 00:01:16:139 - Current block: : 341
+I: Current erase count: -1
+I: 00:01:16:348 - Current block: : 342
+I: Current erase count: -1
+I: 00:01:16:556 - Current block: : 343
+I: Current erase count: -1
+I: 00:01:16:764 - Current block: : 344
+I: Current erase count: -1
+I: 00:01:16:972 - Current block: : 345
+I: Current erase count: -1
+I: 00:01:17:180 - Current block: : 346
+I: Current erase count: -1
+I: 00:01:17:388 - Current block: : 347
+I: Current erase count: -1
+I: 00:01:17:596 - Current block: : 348
+I: Current erase count: -1
+I: 00:01:17:804 - Current block: : 349
+I: Current erase count: -1
+I: 00:01:18:013 - Current block: : 350
+I: Current erase count: -1
+I: 00:01:18:221 - Current block: : 351
+I: Current erase count: -1
+I: 00:01:18:429 - Current block: : 352
+I: Current erase count: -1
+I: 00:01:18:637 - Current block: : 353
+I: Current erase count: -1
+I: 00:01:18:845 - Current block: : 354
+I: Current erase count: -1
+I: 00:01:19:053 - Current block: : 355
+I: Current erase count: -1
+I: 00:01:19:261 - Current block: : 356
+I: Current erase count: -1
+I: 00:01:19:469 - Current block: : 357
+I: Current erase count: -1
+I: 00:01:19:678 - Current block: : 358
+I: Current erase count: -1
+I: 00:01:19:886 - Current block: : 359
+I: Current erase count: -1
+I: 00:01:20:094 - Current block: : 360
+I: Current erase count: -1
+I: 00:01:20:302 - Current block: : 361
+I: Current erase count: -1
+I: 00:01:20:510 - Current block: : 362
+I: Current erase count: -1
+I: 00:01:20:718 - Current block: : 363
+I: Current erase count: -1
+I: 00:01:20:926 - Current block: : 364
+I: Current erase count: -1
+I: 00:01:21:134 - Current block: : 365
+I: Current erase count: -1
+I: 00:01:21:342 - Current block: : 366
+I: Current erase count: -1
+I: 00:01:21:550 - Current block: : 367
+I: Current erase count: -1
+I: 00:01:21:758 - Current block: : 368
+I: Current erase count: -1
+I: 00:01:21:967 - Current block: : 369
+I: Current erase count: -1
+I: 00:01:22:175 - Current block: : 370
+I: Current erase count: -1
+I: 00:01:22:383 - Current block: : 371
+I: Current erase count: -1
+I: 00:01:22:591 - Current block: : 372
+I: Current erase count: -1
+I: 00:01:22:799 - Current block: : 373
+I: Current erase count: -1
+I: 00:01:23:007 - Current block: : 374
+I: Current erase count: -1
+I: 00:01:23:215 - Current block: : 375
+I: Current erase count: -1
+I: 00:01:23:423 - Current block: : 376
+I: Current erase count: -1
+I: 00:01:23:631 - Current block: : 377
+I: Current erase count: -1
+I: 00:01:23:840 - Current block: : 378
+I: Current erase count: -1
+I: 00:01:24:048 - Current block: : 379
+I: Current erase count: -1
+I: 00:01:24:256 - Current block: : 380
+I: Current erase count: -1
+I: 00:01:24:464 - Current block: : 381
+I: Current erase count: -1
+I: 00:01:24:672 - Current block: : 382
+I: Current erase count: -1
+I: 00:01:24:880 - Current block: : 383
+I: Current erase count: -1
+I: 00:01:25:088 - Current block: : 384
+I: Current erase count: -1
+I: 00:01:25:296 - Current block: : 385
+I: Current erase count: -1
+I: 00:01:25:504 - Current block: : 386
+I: Current erase count: -1
+I: 00:01:25:713 - Current block: : 387
+I: Current erase count: -1
+I: 00:01:25:921 - Current block: : 388
+I: Current erase count: -1
+I: 00:01:26:129 - Current block: : 389
+I: Current erase count: -1
+I: 00:01:26:337 - Current block: : 390
+I: Current erase count: -1
+I: 00:01:26:545 - Current block: : 391
+I: Current erase count: -1
+I: 00:01:26:753 - Current block: : 392
+I: Current erase count: -1
+I: 00:01:26:961 - Current block: : 393
+I: Current erase count: -1
+I: 00:01:27:169 - Current block: : 394
+I: Current erase count: -1
+I: 00:01:27:378 - Current block: : 395
+I: Current erase count: -1
+I: 00:01:27:586 - Current block: : 396
+I: Current erase count: -1
+I: 00:01:27:794 - Current block: : 397
+I: Current erase count: -1
+I: 00:01:28:002 - Current block: : 398
+I: Current erase count: -1
+I: 00:01:28:210 - Current block: : 399
+I: Current erase count: -1
+I: 00:01:28:418 - Current block: : 400
+I: Current erase count: -1
+I: 00:01:28:626 - Current block: : 401
+I: Current erase count: -1
+I: 00:01:28:834 - Current block: : 402
+I: Current erase count: -1
+I: 00:01:29:042 - Current block: : 403
+I: Current erase count: -1
+I: 00:01:29:250 - Current block: : 404
+I: Current erase count: -1
+I: 00:01:29:458 - Current block: : 405
+I: Current erase count: -1
+I: 00:01:29:666 - Current block: : 406
+I: Current erase count: -1
+I: 00:01:29:874 - Current block: : 407
+I: Current erase count: -1
+I: 00:01:30:082 - Current block: : 408
+I: Current erase count: -1
+I: 00:01:30:290 - Current block: : 409
+I: Current erase count: -1
+I: 00:01:30:498 - Current block: : 410
+I: Current erase count: -1
+I: 00:01:30:706 - Current block: : 411
+I: Current erase count: -1
+I: 00:01:30:914 - Current block: : 412
+I: Current erase count: -1
+I: 00:01:31:122 - Current block: : 413
+I: Current erase count: -1
+I: 00:01:31:331 - Current block: : 414
+I: Current erase count: -1
+I: 00:01:31:550 - Current block: : 415
+I: Current erase count: -1
+I: 00:01:31:758 - Current block: : 416
+I: Current erase count: -1
+I: 00:01:31:967 - Current block: : 417
+I: Current erase count: -1
+I: 00:01:32:175 - Current block: : 418
+I: Current erase count: -1
+I: 00:01:32:383 - Current block: : 419
+I: Current erase count: -1
+I: 00:01:32:591 - Current block: : 420
+I: Current erase count: -1
+I: 00:01:32:799 - Current block: : 421
+I: Current erase count: -1
+I: 00:01:33:007 - Current block: : 422
+I: Current erase count: -1
+I: 00:01:33:216 - Current block: : 423
+I: Current erase count: -1
+I: 00:01:33:424 - Current block: : 424
+I: Current erase count: -1
+I: 00:01:33:632 - Current block: : 425
+I: Current erase count: -1
+I: 00:01:33:840 - Current block: : 426
+I: Current erase count: -1
+I: 00:01:34:049 - Current block: : 427
+I: Current erase count: -1
+I: 00:01:34:257 - Current block: : 428
+I: Current erase count: -1
+I: 00:01:34:465 - Current block: : 429
+I: Current erase count: -1
+I: 00:01:34:673 - Current block: : 430
+I: Current erase count: -1
+I: 00:01:34:882 - Current block: : 431
+I: Current erase count: -1
+I: 00:01:35:090 - Current block: : 432
+I: Current erase count: -1
+I: 00:01:35:298 - Current block: : 433
+I: Current erase count: -1
+I: 00:01:35:506 - Current block: : 434
+I: Current erase count: -1
+I: 00:01:35:715 - Current block: : 435
+I: Current erase count: -1
+I: 00:01:35:923 - Current block: : 436
+I: Current erase count: -1
+I: 00:01:36:131 - Current block: : 437
+I: Current erase count: -1
+I: 00:01:36:339 - Current block: : 438
+I: Current erase count: -1
+I: 00:01:36:547 - Current block: : 439
+I: Current erase count: -1
+I: 00:01:36:755 - Current block: : 440
+I: Current erase count: -1
+I: 00:01:36:963 - Current block: : 441
+I: Current erase count: -1
+I: 00:01:37:171 - Current block: : 442
+I: Current erase count: -1
+I: 00:01:37:379 - Current block: : 443
+I: Current erase count: -1
+I: 00:01:37:588 - Current block: : 444
+I: Current erase count: -1
+I: 00:01:37:796 - Current block: : 445
+I: Current erase count: -1
+I: 00:01:38:004 - Current block: : 446
+I: Current erase count: -1
+I: 00:01:38:212 - Current block: : 447
+I: Current erase count: -1
+I: 00:01:38:420 - Current block: : 448
+I: Current erase count: -1
+I: 00:01:38:629 - Current block: : 449
+I: Current erase count: -1
+I: 00:01:38:837 - Current block: : 450
+I: Current erase count: -1
+I: 00:01:39:045 - Current block: : 451
+I: Current erase count: -1
+I: 00:01:39:253 - Current block: : 452
+I: Current erase count: -1
+I: 00:01:39:462 - Current block: : 453
+I: Current erase count: -1
+I: 00:01:39:670 - Current block: : 454
+I: Current erase count: -1
+I: 00:01:39:878 - Current block: : 455
+I: Current erase count: -1
+I: 00:01:40:086 - Current block: : 456
+I: Current erase count: -1
+I: 00:01:40:294 - Current block: : 457
+I: Current erase count: -1
+I: 00:01:40:503 - Current block: : 458
+I: Current erase count: -1
+I: 00:01:40:711 - Current block: : 459
+I: Current erase count: -1
+I: 00:01:40:919 - Current block: : 460
+I: Current erase count: -1
+I: 00:01:41:127 - Current block: : 461
+I: Current erase count: -1
+I: 00:01:41:335 - Current block: : 462
+I: Current erase count: -1
+I: 00:01:41:543 - Current block: : 463
+I: Current erase count: -1
+I: 00:01:41:752 - Current block: : 464
+I: Current erase count: -1
+I: 00:01:41:960 - Current block: : 465
+I: Current erase count: -1
+I: 00:01:42:168 - Current block: : 466
+I: Current erase count: -1
+I: 00:01:42:377 - Current block: : 467
+I: Current erase count: -1
+I: 00:01:42:585 - Current block: : 468
+I: Current erase count: -1
+I: File /NAND:/one_eigth_file.txt written successfully
+
+I: 00:01:42:837 - Current block: : 469
+I: Current erase count: -1
+I: 00:01:43:102 - Current block: : 470
+I: Current erase count: -1
+I: 00:01:43:367 - Current block: : 471
+I: Current erase count: -1
+I: 00:01:43:633 - Current block: : 472
+I: Current erase count: -1
+I: 00:01:43:900 - Current block: : 473
+I: Current erase count: -1
+I: 00:01:44:165 - Current block: : 474
+I: Current erase count: -1
+I: 00:01:44:430 - Current block: : 475
+I: Current erase count: -1
+I: 00:01:44:695 - Current block: : 476
+I: Current erase count: -1
+I: 00:01:44:961 - Current block: : 477
+I: Current erase count: -1
+I: 00:01:45:226 - Current block: : 478
+I: Current erase count: -1
+I: 00:01:45:491 - Current block: : 479
+I: Current erase count: -1
+I: 00:01:45:757 - Current block: : 480
+I: Current erase count: -1
+I: 00:01:46:024 - Current block: : 481
+I: Current erase count: -1
+I: 00:01:46:290 - Current block: : 482
+I: Current erase count: -1
+I: 00:01:46:554 - Current block: : 483
+I: Current erase count: -1
+I: 00:01:46:820 - Current block: : 484
+I: Current erase count: -1
+I: 00:01:47:084 - Current block: : 485
+I: Current erase count: -1
+I: 00:01:47:351 - Current block: : 486
+I: Current erase count: -1
+I: 00:01:47:615 - Current block: : 487
+I: Current erase count: -1
+I: 00:01:47:881 - Current block: : 488
+I: Current erase count: -1
+I: 00:01:48:146 - Current block: : 489
+I: Current erase count: -1
+I: 00:01:48:413 - Current block: : 490
+I: Current erase count: -1
+I: 00:01:48:677 - Current block: : 491
+I: Current erase count: -1
+I: 00:01:48:943 - Current block: : 492
+I: Current erase count: -1
+I: 00:01:49:208 - Current block: : 493
+I: Current erase count: -1
+I: 00:01:49:474 - Current block: : 494
+I: Current erase count: -1
+I: 00:01:49:738 - Current block: : 495
+I: Current erase count: -1
+I: 00:01:50:004 - Current block: : 496
+I: Current erase count: -1
+I: 00:01:50:269 - Current block: : 497
+I: Current erase count: -1
+I: 00:01:50:537 - Current block: : 498
+I: Current erase count: -1
+I: 00:01:50:800 - Current block: : 499
+I: Current erase count: -1
+I: 00:01:51:066 - Current block: : 500
+I: Current erase count: -1
+I: 00:01:51:331 - Current block: : 501
+I: Current erase count: -1
+I: 00:01:51:597 - Current block: : 502
+I: Current erase count: -1
+I: 00:01:51:862 - Current block: : 503
+I: Current erase count: -1
+I: 00:01:52:127 - Current block: : 504
+I: Current erase count: -1
+I: 00:01:52:393 - Current block: : 505
+I: Current erase count: -1
+I: 00:01:52:659 - Current block: : 506
+I: Current erase count: -1
+I: 00:01:52:924 - Current block: : 507
+I: Current erase count: -1
+I: 00:01:53:190 - Current block: : 508
+I: Current erase count: -1
+I: 00:01:53:455 - Current block: : 509
+I: Current erase count: -1
+I: 00:01:53:721 - Current block: : 510
+I: Current erase count: -1
+I: 00:01:53:987 - Current block: : 511
+I: Current erase count: -1
+I: 00:01:54:252 - Current block: : 512
+I: Current erase count: -1
+I: 00:01:54:518 - Current block: : 513
+I: Current erase count: -1
+I: 00:01:54:783 - Current block: : 514
+I: Current erase count: -1
+I: 00:01:55:047 - Current block: : 515
+I: Current erase count: -1
+I: 00:01:55:314 - Current block: : 516
+I: Current erase count: -1
+I: 00:01:55:579 - Current block: : 517
+I: Current erase count: -1
+I: 00:01:55:845 - Current block: : 518
+I: Current erase count: -1
+I: 00:01:56:110 - Current block: : 519
+I: Current erase count: -1
+I: 00:01:56:376 - Current block: : 520
+I: Current erase count: -1
+I: 00:01:56:641 - Current block: : 521
+I: Current erase count: -1
+I: 00:01:56:907 - Current block: : 522
+I: Current erase count: -1
+I: 00:01:57:171 - Current block: : 523
+I: Current erase count: -1
+I: 00:01:57:438 - Current block: : 524
+I: Current erase count: -1
+I: 00:01:57:703 - Current block: : 525
+I: Current erase count: -1
+I: 00:01:57:969 - Current block: : 526
+I: Current erase count: -1
+I: 00:01:58:234 - Current block: : 527
+I: Current erase count: -1
+I: 00:01:58:500 - Current block: : 528
+I: Current erase count: -1
+I: 00:01:58:765 - Current block: : 529
+I: Current erase count: -1
+I: 00:01:59:031 - Current block: : 530
+I: Current erase count: -1
+I: 00:01:59:295 - Current block: : 531
+I: Current erase count: -1
+I: 00:01:59:560 - Current block: : 532
+I: Current erase count: -1
+I: 00:01:59:828 - Current block: : 533
+I: Current erase count: -1
+I: 00:02:00:094 - Current block: : 534
+I: Current erase count: -1
+I: 00:02:00:359 - Current block: : 535
+I: Current erase count: -1
+I: 00:02:00:624 - Current block: : 536
+I: Current erase count: -1
+I: 00:02:00:890 - Current block: : 537
+I: Current erase count: -1
+I: 00:02:01:155 - Current block: : 538
+I: Current erase count: -1
+I: 00:02:01:420 - Current block: : 539
+I: Current erase count: -1
+I: 00:02:01:686 - Current block: : 540
+I: Current erase count: -1
+I: 00:02:01:952 - Current block: : 541
+I: Current erase count: -1
+I: 00:02:02:217 - Current block: : 542
+I: Current erase count: -1
+I: 00:02:02:482 - Current block: : 543
+I: Current erase count: -1
+I: 00:02:02:748 - Current block: : 544
+I: Current erase count: -1
+I: 00:02:03:014 - Current block: : 545
+I: Current erase count: -1
+I: 00:02:03:280 - Current block: : 546
+I: Current erase count: -1
+I: 00:02:03:543 - Current block: : 547
+I: Current erase count: -1
+I: 00:02:03:809 - Current block: : 548
+I: Current erase count: -1
+I: 00:02:04:074 - Current block: : 549
+I: Current erase count: -1
+I: 00:02:04:342 - Current block: : 550
+I: Current erase count: -1
+I: 00:02:04:607 - Current block: : 551
+I: Current erase count: -1
+I: 00:02:04:873 - Current block: : 552
+I: Current erase count: -1
+I: 00:02:05:138 - Current block: : 553
+I: Current erase count: -1
+I: 00:02:05:404 - Current block: : 554
+I: Current erase count: -1
+I: 00:02:05:669 - Current block: : 555
+I: Current erase count: -1
+I: 00:02:05:935 - Current block: : 556
+I: Current erase count: -1
+I: 00:02:06:200 - Current block: : 557
+I: Current erase count: -1
+I: 00:02:06:467 - Current block: : 558
+I: Current erase count: -1
+I: 00:02:06:732 - Current block: : 559
+I: Current erase count: -1
+I: 00:02:06:998 - Current block: : 560
+I: Current erase count: -1
+I: 00:02:07:263 - Current block: : 561
+I: Current erase count: -1
+I: 00:02:07:529 - Current block: : 562
+I: Current erase count: -1
+I: 00:02:07:793 - Current block: : 563
+I: Current erase count: -1
+I: 00:02:08:058 - Current block: : 564
+I: Current erase count: -1
+I: 00:02:08:324 - Current block: : 565
+I: Current erase count: -1
+I: 00:02:08:589 - Current block: : 566
+I: Current erase count: -1
+I: 00:02:08:856 - Current block: : 567
+I: Current erase count: -1
+I: 00:02:09:122 - Current block: : 568
+I: Current erase count: -1
+I: 00:02:09:387 - Current block: : 569
+I: Current erase count: -1
+I: 00:02:09:653 - Current block: : 570
+I: Current erase count: -1
+I: 00:02:09:918 - Current block: : 571
+I: Current erase count: -1
+I: 00:02:10:183 - Current block: : 572
+I: Current erase count: -1
+I: 00:02:10:448 - Current block: : 573
+I: Current erase count: -1
+I: 00:02:10:714 - Current block: : 574
+I: Current erase count: -1
+I: 00:02:10:980 - Current block: : 575
+I: Current erase count: -1
+I: 00:02:11:245 - Current block: : 576
+I: Current erase count: -1
+I: 00:02:11:510 - Current block: : 577
+I: Current erase count: -1
+I: 00:02:11:776 - Current block: : 578
+I: Current erase count: -1
+I: 00:02:12:040 - Current block: : 579
+I: Current erase count: -1
+I: 00:02:12:306 - Current block: : 580
+I: Current erase count: -1
+I: 00:02:12:571 - Current block: : 581
+I: Current erase count: -1
+I: 00:02:12:837 - Current block: : 582
+I: Current erase count: -1
+I: 00:02:13:102 - Current block: : 583
+I: Current erase count: -1
+I: 00:02:13:369 - Current block: : 584
+I: Current erase count: -1
+I: 00:02:13:634 - Current block: : 585
+I: Current erase count: -1
+I: 00:02:13:900 - Current block: : 586
+I: Current erase count: -1
+I: 00:02:14:165 - Current block: : 587
+I: Current erase count: -1
+I: 00:02:14:431 - Current block: : 588
+I: Current erase count: -1
+I: 00:02:14:696 - Current block: : 589
+I: Current erase count: -1
+I: 00:02:14:962 - Current block: : 590
+I: Current erase count: -1
+I: 00:02:15:227 - Current block: : 591
+I: Current erase count: -1
+I: 00:02:15:494 - Current block: : 592
+I: Current erase count: -1
+I: 00:02:15:759 - Current block: : 593
+I: Current erase count: -1
+I: 00:02:16:025 - Current block: : 594
+I: Current erase count: -1
+I: 00:02:16:289 - Current block: : 595
+I: Current erase count: -1
+I: 00:02:16:554 - Current block: : 596
+I: Current erase count: -1
+I: 00:02:16:820 - Current block: : 597
+I: Current erase count: -1
+I: 00:02:17:086 - Current block: : 598
+I: Current erase count: -1
+I: 00:02:17:351 - Current block: : 599
+I: Current erase count: -1
+I: 00:02:17:617 - Current block: : 600
+I: Current erase count: -1
+I: 00:02:17:885 - Current block: : 601
+I: Current erase count: -1
+I: 00:02:18:151 - Current block: : 602
+I: Current erase count: -1
+I: 00:02:18:415 - Current block: : 603
+I: Current erase count: -1
+I: 00:02:18:681 - Current block: : 604
+I: Current erase count: -1
+I: 00:02:18:954 - Current block: : 605
+I: Current erase count: -1
+I: 00:02:19:219 - Current block: : 606
+I: Current erase count: -1
+I: 00:02:19:484 - Current block: : 607
+I: Current erase count: -1
+I: 00:02:19:750 - Current block: : 608
+I: Current erase count: -1
+I: 00:02:20:016 - Current block: : 609
+I: Current erase count: -1
+I: 00:02:20:282 - Current block: : 610
+I: Current erase count: -1
+I: 00:02:20:545 - Current block: : 611
+I: Current erase count: -1
+I: 00:02:20:811 - Current block: : 612
+I: Current erase count: -1
+I: 00:02:21:076 - Current block: : 613
+I: Current erase count: -1
+I: 00:02:21:343 - Current block: : 614
+I: Current erase count: -1
+I: 00:02:21:607 - Current block: : 615
+I: Current erase count: -1
+I: 00:02:21:873 - Current block: : 616
+I: Current erase count: -1
+I: 00:02:22:138 - Current block: : 617
+I: Current erase count: -1
+I: 00:02:22:406 - Current block: : 618
+I: Current erase count: -1
+I: 00:02:22:670 - Current block: : 619
+I: Current erase count: -1
+I: 00:02:22:936 - Current block: : 620
+I: Current erase count: -1
+I: 00:02:23:201 - Current block: : 621
+I: Current erase count: -1
+I: 00:02:23:468 - Current block: : 622
+I: Current erase count: -1
+I: 00:02:23:732 - Current block: : 623
+I: Current erase count: -1
+I: 00:02:23:998 - Current block: : 624
+I: Current erase count: -1
+I: 00:02:24:263 - Current block: : 625
+I: Current erase count: -1
+I: 00:02:24:530 - Current block: : 626
+I: Current erase count: -1
+I: 00:02:24:793 - Current block: : 627
+I: Current erase count: -1
+I: 00:02:25:059 - Current block: : 628
+I: Current erase count: -1
+I: 00:02:25:324 - Current block: : 629
+I: Current erase count: -1
+I: 00:02:25:590 - Current block: : 630
+I: Current erase count: -1
+I: 00:02:25:856 - Current block: : 631
+I: Current erase count: -1
+I: 00:02:26:121 - Current block: : 632
+I: Current erase count: -1
+I: 00:02:26:387 - Current block: : 633
+I: Current erase count: -1
+I: 00:02:26:652 - Current block: : 634
+I: Current erase count: -1
+I: 00:02:26:918 - Current block: : 635
+I: Current erase count: -1
+I: 00:02:27:184 - Current block: : 636
+I: Current erase count: -1
+I: 00:02:27:449 - Current block: : 637
+I: Current erase count: -1
+I: 00:02:27:715 - Current block: : 638
+I: Current erase count: -1
+I: 00:02:27:980 - Current block: : 639
+I: Current erase count: -1
+I: 00:02:28:246 - Current block: : 640
+I: Current erase count: -1
+I: 00:02:28:511 - Current block: : 641
+I: Current erase count: -1
+I: 00:02:28:776 - Current block: : 642
+I: Current erase count: -1
+I: 00:02:29:040 - Current block: : 643
+I: Current erase count: -1
+I: 00:02:29:307 - Current block: : 644
+I: Current erase count: -1
+I: 00:02:29:572 - Current block: : 645
+I: Current erase count: -1
+I: 00:02:29:838 - Current block: : 646
+I: Current erase count: -1
+I: 00:02:30:102 - Current block: : 647
+I: Current erase count: -1
+I: 00:02:30:369 - Current block: : 648
+I: Current erase count: -1
+I: 00:02:30:634 - Current block: : 649
+I: Current erase count: -1
+I: 00:02:30:900 - Current block: : 650
+I: Current erase count: -1
+I: 00:02:31:164 - Current block: : 651
+I: Current erase count: -1
+I: 00:02:31:431 - Current block: : 652
+I: Current erase count: -1
+I: 00:02:31:696 - Current block: : 653
+I: Current erase count: -1
+I: 00:02:31:962 - Current block: : 654
+I: Current erase count: -1
+I: 00:02:32:226 - Current block: : 655
+I: Current erase count: -1
+I: 00:02:32:493 - Current block: : 656
+I: Current erase count: -1
+I: 00:02:32:758 - Current block: : 657
+I: Current erase count: -1
+I: 00:02:33:024 - Current block: : 658
+I: Current erase count: -1
+I: 00:02:33:287 - Current block: : 659
+I: Current erase count: -1
+I: 00:02:33:552 - Current block: : 660
+I: Current erase count: -1
+I: 00:02:33:819 - Current block: : 661
+I: Current erase count: -1
+I: 00:02:34:084 - Current block: : 662
+I: Current erase count: -1
+I: 00:02:34:349 - Current block: : 663
+I: Current erase count: -1
+I: 00:02:34:615 - Current block: : 664
+I: Current erase count: -1
+I: 00:02:34:881 - Current block: : 665
+I: Current erase count: -1
+I: 00:02:35:146 - Current block: : 666
+I: Current erase count: -1
+I: 00:02:35:411 - Current block: : 667
+I: Current erase count: -1
+I: 00:02:35:676 - Current block: : 668
+I: Current erase count: -1
+I: 00:02:35:944 - Current block: : 669
+I: Current erase count: -1
+I: 00:02:36:209 - Current block: : 670
+I: Current erase count: -1
+I: 00:02:36:474 - Current block: : 671
+I: Current erase count: -1
+I: 00:02:36:740 - Current block: : 672
+I: Current erase count: -1
+I: 00:02:37:006 - Current block: : 673
+I: Current erase count: -1
+I: 00:02:37:271 - Current block: : 674
+I: Current erase count: -1
+I: 00:02:37:535 - Current block: : 675
+I: Current erase count: -1
+I: 00:02:37:801 - Current block: : 676
+I: Current erase count: -1
+I: 00:02:38:066 - Current block: : 677
+I: Current erase count: -1
+I: 00:02:38:332 - Current block: : 678
+I: Current erase count: -1
+I: 00:02:38:597 - Current block: : 679
+I: Current erase count: -1
+I: 00:02:38:863 - Current block: : 680
+I: Current erase count: -1
+I: 00:02:39:127 - Current block: : 681
+I: Current erase count: -1
+I: 00:02:39:394 - Current block: : 682
+I: Current erase count: -1
+I: 00:02:39:658 - Current block: : 683
+I: Current erase count: -1
+I: 00:02:39:924 - Current block: : 684
+I: Current erase count: -1
+I: 00:02:40:188 - Current block: : 685
+I: Current erase count: -1
+I: 00:02:40:456 - Current block: : 686
+I: Current erase count: -1
+I: 00:02:40:720 - Current block: : 687
+I: Current erase count: -1
+I: 00:02:40:986 - Current block: : 688
+I: Current erase count: -1
+I: 00:02:41:250 - Current block: : 689
+I: Current erase count: -1
+I: 00:02:41:517 - Current block: : 690
+I: Current erase count: -1
+I: 00:02:41:780 - Current block: : 691
+I: Current erase count: -1
+I: 00:02:42:046 - Current block: : 692
+I: Current erase count: -1
+I: 00:02:42:311 - Current block: : 693
+I: Current erase count: -1
+I: 00:02:42:576 - Current block: : 694
+I: Current erase count: -1
+I: 00:02:42:842 - Current block: : 695
+I: Current erase count: -1
+I: 00:02:43:107 - Current block: : 696
+I: Current erase count: -1
+I: 00:02:43:372 - Current block: : 697
+I: Current erase count: -1
+I: 00:02:43:638 - Current block: : 698
+I: Current erase count: -1
+I: 00:02:43:903 - Current block: : 699
+I: Current erase count: -1
+I: 00:02:44:168 - Current block: : 700
+I: Current erase count: -1
+I: 00:02:44:433 - Current block: : 701
+I: Current erase count: -1
+I: 00:02:44:699 - Current block: : 702
+I: Current erase count: -1
+I: 00:02:44:965 - Current block: : 703
+I: Current erase count: -1
+I: 00:02:45:231 - Current block: : 704
+I: Current erase count: -1
+I: 00:02:45:496 - Current block: : 705
+I: Current erase count: -1
+I: 00:02:45:761 - Current block: : 706
+I: Current erase count: -1
+I: 00:02:46:025 - Current block: : 707
+I: Current erase count: -1
+I: 00:02:46:291 - Current block: : 708
+I: Current erase count: -1
+I: 00:02:46:556 - Current block: : 709
+I: Current erase count: -1
+I: 00:02:46:822 - Current block: : 710
+I: Current erase count: -1
+I: 00:02:47:086 - Current block: : 711
+I: Current erase count: -1
+I: 00:02:47:353 - Current block: : 712
+I: Current erase count: -1
+I: 00:02:47:618 - Current block: : 713
+I: Current erase count: -1
+I: 00:02:47:883 - Current block: : 714
+I: Current erase count: -1
+I: 00:02:48:147 - Current block: : 715
+I: Current erase count: -1
+I: 00:02:48:414 - Current block: : 716
+I: Current erase count: -1
+I: 00:02:48:678 - Current block: : 717
+I: Current erase count: -1
+I: 00:02:48:944 - Current block: : 718
+I: Current erase count: -1
+I: 00:02:49:208 - Current block: : 719
+I: Current erase count: -1
+I: 00:02:49:476 - Current block: : 720
+I: Current erase count: -1
+I: 00:02:49:740 - Current block: : 721
+I: Current erase count: -1
+I: 00:02:50:006 - Current block: : 722
+I: Current erase count: -1
+I: 00:02:50:269 - Current block: : 723
+I: Current erase count: -1
+I: 00:02:50:535 - Current block: : 724
+I: Current erase count: -1
+I: 00:02:50:800 - Current block: : 725
+I: Current erase count: -1
+I: 00:02:51:066 - Current block: : 726
+I: Current erase count: -1
+I: 00:02:51:331 - Current block: : 727
+I: Current erase count: -1
+I: 00:02:51:596 - Current block: : 728
+I: Current erase count: -1
+I: 00:02:51:862 - Current block: : 729
+I: Current erase count: -1
+I: 00:02:52:127 - Current block: : 730
+I: Current erase count: -1
+I: 00:02:52:392 - Current block: : 731
+I: Current erase count: -1
+I: 00:02:52:657 - Current block: : 732
+I: Current erase count: -1
+I: 00:02:52:923 - Current block: : 733
+I: Current erase count: -1
+I: 00:02:53:188 - Current block: : 734
+I: Current erase count: -1
+I: 00:02:53:453 - Current block: : 735
+I: Current erase count: -1
+I: 00:02:53:718 - Current block: : 736
+I: Current erase count: -1
+I: 00:02:53:987 - Current block: : 737
+I: Current erase count: -1
+I: 00:02:54:252 - Current block: : 738
+I: Current erase count: -1
+I: 00:02:54:516 - Current block: : 739
+I: Current erase count: -1
+I: 00:02:54:781 - Current block: : 740
+I: Current erase count: -1
+I: 00:02:55:046 - Current block: : 741
+I: Current erase count: -1
+I: 00:02:55:319 - Current block: : 742
+I: Current erase count: -1
+I: 00:02:55:583 - Current block: : 743
+I: Current erase count: -1
+I: 00:02:55:849 - Current block: : 744
+I: Current erase count: -1
+I: 00:02:56:113 - Current block: : 745
+I: Current erase count: -1
+I: 00:02:56:380 - Current block: : 746
+I: Current erase count: -1
+I: 00:02:56:644 - Current block: : 747
+I: Current erase count: -1
+I: 00:02:56:909 - Current block: : 748
+I: Current erase count: -1
+I: 00:02:57:174 - Current block: : 749
+I: Current erase count: -1
+I: 00:02:57:440 - Current block: : 750
+I: Current erase count: -1
+I: 00:02:57:704 - Current block: : 751
+I: Current erase count: -1
+I: 00:02:57:969 - Current block: : 752
+I: Current erase count: -1
+I: 00:02:58:234 - Current block: : 753
+I: Current erase count: -1
+I: 00:02:58:501 - Current block: : 754
+I: Current erase count: -1
+I: 00:02:58:765 - Current block: : 755
+I: Current erase count: -1
+I: 00:02:59:030 - Current block: : 756
+I: Current erase count: -1
+I: 00:02:59:294 - Current block: : 757
+I: Current erase count: -1
+I: 00:02:59:560 - Current block: : 758
+I: Current erase count: -1
+I: 00:02:59:825 - Current block: : 759
+I: Current erase count: -1
+I: 00:03:00:090 - Current block: : 760
+I: Current erase count: -1
+I: 00:03:00:355 - Current block: : 761
+I: Current erase count: -1
+I: 00:03:00:620 - Current block: : 762
+I: Current erase count: -1
+I: 00:03:00:885 - Current block: : 763
+I: Current erase count: -1
+I: 00:03:01:150 - Current block: : 764
+I: Current erase count: -1
+I: 00:03:01:415 - Current block: : 765
+I: Current erase count: -1
+I: 00:03:01:680 - Current block: : 766
+I: Current erase count: -1
+I: 00:03:01:946 - Current block: : 767
+I: Current erase count: -1
+I: 00:03:02:211 - Current block: : 768
+I: Current erase count: -1
+I: 00:03:02:476 - Current block: : 769
+I: Current erase count: -1
+I: 00:03:02:741 - Current block: : 770
+I: Current erase count: -1
+I: 00:03:03:004 - Current block: : 771
+I: Current erase count: -1
+I: 00:03:03:272 - Current block: : 772
+I: Current erase count: -1
+I: 00:03:03:536 - Current block: : 773
+I: Current erase count: -1
+I: 00:03:03:802 - Current block: : 774
+I: Current erase count: -1
+I: 00:03:04:066 - Current block: : 775
+I: Current erase count: -1
+I: 00:03:04:333 - Current block: : 776
+I: Current erase count: -1
+I: 00:03:04:597 - Current block: : 777
+I: Current erase count: -1
+I: 00:03:04:863 - Current block: : 778
+I: Current erase count: -1
+I: 00:03:05:127 - Current block: : 779
+I: Current erase count: -1
+I: 00:03:05:393 - Current block: : 780
+I: Current erase count: -1
+I: 00:03:05:658 - Current block: : 781
+I: Current erase count: -1
+I: 00:03:05:923 - Current block: : 782
+I: Current erase count: -1
+I: 00:03:06:187 - Current block: : 783
+I: Current erase count: -1
+I: 00:03:06:454 - Current block: : 784
+I: Current erase count: -1
+I: 00:03:06:718 - Current block: : 785
+I: Current erase count: -1
+I: 00:03:06:984 - Current block: : 786
+I: Current erase count: -1
+I: 00:03:07:247 - Current block: : 787
+I: Current erase count: -1
+I: 00:03:07:512 - Current block: : 788
+I: Current erase count: -1
+I: 00:03:07:778 - Current block: : 789
+I: Current erase count: -1
+I: 00:03:08:043 - Current block: : 790
+I: Current erase count: -1
+I: 00:03:08:308 - Current block: : 791
+I: Current erase count: -1
+I: 00:03:08:573 - Current block: : 792
+I: Current erase count: -1
+I: 00:03:08:838 - Current block: : 793
+I: Current erase count: -1
+I: 00:03:09:103 - Current block: : 794
+I: Current erase count: -1
+I: 00:03:09:367 - Current block: : 795
+I: Current erase count: -1
+I: 00:03:09:633 - Current block: : 796
+I: Current erase count: -1
+I: 00:03:09:899 - Current block: : 797
+I: Current erase count: -1
+I: 00:03:10:164 - Current block: : 798
+I: Current erase count: -1
+I: 00:03:10:429 - Current block: : 799
+I: Current erase count: -1
+I: 00:03:10:694 - Current block: : 800
+I: Current erase count: -1
+I: 00:03:10:960 - Current block: : 801
+I: Current erase count: -1
+I: 00:03:11:225 - Current block: : 802
+I: Current erase count: -1
+I: 00:03:11:488 - Current block: : 803
+I: Current erase count: -1
+I: 00:03:11:754 - Current block: : 804
+I: Current erase count: -1
+I: 00:03:12:019 - Current block: : 805
+I: Current erase count: -1
+I: 00:03:12:287 - Current block: : 806
+I: Current erase count: -1
+I: 00:03:12:551 - Current block: : 807
+I: Current erase count: -1
+I: 00:03:12:817 - Current block: : 808
+I: Current erase count: -1
+I: 00:03:13:081 - Current block: : 809
+I: Current erase count: -1
+I: 00:03:13:347 - Current block: : 810
+I: Current erase count: -1
+I: 00:03:13:611 - Current block: : 811
+I: Current erase count: -1
+I: 00:03:13:877 - Current block: : 812
+I: Current erase count: -1
+I: 00:03:14:141 - Current block: : 813
+I: Current erase count: -1
+I: 00:03:14:408 - Current block: : 814
+I: Current erase count: -1
+I: 00:03:14:672 - Current block: : 815
+I: Current erase count: -1
+I: 00:03:14:938 - Current block: : 816
+I: Current erase count: -1
+I: 00:03:15:202 - Current block: : 817
+I: Current erase count: -1
+I: 00:03:15:468 - Current block: : 818
+I: Current erase count: -1
+I: 00:03:15:732 - Current block: : 819
+I: Current erase count: -1
+I: 00:03:15:997 - Current block: : 820
+I: Current erase count: -1
+I: 00:03:16:262 - Current block: : 821
+I: Current erase count: -1
+I: 00:03:16:527 - Current block: : 822
+I: Current erase count: -1
+I: 00:03:16:793 - Current block: : 823
+I: Current erase count: -1
+I: 00:03:17:059 - Current block: : 824
+I: Current erase count: -1
+I: 00:03:17:324 - Current block: : 825
+I: Current erase count: -1
+I: 00:03:17:589 - Current block: : 826
+I: Current erase count: -1
+I: 00:03:17:854 - Current block: : 827
+I: Current erase count: -1
+I: 00:03:18:119 - Current block: : 828
+I: Current erase count: -1
+I: 00:03:18:384 - Current block: : 829
+I: Current erase count: -1
+I: 00:03:18:649 - Current block: : 830
+I: Current erase count: -1
+I: 00:03:18:914 - Current block: : 831
+I: Current erase count: -1
+I: 00:03:19:180 - Current block: : 832
+I: Current erase count: -1
+I: 00:03:19:445 - Current block: : 833
+I: Current erase count: -1
+I: 00:03:19:710 - Current block: : 834
+I: Current erase count: -1
+I: 00:03:19:973 - Current block: : 835
+I: Current erase count: -1
+I: 00:03:20:239 - Current block: : 836
+I: Current erase count: -1
+I: 00:03:20:503 - Current block: : 837
+I: Current erase count: -1
+I: 00:03:20:769 - Current block: : 838
+I: Current erase count: -1
+I: 00:03:21:033 - Current block: : 839
+I: Current erase count: -1
+I: 00:03:21:300 - Current block: : 840
+I: Current erase count: -1
+I: 00:03:21:565 - Current block: : 841
+I: Current erase count: -1
+I: 00:03:21:830 - Current block: : 842
+I: Current erase count: -1
+I: 00:03:22:094 - Current block: : 843
+I: Current erase count: -1
+I: 00:03:22:360 - Current block: : 844
+I: Current erase count: -1
+I: 00:03:22:625 - Current block: : 845
+I: Current erase count: -1
+I: 00:03:22:890 - Current block: : 846
+I: Current erase count: -1
+I: 00:03:23:154 - Current block: : 847
+I: Current erase count: -1
+I: 00:03:23:421 - Current block: : 848
+I: Current erase count: -1
+I: 00:03:23:685 - Current block: : 849
+I: Current erase count: -1
+I: 00:03:23:951 - Current block: : 850
+I: Current erase count: -1
+I: 00:03:24:214 - Current block: : 851
+I: Current erase count: -1
+I: 00:03:24:479 - Current block: : 852
+I: Current erase count: -1
+I: 00:03:24:745 - Current block: : 853
+I: Current erase count: -1
+I: 00:03:25:010 - Current block: : 854
+I: Current erase count: -1
+I: 00:03:25:274 - Current block: : 855
+I: Current erase count: -1
+I: 00:03:25:539 - Current block: : 856
+I: Current erase count: -1
+I: 00:03:25:805 - Current block: : 857
+I: Current erase count: -1
+I: 00:03:26:070 - Current block: : 858
+I: Current erase count: -1
+I: 00:03:26:334 - Current block: : 859
+I: Current erase count: -1
+I: 00:03:26:600 - Current block: : 860
+I: Current erase count: -1
+I: 00:03:26:865 - Current block: : 861
+I: Current erase count: -1
+I: 00:03:27:130 - Current block: : 862
+I: Current erase count: -1
+I: 00:03:27:394 - Current block: : 863
+I: Current erase count: -1
+I: 00:03:27:660 - Current block: : 864
+I: Current erase count: -1
+I: 00:03:27:925 - Current block: : 865
+I: Current erase count: -1
+I: 00:03:28:190 - Current block: : 866
+I: Current erase count: -1
+I: 00:03:28:453 - Current block: : 867
+I: Current erase count: -1
+I: 00:03:28:719 - Current block: : 868
+I: Current erase count: -1
+I: 00:03:28:983 - Current block: : 869
+I: Current erase count: -1
+I: 00:03:29:249 - Current block: : 870
+I: Current erase count: -1
+I: 00:03:29:513 - Current block: : 871
+I: Current erase count: -1
+I: 00:03:29:779 - Current block: : 872
+I: Current erase count: -1
+I: 00:03:30:043 - Current block: : 873
+I: Current erase count: -1
+I: 00:03:30:311 - Current block: : 874
+I: Current erase count: -1
+I: 00:03:30:575 - Current block: : 875
+I: Current erase count: -1
+I: 00:03:30:840 - Current block: : 876
+I: Current erase count: -1
+I: 00:03:31:105 - Current block: : 877
+I: Current erase count: -1
+I: 00:03:31:377 - Current block: : 878
+I: Current erase count: -1
+I: 00:03:31:641 - Current block: : 879
+I: Current erase count: -1
+I: 00:03:31:907 - Current block: : 880
+I: Current erase count: -1
+I: 00:03:32:171 - Current block: : 881
+I: Current erase count: -1
+I: 00:03:32:437 - Current block: : 882
+I: Current erase count: -1
+I: 00:03:32:700 - Current block: : 883
+I: Current erase count: -1
+I: 00:03:32:965 - Current block: : 884
+I: Current erase count: -1
+I: 00:03:33:230 - Current block: : 885
+I: Current erase count: -1
+I: 00:03:33:495 - Current block: : 886
+I: Current erase count: -1
+I: 00:03:33:760 - Current block: : 887
+I: Current erase count: -1
+I: 00:03:34:025 - Current block: : 888
+I: Current erase count: -1
+I: 00:03:34:290 - Current block: : 889
+I: Current erase count: -1
+I: 00:03:34:555 - Current block: : 890
+I: Current erase count: -1
+I: 00:03:34:820 - Current block: : 891
+I: Current erase count: -1
+I: 00:03:35:085 - Current block: : 892
+I: Current erase count: -1
+I: 00:03:35:350 - Current block: : 893
+I: Current erase count: -1
+I: 00:03:35:614 - Current block: : 894
+I: Current erase count: -1
+I: 00:03:35:879 - Current block: : 895
+I: Current erase count: -1
+I: 00:03:36:144 - Current block: : 896
+I: Current erase count: -1
+I: 00:03:36:409 - Current block: : 897
+I: Current erase count: -1
+I: 00:03:36:673 - Current block: : 898
+I: Current erase count: -1
+I: 00:03:36:936 - Current block: : 899
+I: Current erase count: -1
+I: 00:03:37:202 - Current block: : 900
+I: Current erase count: -1
+I: 00:03:37:466 - Current block: : 901
+I: Current erase count: -1
+I: 00:03:37:732 - Current block: : 902
+I: Current erase count: -1
+I: 00:03:37:996 - Current block: : 903
+I: Current erase count: -1
+I: 00:03:38:261 - Current block: : 904
+I: Current erase count: -1
+I: 00:03:38:526 - Current block: : 905
+I: Current erase count: -1
+I: 00:03:38:791 - Current block: : 906
+I: Current erase count: -1
+I: 00:03:39:054 - Current block: : 907
+I: Current erase count: -1
+I: 00:03:39:321 - Current block: : 908
+I: Current erase count: -1
+I: 00:03:39:586 - Current block: : 909
+I: Current erase count: -1
+I: 00:03:39:851 - Current block: : 910
+I: Current erase count: -1
+I: 00:03:40:115 - Current block: : 911
+I: Current erase count: -1
+I: 00:03:40:380 - Current block: : 912
+I: Current erase count: -1
+I: 00:03:40:644 - Current block: : 913
+I: Current erase count: -1
+I: 00:03:40:910 - Current block: : 914
+I: Current erase count: -1
+I: 00:03:41:172 - Current block: : 915
+I: Current erase count: -1
+I: 00:03:41:437 - Current block: : 916
+I: Current erase count: -1
+I: 00:03:41:703 - Current block: : 917
+I: Current erase count: -1
+I: 00:03:41:967 - Current block: : 918
+I: Current erase count: -1
+I: 00:03:42:231 - Current block: : 919
+I: Current erase count: -1
+I: 00:03:42:496 - Current block: : 920
+I: Current erase count: -1
+I: 00:03:42:761 - Current block: : 921
+I: Current erase count: -1
+I: 00:03:43:026 - Current block: : 922
+I: Current erase count: -1
+I: 00:03:43:290 - Current block: : 923
+I: Current erase count: -1
+I: 00:03:43:555 - Current block: : 924
+I: Current erase count: -1
+I: 00:03:43:820 - Current block: : 925
+I: Current erase count: -1
+I: 00:03:44:085 - Current block: : 926
+I: Current erase count: -1
+I: 00:03:44:350 - Current block: : 927
+I: Current erase count: -1
+I: 00:03:44:614 - Current block: : 928
+I: Current erase count: -1
+I: 00:03:44:879 - Current block: : 929
+I: Current erase count: -1
+I: 00:03:45:144 - Current block: : 930
+I: Current erase count: -1
+I: 00:03:45:407 - Current block: : 931
+I: Current erase count: -1
+I: File /NAND:/one_eigth_file.txt written successfully
+
+I: 00:03:45:686 - Current block: : 932
+I: Current erase count: -1
+I: 00:03:45:955 - Current block: : 933
+I: Current erase count: -1
+I: 00:03:46:219 - Current block: : 934
+I: Current erase count: -1
+I: 00:03:46:484 - Current block: : 935
+I: Current erase count: -1
+I: 00:03:46:750 - Current block: : 936
+I: Current erase count: -1
+I: 00:03:47:014 - Current block: : 937
+I: Current erase count: -1
+I: 00:03:47:277 - Current block: : 938
+I: Current erase count: -1
+I: 00:03:47:542 - Current block: : 939
+I: Current erase count: -1
+I: 00:03:47:806 - Current block: : 940
+I: Current erase count: -1
+I: 00:03:48:072 - Current block: : 941
+I: Current erase count: -1
+I: 00:03:48:336 - Current block: : 942
+I: Current erase count: -1
+I: 00:03:48:601 - Current block: : 943
+I: Current erase count: -1
+I: 00:03:48:865 - Current block: : 944
+I: Current erase count: -1
+I: 00:03:49:131 - Current block: : 945
+I: Current erase count: -1
+I: 00:03:49:395 - Current block: : 946
+I: Current erase count: -1
+I: 00:03:49:660 - Current block: : 947
+I: Current erase count: -1
+I: 00:03:49:924 - Current block: : 948
+I: Current erase count: -1
+I: 00:03:50:190 - Current block: : 949
+I: Current erase count: -1
+I: 00:03:50:453 - Current block: : 950
+I: Current erase count: -1
+I: 00:03:50:718 - Current block: : 951
+I: Current erase count: -1
+I: 00:03:50:983 - Current block: : 952
+I: Current erase count: -1
+I: 00:03:51:248 - Current block: : 953
+I: Current erase count: -1
+I: 00:03:51:511 - Current block: : 954
+I: Current erase count: -1
+I: 00:03:51:776 - Current block: : 955
+I: Current erase count: -1
+I: 00:03:52:040 - Current block: : 956
+I: Current erase count: -1
+I: 00:03:52:305 - Current block: : 957
+I: Current erase count: -1
+I: 00:03:52:569 - Current block: : 958
+I: Current erase count: -1
+I: 00:03:52:834 - Current block: : 959
+I: Current erase count: -1
+I: 00:03:53:099 - Current block: : 960
+I: Current erase count: -1
+I: 00:03:53:363 - Current block: : 961
+I: Current erase count: -1
+I: 00:03:53:629 - Current block: : 962
+I: Current erase count: -1
+I: 00:03:53:893 - Current block: : 963
+I: Current erase count: -1
+I: 00:03:54:158 - Current block: : 964
+I: Current erase count: -1
+I: 00:03:54:422 - Current block: : 965
+I: Current erase count: -1
+I: 00:03:54:686 - Current block: : 966
+I: Current erase count: -1
+I: 00:03:54:951 - Current block: : 967
+I: Current erase count: -1
+I: 00:03:55:216 - Current block: : 968
+I: Current erase count: -1
+I: 00:03:55:480 - Current block: : 969
+I: Current erase count: -1
+I: 00:03:55:743 - Current block: : 970
+I: Current erase count: -1
+I: 00:03:56:009 - Current block: : 971
+I: Current erase count: -1
+I: 00:03:56:273 - Current block: : 972
+I: Current erase count: -1
+I: 00:03:56:538 - Current block: : 973
+I: Current erase count: -1
+I: 00:03:56:801 - Current block: : 974
+I: Current erase count: -1
+I: 00:03:57:067 - Current block: : 975
+I: Current erase count: -1
+I: 00:03:57:330 - Current block: : 976
+I: Current erase count: -1
+I: 00:03:57:595 - Current block: : 977
+I: Current erase count: -1
+I: 00:03:57:858 - Current block: : 978
+I: Current erase count: -1
+I: 00:03:58:125 - Current block: : 979
+I: Current erase count: -1
+I: 00:03:58:389 - Current block: : 980
+I: Current erase count: -1
+I: 00:03:58:654 - Current block: : 981
+I: Current erase count: -1
+I: 00:03:58:917 - Current block: : 982
+I: Current erase count: -1
+I: 00:03:59:182 - Current block: : 983
+I: Current erase count: -1
+I: 00:03:59:446 - Current block: : 984
+I: Current erase count: -1
+I: 00:03:59:711 - Current block: : 985
+I: Current erase count: -1
+I: 00:03:59:974 - Current block: : 986
+I: Current erase count: -1
+I: 00:04:00:238 - Current block: : 987
+I: Current erase count: -1
+I: 00:04:00:504 - Current block: : 988
+I: Current erase count: -1
+I: 00:04:00:768 - Current block: : 989
+I: Current erase count: -1
+I: 00:04:01:032 - Current block: : 990
+I: Current erase count: -1
+I: 00:04:01:296 - Current block: : 991
+I: Current erase count: -1
+I: 00:04:01:561 - Current block: : 992
+I: Current erase count: -1
+I: 00:04:01:826 - Current block: : 993
+I: Current erase count: -1
+I: 00:04:02:089 - Current block: : 994
+I: Current erase count: -1
+I: 00:04:02:354 - Current block: : 995
+I: Current erase count: -1
+I: 00:04:02:620 - Current block: : 996
+I: Current erase count: -1
+I: 00:04:02:885 - Current block: : 997
+I: Current erase count: -1
+I: 00:04:03:149 - Current block: : 998
+I: Current erase count: -1
+I: 00:04:03:413 - Current block: : 999
+I: Current erase count: -1
+I: 00:04:03:678 - Current block: : 1000
+I: Current erase count: -1
+I: 00:04:03:942 - Current block: : 1001
+I: Current erase count: -1
+I: 00:04:04:205 - Current block: : 1002
+I: Current erase count: -1
+I: 00:04:04:470 - Current block: : 1003
+I: Current erase count: -1
+I: 00:04:04:734 - Current block: : 1004
+I: Current erase count: -1
+I: 00:04:05:000 - Current block: : 1005
+I: Current erase count: -1
+I: 00:04:05:263 - Current block: : 1006
+I: Current erase count: -1
+I: 00:04:05:528 - Current block: : 1007
+I: Current erase count: -1
+I: 00:04:05:792 - Current block: : 1008
+I: Current erase count: -1
+I: 00:04:06:058 - Current block: : 1009
+I: Current erase count: -1
+I: 00:04:06:321 - Current block: : 1010
+I: Current erase count: -1
+I: 00:04:06:586 - Current block: : 1011
+I: Current erase count: -1
+I: 00:04:06:849 - Current block: : 1012
+I: Current erase count: -1
+I: 00:04:07:116 - Current block: : 1013
+I: Current erase count: -1
+I: 00:04:07:379 - Current block: : 1014
+I: Current erase count: -1
+I: 00:04:07:644 - Current block: : 1015
+I: Current erase count: -1
+I: 00:04:07:908 - Current block: : 1016
+I: Current erase count: -1
+I: 00:04:08:173 - Current block: : 1017
+I: Current erase count: -1
+I: 00:04:08:435 - Current block: : 1018
+I: Current erase count: -1
+I: 00:04:08:700 - Current block: : 1019
+I: Current erase count: -1
+I: 00:04:08:964 - Current block: : 1020
+I: Current erase count: -1
+I: 00:04:09:229 - Current block: : 1021
+I: Current erase count: -1
+I: 00:04:09:494 - Current block: : 1022
+I: Current erase count: -1
+I: 00:04:09:758 - Current block: : 1023
+I: Current erase count: -1
+I: 00:04:10:023 - Current block: : 1024
+I: Current erase count: -1
+I: 00:04:10:287 - Current block: : 1025
+I: Current erase count: -1
+I: 00:04:10:550 - Current block: : 1026
+I: Current erase count: -1
+I: 00:04:10:814 - Current block: : 1027
+I: Current erase count: -1
+I: 00:04:11:077 - Current block: : 1028
+I: Current erase count: -1
+I: 00:04:11:341 - Current block: : 1029
+I: Current erase count: -1
+I: 00:04:11:606 - Current block: : 1030
+I: Current erase count: -1
+I: 00:04:11:872 - Current block: : 1031
+I: Current erase count: -1
+I: 00:04:12:138 - Current block: : 1032
+I: Current erase count: -1
+I: 00:04:12:401 - Current block: : 1033
+I: Current erase count: -1
+I: 00:04:12:663 - Current block: : 1034
+I: Current erase count: -1
+I: 00:04:12:928 - Current block: : 1035
+I: Current erase count: -1
+I: 00:04:13:192 - Current block: : 1036
+I: Current erase count: -1
+I: 00:04:13:456 - Current block: : 1037
+I: Current erase count: -1
+I: 00:04:13:719 - Current block: : 1038
+I: Current erase count: -1
+I: 00:04:13:985 - Current block: : 1039
+I: Current erase count: -1
+I: 00:04:14:248 - Current block: : 1040
+I: Current erase count: -1
+I: 00:04:14:513 - Current block: : 1041
+I: Current erase count: -1
+I: 00:04:14:775 - Current block: : 1042
+I: Current erase count: -1
+I: 00:04:15:041 - Current block: : 1043
+I: Current erase count: -1
+I: 00:04:15:304 - Current block: : 1044
+I: Current erase count: -1
+I: 00:04:15:569 - Current block: : 1045
+I: Current erase count: -1
+I: 00:04:15:832 - Current block: : 1046
+I: Current erase count: -1
+I: 00:04:16:097 - Current block: : 1047
+I: Current erase count: -1
+I: 00:04:16:360 - Current block: : 1048
+I: Current erase count: -1
+I: 00:04:16:625 - Current block: : 1049
+I: Current erase count: -1
+I: 00:04:16:887 - Current block: : 1050
+I: Current erase count: -1
+I: 00:04:17:151 - Current block: : 1051
+I: Current erase count: -1
+I: 00:04:17:416 - Current block: : 1052
+I: Current erase count: -1
+I: 00:04:17:680 - Current block: : 1053
+I: Current erase count: -1
+I: 00:04:17:944 - Current block: : 1054
+I: Current erase count: -1
+I: 00:04:18:208 - Current block: : 1055
+I: Current erase count: -1
+I: 00:04:18:473 - Current block: : 1056
+I: Current erase count: -1
+I: 00:04:18:737 - Current block: : 1057
+I: Current erase count: -1
+I: 00:04:19:001 - Current block: : 1058
+I: Current erase count: -1
+I: 00:04:19:265 - Current block: : 1059
+I: Current erase count: -1
+I: 00:04:19:530 - Current block: : 1060
+I: Current erase count: -1
+I: 00:04:19:795 - Current block: : 1061
+I: Current erase count: -1
+I: 00:04:20:058 - Current block: : 1062
+I: Current erase count: -1
+I: 00:04:20:323 - Current block: : 1063
+I: Current erase count: -1
+I: 00:04:20:590 - Current block: : 1064
+I: Current erase count: -1
+I: 00:04:20:854 - Current block: : 1065
+I: Current erase count: -1
+I: 00:04:21:117 - Current block: : 1066
+I: Current erase count: -1
+I: 00:04:21:382 - Current block: : 1067
+I: Current erase count: -1
+I: 00:04:21:646 - Current block: : 1068
+I: Current erase count: -1
+I: 00:04:21:918 - Current block: : 1069
+I: Current erase count: -1
+I: 00:04:22:181 - Current block: : 1070
+I: Current erase count: -1
+I: 00:04:22:447 - Current block: : 1071
+I: Current erase count: -1
+I: 00:04:22:711 - Current block: : 1072
+I: Current erase count: -1
+I: 00:04:22:977 - Current block: : 1073
+I: Current erase count: -1
+I: 00:04:23:240 - Current block: : 1074
+I: Current erase count: -1
+I: 00:04:23:505 - Current block: : 1075
+I: Current erase count: -1
+I: 00:04:23:769 - Current block: : 1076
+I: Current erase count: -1
+I: 00:04:24:035 - Current block: : 1077
+I: Current erase count: -1
+I: 00:04:24:299 - Current block: : 1078
+I: Current erase count: -1
+I: 00:04:24:564 - Current block: : 1079
+I: Current erase count: -1
+I: 00:04:24:828 - Current block: : 1080
+I: Current erase count: -1
+I: 00:04:25:095 - Current block: : 1081
+I: Current erase count: -1
+I: 00:04:25:358 - Current block: : 1082
+I: Current erase count: -1
+I: 00:04:25:623 - Current block: : 1083
+I: Current erase count: -1
+I: 00:04:25:887 - Current block: : 1084
+I: Current erase count: -1
+I: 00:04:26:152 - Current block: : 1085
+I: Current erase count: -1
+I: 00:04:26:416 - Current block: : 1086
+I: Current erase count: -1
+I: 00:04:26:681 - Current block: : 1087
+I: Current erase count: -1
+I: 00:04:26:946 - Current block: : 1088
+I: Current erase count: -1
+I: 00:04:27:211 - Current block: : 1089
+I: Current erase count: -1
+I: 00:04:27:476 - Current block: : 1090
+I: Current erase count: -1
+I: 00:04:27:741 - Current block: : 1091
+I: Current erase count: -1
+I: 00:04:28:006 - Current block: : 1092
+I: Current erase count: -1
+I: 00:04:28:270 - Current block: : 1093
+I: Current erase count: -1
+I: 00:04:28:535 - Current block: : 1094
+I: Current erase count: -1
+I: 00:04:28:800 - Current block: : 1095
+I: Current erase count: -1
+I: 00:04:29:064 - Current block: : 1096
+I: Current erase count: -1
+I: 00:04:29:329 - Current block: : 1097
+I: Current erase count: -1
+I: 00:04:29:592 - Current block: : 1098
+I: Current erase count: -1
+I: 00:04:29:859 - Current block: : 1099
+I: Current erase count: -1
+I: 00:04:30:123 - Current block: : 1100
+I: Current erase count: -1
+I: 00:04:30:389 - Current block: : 1101
+I: Current erase count: -1
+I: 00:04:30:653 - Current block: : 1102
+I: Current erase count: -1
+I: 00:04:30:919 - Current block: : 1103
+I: Current erase count: -1
+I: 00:04:31:183 - Current block: : 1104
+I: Current erase count: -1
+I: 00:04:31:448 - Current block: : 1105
+I: Current erase count: -1
+I: 00:04:31:712 - Current block: : 1106
+I: Current erase count: -1
+I: 00:04:31:978 - Current block: : 1107
+I: Current erase count: -1
+I: 00:04:32:243 - Current block: : 1108
+I: Current erase count: -1
+I: 00:04:32:508 - Current block: : 1109
+I: Current erase count: -1
+I: 00:04:32:772 - Current block: : 1110
+I: Current erase count: -1
+I: 00:04:33:037 - Current block: : 1111
+I: Current erase count: -1
+I: 00:04:33:301 - Current block: : 1112
+I: Current erase count: -1
+I: 00:04:33:567 - Current block: : 1113
+I: Current erase count: -1
+I: 00:04:33:830 - Current block: : 1114
+I: Current erase count: -1
+I: 00:04:34:095 - Current block: : 1115
+I: Current erase count: -1
+I: 00:04:34:361 - Current block: : 1116
+I: Current erase count: -1
+I: 00:04:34:626 - Current block: : 1117
+I: Current erase count: -1
+I: 00:04:34:890 - Current block: : 1118
+I: Current erase count: -1
+I: 00:04:35:155 - Current block: : 1119
+I: Current erase count: -1
+I: 00:04:35:421 - Current block: : 1120
+I: Current erase count: -1
+I: 00:04:35:685 - Current block: : 1121
+I: Current erase count: -1
+I: 00:04:35:949 - Current block: : 1122
+I: Current erase count: -1
+I: 00:04:36:214 - Current block: : 1123
+I: Current erase count: -1
+I: 00:04:36:480 - Current block: : 1124
+I: Current erase count: -1
+I: 00:04:36:745 - Current block: : 1125
+I: Current erase count: -1
+I: 00:04:37:010 - Current block: : 1126
+I: Current erase count: -1
+I: 00:04:37:275 - Current block: : 1127
+I: Current erase count: -1
+I: 00:04:37:540 - Current block: : 1128
+I: Current erase count: -1
+I: 00:04:37:805 - Current block: : 1129
+I: Current erase count: -1

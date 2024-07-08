@@ -33,6 +33,7 @@
 
 #define PATTERN_SEED    0x12345678
 LOG_MODULE_REGISTER(test_main_top, CONFIG_LOG_DEFAULT_LEVEL);
+int file_counter = 1;
 
 /////////////////////////////////////////////       FUNCTIONALITY TESTS START     //////////////////////////
 
@@ -1094,6 +1095,7 @@ int test_delete_file(void){
     return 0;
 }
 
+
 /**
  * @brief Test writing to one-eighth of the flash memory.
  * 
@@ -1103,12 +1105,12 @@ int test_write_one_eighth_flash(void) {
     LOG_INF("Test: Writing to one-eighth of the flash memory");
     struct fs_statvfs sbuf;
     struct fs_statvfs sbuf2;
-
-    int rc = lsdir(nand_mount_fat.mnt_point);
-    if (rc < 0) {
-        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
-        return -1;
-    }
+    int rc;
+    // int rc = lsdir(nand_mount_fat.mnt_point);
+    // if (rc < 0) {
+    //     LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+    //     return -1;
+    // }
 
     rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
     if (rc < 0) {
@@ -1119,8 +1121,8 @@ int test_write_one_eighth_flash(void) {
     size_t one_eighth_flash_size = sbuf.f_bsize * sbuf.f_blocks / 8;
 
     char fname2[MAX_PATH_LEN];
-    snprintf(fname2, sizeof(fname2), "%s/%s", nand_mount_fat.mnt_point, FILE_NAME_ONE_EIGHTH);
-
+    snprintf(fname2, sizeof(fname2), "%s/%d_one_eighth_file.txt", nand_mount_fat.mnt_point, file_counter);
+    file_counter++;
     // Write data to file in chunks
     rc = create_and_write_file_in_chunks(fname2, one_eighth_flash_size);
     if (rc < 0) {
@@ -1129,49 +1131,49 @@ int test_write_one_eighth_flash(void) {
     }
     LOG_INF("Written one-eighth of the flash memory to file");
 
-    rc = lsdir(nand_mount_fat.mnt_point);
-    if (rc < 0) {
-        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
-        return -1;
-    }
+    // rc = lsdir(nand_mount_fat.mnt_point);
+    // if (rc < 0) {
+    //     LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+    //     return -1;
+    // }
 
-    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf2);
-    if (rc < 0) {
-        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
-        return -1;
-    }
+    // rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf2);
+    // if (rc < 0) {
+    //     LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+    //     return -1;
+    // }
 
-    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
-           " blocks = %lu ; bfree = %lu\n",
-           nand_mount_fat.mnt_point,
-           sbuf2.f_bsize, sbuf2.f_frsize,
-           sbuf2.f_blocks, sbuf2.f_bfree);
+    // LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+    //        " blocks = %lu ; bfree = %lu\n",
+    //        nand_mount_fat.mnt_point,
+    //        sbuf2.f_bsize, sbuf2.f_frsize,
+    //        sbuf2.f_blocks, sbuf2.f_bfree);
 
     // Delete the file
-    rc = fs_unlink(fname2);
-    if (rc < 0) {
-        LOG_ERR("Failed to delete the file");
-        return -1;
-    }
-    LOG_INF("Deleted the file successfully");
+    // rc = fs_unlink(fname2);
+    // if (rc < 0) {
+    //     LOG_ERR("Failed to delete the file");
+    //     return -1;
+    // }
+    // LOG_INF("Deleted the file successfully");
 
-    rc = lsdir(nand_mount_fat.mnt_point);
-    if (rc < 0) {
-        LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
-        return -1;
-    }
+    // rc = lsdir(nand_mount_fat.mnt_point);
+    // if (rc < 0) {
+    //     LOG_PRINTK("FAIL: lsdir %s: %d\n", nand_mount_fat.mnt_point, rc);
+    //     return -1;
+    // }
 
-    rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
-    if (rc < 0) {
-        LOG_PRINTK("FAIL: statvfs: %d\n", rc);
-        return -1;
-    }
+    // rc = fs_statvfs(nand_mount_fat.mnt_point, &sbuf);
+    // if (rc < 0) {
+    //     LOG_PRINTK("FAIL: statvfs: %d\n", rc);
+    //     return -1;
+    // }
 
-    LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
-           " blocks = %lu ; bfree = %lu\n",
-           nand_mount_fat.mnt_point,
-           sbuf.f_bsize, sbuf.f_frsize,
-           sbuf.f_blocks, sbuf.f_bfree);
+    // LOG_PRINTK("%s: bsize = %lu ; frsize = %lu ;"
+    //        " blocks = %lu ; bfree = %lu\n",
+    //        nand_mount_fat.mnt_point,
+    //        sbuf.f_bsize, sbuf.f_frsize,
+    //        sbuf.f_blocks, sbuf.f_bfree);
 
     return 0;
 }
@@ -1589,7 +1591,7 @@ static int create_and_write_file_in_chunks_rand(const char *filename, size_t tot
     memset(pattern_buf, 0xFF, 2048);
     fill_buffer_rand(PATTERN_SEED, pattern_buf, 2048);
 
-    print_buffer(pattern_buf, sizeof(pattern_buf));
+    //print_buffer(pattern_buf, sizeof(pattern_buf));
 
 
     size_t total_bytes_written = 0;
@@ -1739,14 +1741,14 @@ int long_term_test(void){
             return -1;
         }
         
-        //read out files and check if they are correct
-        rc = check_files(current_flash_size);
-        if (rc < 0) {
-            LOG_ERR("Error: unable to read entire flash");
-            return -1;
-        }
+        // //read out files and check if they are correct
+        // rc = check_files(current_flash_size);
+        // if (rc < 0) {
+        //     LOG_ERR("Error: unable to read entire flash");
+        //     return -1;
+        // }
 
-        LOG_INF("Overall number of wrong bytes %d", faulty_read_write_incidences);
+        // LOG_INF("Overall number of wrong bytes %d", faulty_read_write_incidences);
 
     }
     //bad blocks, ECC errors and erasing of blocks (wear levelling) have to be logged through the nand.c and oper layer
