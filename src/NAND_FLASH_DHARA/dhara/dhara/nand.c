@@ -38,16 +38,15 @@ uint8_t spare_area_buffer[8];
 //defined in 
 
 /** @brief waiting for finished transaction
- * wait at least the expected time and then check for the status register
+ * check repeatedly for the status register
  *
  * defined in the nand.c between nand_oper and dhara
  * used in the top layer and nand.c
  *
- * @param expected_operation_time_us
  * @param[out] status_out status register content of current transaction
  * @return 0 on success, -1 if the read out of the register failed.
  */
-static int wait_for_ready_nand(uint32_t expected_operation_time_us, uint8_t *status_out)
+static int wait_for_ready_nand(uint8_t *status_out)
 {
     while (true) {
         uint8_t status;
@@ -94,7 +93,7 @@ static int read_page_and_wait(struct nand_flash_device_t *device, uint32_t page,
         return -1;
     }
 
-    return wait_for_ready_nand(device -> read_page_delay_us, status_out);
+    return wait_for_ready_nand(status_out);
 }
 
 
@@ -107,9 +106,7 @@ static int read_page_and_wait(struct nand_flash_device_t *device, uint32_t page,
  * status by calling `wait_for_ready_nand`.
  * 
  * The function ensures that the programming operation is executed correctly by monitoring
- * the NAND flash device's status register after the operation. It makes use of the delay
- * specified in `device->program_page_delay_us` to determine the wait period for the device
- * to become ready.
+ * the NAND flash device's status register after the operation.
  * 
  * @param device A pointer to the nand_flash_device_t structure representing the NAND flash device.
  * @param page The page number where the data will be programmed in the NAND flash.
@@ -128,7 +125,7 @@ static int program_execute_and_wait(struct nand_flash_device_t *device, uint32_t
         return -1;
     }
 
-    return wait_for_ready_nand( device -> program_page_delay_us, status_out);
+    return wait_for_ready_nand(status_out);
 }
 
 
@@ -306,7 +303,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    ret = wait_for_ready_nand(dev->erase_block_delay_us, &status);
+    ret = wait_for_ready_nand( &status);
     if (ret != 0) {
         my_nand_handle->log("Failed to wait for ready, error",true ,true ,ret);
         return -1;

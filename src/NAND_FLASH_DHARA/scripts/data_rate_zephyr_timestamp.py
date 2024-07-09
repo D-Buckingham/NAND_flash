@@ -45,15 +45,15 @@ def plot_time_differences_over_time(time_differences, timestamps, file_label, ax
 # Function to plot data rate
 def plot_data_rate(data_rates, file_label, ax):
     ax.plot(range(len(data_rates)), data_rates, marker='o', linestyle='-')
-    ax.set_title(f'Data Rate Over Time (SPI 2 MHz)')
+    ax.set_title(f'Data Rate Over Time (SPI 16 MHz)')
     ax.set_xlabel('Blocks')
     ax.set_ylabel('Data Rate (B/s)')
-    ax.set_ylim(0, 1000000)
+    ax.set_ylim(0, 1200000)
     ax.grid(True)
 
 # Main function to execute the script for a single file
 def main():
-    file_path = 'log_data_2MHz_SPI.txt'  # Replace with your specific log file path
+    file_path = 'log_data_16MHz_SPI.txt'  # Replace with your specific log file path
     block_size = 64 * 2056  # bytes
 
     fig_hist, ax_hist = plt.subplots(figsize=(5, 5))

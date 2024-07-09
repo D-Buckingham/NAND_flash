@@ -36,9 +36,6 @@ typedef struct nand_flash_device_t{
     struct dhara_map dhara_map;
     struct dhara_nand dhara_nand;
     uint8_t *work_buffer;
-    uint32_t read_page_delay_us;
-    uint32_t erase_block_delay_us;
-    uint32_t program_page_delay_us;
     struct k_sem mutex;  // Zephyr semaphore
 }nand_flash_device_t;
 
@@ -64,7 +61,7 @@ extern nand_flash_device_t *device_handle;
  * @param[out] status_out status register content of current transaction
  * @return 0 on success, -1 if the read out of the register failed.
  */
-int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out);
+int wait_for_ready(uint8_t *status_out);
 
 
 

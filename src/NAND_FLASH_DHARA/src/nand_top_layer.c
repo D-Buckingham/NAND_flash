@@ -48,9 +48,6 @@ static int nand_winbond_init(nand_flash_device_t *dev)
     }
 
     uint16_t device_id = (device_id_buf[0] << 8) + device_id_buf[1];
-    dev->read_page_delay_us = 10;
-    dev->erase_block_delay_us = 2500;
-    dev->program_page_delay_us = 320;
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
     dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
 
@@ -107,8 +104,6 @@ static int nand_alliance_init(nand_flash_device_t *dev)
         return -1;
     }
     //setting up the device
-    dev->erase_block_delay_us = 3000;
-    dev->program_page_delay_us = 630;
 
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
     dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
@@ -116,21 +111,18 @@ static int nand_alliance_init(nand_flash_device_t *dev)
     case ALLIANCE_DI_25: //AS5F31G04SND-08LIN
         LOG_INF("Automatic recognition of AS5F31G04SND-08LIN flash");
         dev->dhara_nand.num_blocks = 1024;
-        dev->read_page_delay_us = 60;
         break;
     case ALLIANCE_DI_2E: //AS5F32G04SND-08LIN
         LOG_INF("Automatic recognition of AS5F32G04SND-08LIN flash");
     case ALLIANCE_DI_8E: //AS5F12G04SND-10LIN
         LOG_INF("Automatic recognition of AS5F12G04SND-10LIN flash");
         dev->dhara_nand.num_blocks = 2048;
-        dev->read_page_delay_us = 60;
         break;
     case ALLIANCE_DI_2F: //AS5F34G04SND-08LIN
         LOG_INF("Automatic recognition of AS5F34G04SND-08LIN flash");
     case ALLIANCE_DI_8F: //AS5F14G04SND-10LIN ==> Current implementation
         LOG_INF("NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash");
         dev->dhara_nand.num_blocks = 4096;
-        dev->read_page_delay_us = 70;
         break;
     case ALLIANCE_DI_2D: //AS5F38G04SND-08LIN
         LOG_INF("Automatic recognition of AS5F38G04SND-08LIN flash");
@@ -138,7 +130,6 @@ static int nand_alliance_init(nand_flash_device_t *dev)
         LOG_INF("Automatic recognition of AS5F18G04SND-10LIN flash");
         dev->dhara_nand.log2_page_size = 12; // 4k pages
         dev->dhara_nand.num_blocks = 4096;
-        dev->read_page_delay_us = 130; // somewhat slower reads
         break;
     default:
         LOG_ERR("Invalid Alliance device ID: 0x%X", device_id);
@@ -151,9 +142,7 @@ static int nand_alliance_init(nand_flash_device_t *dev)
  * @brief Initializes a GigaDevice NAND flash based on its device ID.
  *
  * This function reads the device ID of a GigaDevice NAND flash and configures
- * various operational parameters based on the detected device. It sets up the
- * number of blocks, read page delay, erase block delay, and program page delay
- * based on the specific device variant identified by the device ID.
+ * various operational parameters based on the detected device.
  *
  * @param dev Pointer to the nand_flash_device_t structure representing the NAND device.
  * @return 0 on successful initialization and configuration, -1 on failure with an error logged.
@@ -173,9 +162,6 @@ static int nand_gigadevice_init(nand_flash_device_t *dev)
         LOG_ERR("Failed to read gigadevice device ID, error: %d", err);
         return -1;
     }
-    dev->read_page_delay_us = 25;
-    dev->erase_block_delay_us = 3200;
-    dev->program_page_delay_us = 380;
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
     dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
     switch (device_id) {
@@ -294,7 +280,7 @@ static int unprotect_chip(nand_flash_device_t *dev)
 
 
 
-int wait_for_ready(uint32_t expected_operation_time_us, uint8_t *status_out)
+int wait_for_ready(uint8_t *status_out)
 {
     while (true) {
         uint8_t status;
@@ -416,7 +402,7 @@ int nand_erase_chip(nand_flash_device_t *handle)
         }
 
 
-        ret = wait_for_ready(handle->erase_block_delay_us, NULL);
+        ret = wait_for_ready(NULL);
         if (ret != 0) {
             LOG_ERR("Failed to wait for readiness after erase");
             goto end;
