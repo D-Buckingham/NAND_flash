@@ -19,12 +19,14 @@ energy_mah = (energy_wh) / 1.8  # mAh
 max_speeds = spi_speeds * 1e6  # Convert MHz to Hz
 percentages = 8 * (data_rates / max_speeds) * 100
 
+data_rates /= 1000
+
 # Plot 1: Mean Data Rates vs. SPI Speeds
 plt.figure(figsize=(10, 5))
 plt.plot(spi_speeds, data_rates, marker='o', linestyle='-')
 plt.title('Mean Data Rates vs. SPI Speeds')
 plt.xlabel('SPI Speed (MHz)')
-plt.ylabel('Data Rate (B/s)')
+plt.ylabel('Data Rate (kB/s)')
 plt.grid(True)
 plt.show()
 
