@@ -204,6 +204,114 @@ static int nand_gigadevice_init(nand_flash_device_t *dev)
 
 
 /**
+ * @brief Initializes a Micron NAND flash based on its device ID.
+ *
+ * This function reads the device ID of a Micron NAND flash and configures
+ * various operational parameters based on the detected device.
+ *
+ * @param dev Pointer to the nand_flash_device_t structure representing the NAND device.
+ * @return 0 on successful initialization and configuration, -1 on failure with an error logged.
+ */
+static int nand_micron_init(nand_flash_device_t *dev)
+{
+    uint8_t device_id;
+    int err;
+    nand_transaction_t t = {
+        .command = CMD_READ_ID,
+        .dummy_bytes = 2,
+        .miso_len = 1,
+        .miso_data = &device_id
+    };
+    err = my_nand_handle->transceive(&t);
+    if (err != 0) {
+        LOG_ERR("Failed to read Micron device ID, error: %d", err);
+        return -1;
+    }
+    dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
+    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
+
+    switch (device_id) {
+    case MICRON_DI_38:
+        LOG_INF("Automatic recognition of MT29F8G08AB flash");
+        break;
+    case MICRON_DI_48:
+        LOG_INF("Automatic recognition of MT29F flash");
+        break;
+    case MICRON_DI_68:
+        LOG_INF("Automatic recognition of 	MT29F flash");
+        break;
+    case MICRON_DI_A1:    
+        LOG_INF("Automatic recognition of MT29F1G08ABBDA flash");
+        break;
+    case MICRON_DI_A3:
+        LOG_INF("Automatic recognition of MT29F8G08ADBDA flash");
+        break;
+    case MICRON_DI_A8:
+        LOG_INF("Automatic recognition of MT29F256G08 flash");
+        break;
+    case MICRON_DI_AA:
+        LOG_INF("Automatic recognition of MT29F2G08 flash");
+        break;
+    case MICRON_DI_AC:
+        LOG_INF("Automatic recognition of MT29F4G08ABBDA flash");
+        break;
+    case MICRON_DI_B1:
+        LOG_INF("Automatic recognition of MT29F1G16ABBDA flash");
+        break;
+    case MICRON_DI_B3:
+        LOG_INF("Automatic recognition of MT29F8G16ADBDA flash");
+        break;
+    case MICRON_DI_BA:
+        LOG_INF("Automatic recognition of MT29F2G16AB flash");
+        break;
+    case MICRON_DI_CA:
+        LOG_INF("Automatic recognition of MT29F2G16A flash");
+        break;
+    case MICRON_DI_C3:
+        LOG_INF("Automatic recognition of MT29F8G16ADADA flash");
+        break;
+    case MICRON_DI_CC:
+        LOG_INF("Automatic recognition of MT29F4G16 flash");
+        break;
+    case MICRON_DI_D3:
+        LOG_INF("Automatic recognition of MT29F flash");
+        break;
+    case MICRON_DI_D5:
+        LOG_INF("Automatic recognition of MT29F flash");
+        break;
+    case MICRON_DI_D7:
+        LOG_INF("Automatic recognition of MT29F64G08TAA flash");
+        break;
+    case MICRON_DI_DA:
+        LOG_INF("Automatic recognition of MT29F2G08 flash");
+        break;
+    case MICRON_DI_DC:
+        LOG_INF("Automatic recognition of MT29F8G0 flash");
+        break;
+    case MICRON_DI_F1:
+        LOG_INF("Automatic recognition of MT29F4G0 flash");
+        break;
+    case MICRON_DI_35:
+        LOG_INF("Automatic recognition of MT29F4G0 flash");
+        dev->dhara_nand.num_blocks = 2048;
+        dev->dhara_nand.log2_page_size = 12;// Assume 4096 bytes per page
+        break;
+    case MICRON_DI_47:
+        LOG_INF("Automatic recognition of MT29F4G0 flash");
+        dev->dhara_nand.num_blocks = 2*2048;
+        dev->dhara_nand.log2_page_size = 12;// Assume 4096 bytes per page
+        break;
+    default:
+        LOG_ERR("Invalid Micron device ID: %u", device_id);
+        return -1;
+    }
+    return 0;
+}
+
+
+
+
+/**
  * @brief Detects the NAND flash chip and initializes it based on the manufacturer ID.
  *
  * This function reads the manufacturer ID of the NAND flash chip and calls the appropriate
@@ -236,6 +344,8 @@ static int detect_chip(nand_flash_device_t *dev)
         return nand_winbond_init(dev);
     case NAND_FLASH_GIGADEVICE_MI: // GigaDevice
         return nand_gigadevice_init(dev);
+    case NAND_FLASH_MICRON_MI: // GigaDevice
+        return nand_micron_init(dev);
     default:
         LOG_ERR("Invalid manufacturer ID: %u", manufacturer_id);
         return -1;

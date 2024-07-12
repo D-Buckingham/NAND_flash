@@ -4,6 +4,7 @@
 #define NAND_FLASH_GIGADEVICE_MI  0xC8
 #define NAND_FLASH_ALLIANCE_MI    0x52
 #define NAND_FLASH_WINBOND_MI     0xEF
+#define NAND_FLASH_MICRON_MI      0x2C
 
 //Device ID (DI) for supported nand flash devices
 
@@ -33,3 +34,26 @@
 #define WINBOND_DI_AA21               0xAA21
 #define WINBOND_DI_BA21               0xBA21
 #define WINBOND_DI_BC21               0xBC21
+
+#define MICRON_DI_38                  0x38
+#define MICRON_DI_48                  0x48
+#define MICRON_DI_68                  0x68
+#define MICRON_DI_A1                  0xA1
+#define MICRON_DI_A3                  0xA3
+#define MICRON_DI_A8                  0xA8
+#define MICRON_DI_AA                  0xAA
+#define MICRON_DI_AC                  0xAC
+#define MICRON_DI_B1                  0xB1
+#define MICRON_DI_B3                  0xB3
+#define MICRON_DI_BA                  0xBA
+#define MICRON_DI_CA                  0xCA
+#define MICRON_DI_C3                  0xC3
+#define MICRON_DI_CC                  0xCC
+#define MICRON_DI_D3                  0xD3
+#define MICRON_DI_D5                  0xD5
+#define MICRON_DI_D7                  0xD7
+#define MICRON_DI_DA                  0xDA
+#define MICRON_DI_DC                  0xDC
+#define MICRON_DI_F1                  0xF1
+#define MICRON_DI_35                  0x35
+#define MICRON_DI_47                  0x47
