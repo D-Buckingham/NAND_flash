@@ -25,6 +25,20 @@
 #define RA_TO_BLOCK(ra) ((ra >> 6) & 0xFFF)  // Extracts bits 17:6 (block)
 #define RA_TO_PAGE(ra)  (ra & 0x3F)         // Extracts bits 5:0 (page)
 
+uint32_t last_read_page_in_NAND_cache = 0;
+
+#define METADATA_SIZE 132
+#define BUFFER_SIZE 16
+
+typedef struct {
+    uint8_t data[METADATA_SIZE];
+    uint32_t page_address;
+    uint16_t column;
+} metadata_entry_t;
+
+metadata_entry_t metadata_buffer[BUFFER_SIZE];
+uint8_t buffer_index = 0;
+
 
 
 //address_bytes = 0
@@ -116,22 +130,53 @@ int nand_device_id(uint8_t *device_id){
 
 //address_bytes = 2
 
-int nand_read(uint8_t *data, uint16_t column, uint16_t length)
-{
-    nand_transaction_t  t = {
+
+// Function to check if the requested metadata is in the buffer
+int find_in_buffer(uint8_t *data, uint32_t page_address, uint16_t column) {
+    for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
+        if (metadata_buffer[i].page_address == page_address && metadata_buffer[i].column == column) {
+            memcpy(data, metadata_buffer[i].data, METADATA_SIZE);
+            return 1; // Found
+        }
+    }
+    return 0; // Not found
+}
+
+// Function to store metadata in the buffer
+void store_in_buffer(uint8_t *data, uint32_t page_address, uint16_t column) {
+    memcpy(metadata_buffer[buffer_index].data, data, METADATA_SIZE);
+    metadata_buffer[buffer_index].page_address = page_address;
+    metadata_buffer[buffer_index].column = column;
+    buffer_index = (buffer_index + 1) % BUFFER_SIZE;
+}
+
+int nand_read(uint8_t *data, uint16_t column, uint16_t length) {
+    if (length == METADATA_SIZE) {
+        // Check if the metadata is already in the buffer
+        if (find_in_buffer(data, last_read_page_in_NAND_cache, column)) {
+            return 0; // Data found in buffer, no need to perform read
+        }
+    }
+
+    nand_transaction_t t = {
         .command = CMD_READ_FAST,
         .address_bytes = 2,
-        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8),//big to small endian
-        .miso_len = length,//usually 2 bytes
+        .address = ((column & 0x00FF) << 8) | ((column & 0xFF00) >> 8), // big to small endian
+        .miso_len = length, // usually 2 bytes
         .miso_data = data,
         .dummy_bytes = 1
     };
-    
-    //my_nand_handle->log("OPER: Reading start at column", false, true, column);
-    //my_nand_handle->log("OPER: Reading length", false, true, length);
+
+    // my_nand_handle->log("OPER: Reading start at column", false, true, column);
+    // my_nand_handle->log("OPER: Reading length", false, true, length);
 
     if (my_nand_handle && my_nand_handle->transceive) {
-        return my_nand_handle->transceive(&t);
+        int result = my_nand_handle->transceive(&t);
+        if (result == 0 && length == METADATA_SIZE) {
+            // Store the metadata in the buffer
+            store_in_buffer(data, last_read_page_in_NAND_cache, column);
+        }
+        return result;
     } else {
         // Handle error if the function pointer is not set
         if (my_nand_handle && my_nand_handle->log) {
@@ -143,6 +188,7 @@ int nand_read(uint8_t *data, uint16_t column, uint16_t length)
 
 int nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
 {
+    last_read_page_in_NAND_cache = 0;
     nand_transaction_t  t = {
         .command = CMD_PROGRAM_LOAD,
         .address_bytes = 2,
@@ -169,6 +215,10 @@ int nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
 
 int nand_read_page(uint32_t page)
 {
+    if(last_read_page_in_NAND_cache == page && page != 0){
+        return 0;    
+    }
+    last_read_page_in_NAND_cache = page;
     nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
         .address_bytes = 3,

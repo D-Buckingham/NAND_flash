@@ -67,6 +67,31 @@ int my_transceive_function(nand_transaction_t *transaction) {
             };
 
             return spi_write_dt(&spidev_dt, &tx);
+        }else if(transaction->miso_len == 2){
+            uint8_t combined_buf[2];
+            combined_buf[0] = transaction->command;
+            combined_buf[1] = transaction->address;
+
+            struct spi_buf tx_bufs_two_bytes;
+            tx_bufs_two_bytes.buf = combined_buf;
+            tx_bufs_two_bytes.len = 2;
+
+            const struct spi_buf_set tx = {
+                .buffers = &tx_bufs_two_bytes,
+                .count = 1
+            };
+
+            struct spi_buf rx_bufs;
+
+            rx_bufs.buf = transaction->miso_data - 3;//shifting the pointer      
+            rx_bufs.len = 4;
+
+            const struct spi_buf_set rx = {
+                .buffers = &rx_bufs,
+                .count = 1
+            };
+            
+            return spi_transceive_dt(&spidev_dt, &tx, &rx);
         }else{
             uint8_t combined_buf[2];
             combined_buf[0] = transaction->command;

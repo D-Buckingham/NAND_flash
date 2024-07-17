@@ -1,9 +1,7 @@
 /**
  * @file nand_top_layer.h
- * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
+ * @brief Configuring the NAND flash
  *
- * This file establishes the communication and stores the predefined commands to interfere 
- * with the S5F14G04SND10LIN NAND flash
  * Author: [Denis Buckingham]
  * Date: [10.03.2024]
  */
