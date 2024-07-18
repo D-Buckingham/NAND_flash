@@ -6,4 +6,11 @@ config HEALTH_MONITORING
     help
       Enable this option to compile the health monitoring part of the code.
 
+
+config DHARA_METADATA_BUFFER
+    bool "Enable metadata buffer, buffering 16 y 132 bytes in a table"
+    default y
+    help
+      Enable this option to minimize the actual reads from the dhara mapping
+
 endmenu

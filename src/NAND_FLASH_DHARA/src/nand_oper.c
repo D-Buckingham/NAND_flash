@@ -27,6 +27,8 @@
 
 uint32_t last_read_page_in_NAND_cache = 0;
 
+#ifdef CONFIG_DHARA_METADATA_BUFFER
+
 #define METADATA_SIZE 132
 #define BUFFER_SIZE 16
 
@@ -40,6 +42,29 @@ metadata_entry_t metadata_buffer[BUFFER_SIZE];
 uint8_t buffer_index = 0;
 
 
+
+// Function to check if the requested metadata is in the buffer
+static int find_in_buffer(uint8_t *data, uint32_t page_address, uint16_t column) {
+    for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
+        if (metadata_buffer[i].page_address == page_address && metadata_buffer[i].column == column) {
+            memcpy(data, metadata_buffer[i].data, METADATA_SIZE);
+            return 1; // Found
+        }
+    }
+    return 0; // Not found
+}
+
+// Function to store metadata in the buffer
+static void store_in_buffer(uint8_t *data, uint32_t page_address, uint16_t column) {
+    memcpy(metadata_buffer[buffer_index].data, data, METADATA_SIZE);
+    metadata_buffer[buffer_index].page_address = page_address;
+    metadata_buffer[buffer_index].column = column;
+    buffer_index = (buffer_index + 1) % BUFFER_SIZE;
+}
+
+
+
+#endif //CONFIG_DHARA_METADATA_BUFFER
 
 //address_bytes = 0
 int nand_write_enable(void)
@@ -131,32 +156,15 @@ int nand_device_id(uint8_t *device_id){
 //address_bytes = 2
 
 
-// Function to check if the requested metadata is in the buffer
-int find_in_buffer(uint8_t *data, uint32_t page_address, uint16_t column) {
-    for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
-        if (metadata_buffer[i].page_address == page_address && metadata_buffer[i].column == column) {
-            memcpy(data, metadata_buffer[i].data, METADATA_SIZE);
-            return 1; // Found
-        }
-    }
-    return 0; // Not found
-}
-
-// Function to store metadata in the buffer
-void store_in_buffer(uint8_t *data, uint32_t page_address, uint16_t column) {
-    memcpy(metadata_buffer[buffer_index].data, data, METADATA_SIZE);
-    metadata_buffer[buffer_index].page_address = page_address;
-    metadata_buffer[buffer_index].column = column;
-    buffer_index = (buffer_index + 1) % BUFFER_SIZE;
-}
-
 int nand_read(uint8_t *data, uint16_t column, uint16_t length) {
+    #ifdef CONFIG_DHARA_METADATA_BUFFER
     if (length == METADATA_SIZE) {
         // Check if the metadata is already in the buffer
         if (find_in_buffer(data, last_read_page_in_NAND_cache, column)) {
             return 0; // Data found in buffer, no need to perform read
         }
     }
+    #endif //CONFIG_DHARA_METADATA_BUFFER
 
     nand_transaction_t t = {
         .command = CMD_READ_FAST,
@@ -172,10 +180,12 @@ int nand_read(uint8_t *data, uint16_t column, uint16_t length) {
 
     if (my_nand_handle && my_nand_handle->transceive) {
         int result = my_nand_handle->transceive(&t);
+        #ifdef CONFIG_DHARA_METADATA_BUFFER
         if (result == 0 && length == METADATA_SIZE) {
             // Store the metadata in the buffer
             store_in_buffer(data, last_read_page_in_NAND_cache, column);
         }
+        #endif //CONFIG_DHARA_METADATA_BUFFER
         return result;
     } else {
         // Handle error if the function pointer is not set
@@ -215,6 +225,7 @@ int nand_program_load(const uint8_t *data, uint16_t column, uint16_t length)
 
 int nand_read_page(uint32_t page)
 {
+    //if it already loaded into the NAND cache, don't do it again. (experimental optimization)
     if(last_read_page_in_NAND_cache == page && page != 0){
         return 0;    
     }
