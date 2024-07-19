@@ -13,4 +13,11 @@ config DHARA_METADATA_BUFFER
     help
       Enable this option to minimize the actual reads from the dhara mapping
 
+
+config DHARA_METADATA_BUFFER_SIZE
+    int "Enable metadata buffer, buffering 16 y 132 bytes in a table"
+    default 16
+    help
+      Enable this option to minimize the actual reads from the dhara mapping
+
 endmenu
