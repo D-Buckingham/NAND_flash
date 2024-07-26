@@ -25,10 +25,16 @@ def calculate_data_rate(time_differences, block_size):
     data_rates = [(block_size / (td / 1000)) for td in time_differences if td > 0]  # B/s
     return data_rates
 
+# Function to extract the gc_factor from the file name
+def extract_gc_factor(file_label):
+    match = re.search(r'(\d+)', file_label)
+    return match.group(1) if match else 'unknown'
+
 # Function to plot the frequency of time differences
 def plot_time_differences_histogram(time_differences, file_label, ax):
+    gc_factor = extract_gc_factor(file_label)
     ax.hist(time_differences, bins=50, range=(0, 2000))
-    ax.set_title(f'Frequency of Time Differences\n{file_label}')
+    ax.set_title(f'Frequency of Time Differences\n(gc = {gc_factor})')
     ax.set_xlabel('Time Difference (ms)')
     ax.set_ylabel('Frequency')
     ax.grid(True)
@@ -36,16 +42,18 @@ def plot_time_differences_histogram(time_differences, file_label, ax):
 
 # Function to plot time differences over timestamps
 def plot_time_differences_over_time(time_differences, timestamps, file_label, ax):
+    gc_factor = extract_gc_factor(file_label)
     ax.plot(range(len(time_differences)), time_differences, marker='o', linestyle='-')
-    ax.set_title(f'Time Differences Over Timestamps\n{file_label}')
+    ax.set_title(f'Time Differences Over Timestamps\n(gc = {gc_factor})')
     ax.set_xlabel('Index')
     ax.set_ylabel('Time Difference (ms)')
     ax.grid(True)
 
 # Function to plot data rate
 def plot_data_rate(data_rates, file_label, ax):
+    gc_factor = extract_gc_factor(file_label)
     ax.plot(range(len(data_rates)), data_rates, marker='o', linestyle='-')
-    ax.set_title(f'Data Rate Over Time\n{file_label}')
+    ax.set_title(f'Data Rate Over Time\n(gc = {gc_factor})')
     ax.set_xlabel('Index')
     ax.set_ylabel('Data Rate (B/s)')
     ax.set_ylim(50000,900000)

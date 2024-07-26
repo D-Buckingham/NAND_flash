@@ -34,6 +34,8 @@ uint32_t erase_count_indicator = 0;
 
 uint8_t spare_area_buffer[8];
 
+static uint8_t load_buffer[4200];
+
 
 //defined in 
 
@@ -220,7 +222,7 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
     //LOG_INF("erase_block, block=%u", b);
     struct nand_flash_device_t *dev = CONTAINER_OF(n, struct nand_flash_device_t, dhara_nand);
     int ret;
-    uint32_t ecc_count_indicator = 0;
+    
 
     dhara_page_t first_block_page = b * (1 << n->log2_ppb);
     uint8_t status;
@@ -232,32 +234,33 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    //my_nand_handle->log("Current block",false ,true ,b);
-    uint64_t uptime = k_uptime_get(); // Get the system uptime in milliseconds
+    my_nand_handle->log("Current block",false ,true ,b);
+    // uint64_t uptime = k_uptime_get(); // Get the system uptime in milliseconds
 
-    // Convert uptime to hours, minutes, seconds, and milliseconds
-    uint32_t ms = uptime % 1000;
-    uptime /= 1000;
-    uint32_t sec = uptime % 60;
-    uptime /= 60;
-    uint32_t min = uptime % 60;
-    uptime /= 60;
-    uint32_t hour = uptime;
+    // // Convert uptime to hours, minutes, seconds, and milliseconds
+    // uint32_t ms = uptime % 1000;
+    // uptime /= 1000;
+    // uint32_t sec = uptime % 60;
+    // uptime /= 60;
+    // uint32_t min = uptime % 60;
+    // uptime /= 60;
+    // uint32_t hour = uptime;
 
-    // Create the timestamp string
-    char timestamp[20];
-    snprintf(timestamp, sizeof(timestamp), "%02u:%02u:%02u:%03u", hour, min, sec, ms);
+    // // Create the timestamp string
+    // char timestamp[20];
+    // snprintf(timestamp, sizeof(timestamp), "%02u:%02u:%02u:%03u", hour, min, sec, ms);
 
-    // Create the log message with the timestamp
-    char log_message[256];
-    snprintf(log_message, sizeof(log_message), "%s - Current block: ", timestamp);
+    // // Create the log message with the timestamp
+    // char log_message[256];
+    // snprintf(log_message, sizeof(log_message), "%s - Current block: ", timestamp);
 
-    // Call the original log function
-    my_nand_handle->log(log_message, false, true, b);
+    // // Call the original log function
+    // my_nand_handle->log(log_message, false, true, b);
     /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
 
 #ifdef CONFIG_HEALTH_MONITORING
     //extract the counters, that are after erasure programmed back to the first page of a block
+    uint32_t ecc_count_indicator = 0;
     ret = nand_read(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);
     if (ret != 0) {
         my_nand_handle->log("Failed to read from spare area", true, true, ret);
@@ -346,18 +349,10 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         my_nand_handle->log("Failed to enable write, error",true ,true ,ret);
         return -1;
     }
+    memset(load_buffer, 0xFF, 4200);
+    memcpy(load_buffer, data, dev->page_size);
+    memcpy(load_buffer + dev->page_size + 2, &used_marker, sizeof(used_marker));
 
-    ret = nand_program_load(data, 0, dev->page_size);//Load data into the NAND device's cache.
-    if (ret) {
-        my_nand_handle->log("Failed to load program, error",true ,true ,ret);
-        return -1;
-    }
-
-    ret = nand_program_load((uint8_t *)&used_marker, dev->page_size + 2, 2);//put a flag there
-    if (ret) {
-        my_nand_handle->log("Failed to load used marker, error",true ,true ,ret);
-        return -1;
-    }
 
     /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
 #ifdef CONFIG_HEALTH_MONITORING
@@ -370,14 +365,37 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
 
         Erase_counter_FLAG = 0;
 
-        ret = nand_program_load(spare_area_buffer, dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, 8);//put a flag there
+        memcpy(load_buffer + dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, spare_area_buffer, 8);
+        ret = nand_program_load(load_buffer, 0, dev->page_size + sizeof(used_marker) + 2 + ERASE_COUNTER_SPARE_AREA_OFFSET + 8);//put a flag there
         if (ret) {
             my_nand_handle->log("Failed to load erase counter, error",true ,true ,ret);
             return -1;
         }
     }
+
+    ret = program_execute_and_wait(dev, p, &status);//Execute a program operation. Commits the data previously loaded into the device's cache to the NAND array
+    if (ret) {
+        my_nand_handle->log("Failed to execute program, error",true ,true ,ret);
+        return -1;
+    }
+
+    if ((status & STAT_PROGRAM_FAILED) != 0) {
+        my_nand_handle->log("prog failed, page",true ,true ,p);
+        dhara_set_error(err, DHARA_E_BAD_BLOCK);
+        return -1;
+    }
+    
+
+    return 0;
 #endif //CONFIG_HEALTH_MONITORING
     /////////////////////////           HEALTH MONITORING END (OPTIONAL)        ///////////////////////////////////
+
+    
+    ret = nand_program_load(load_buffer, 0, dev->page_size + sizeof(used_marker) + 2);
+    if (ret != 0) {
+        my_nand_handle->log("Failed to program load, error", true, true, ret);
+        return -1;
+    }
 
     ret = program_execute_and_wait(dev, p, &status);//Execute a program operation. Commits the data previously loaded into the device's cache to the NAND array
     if (ret) {
