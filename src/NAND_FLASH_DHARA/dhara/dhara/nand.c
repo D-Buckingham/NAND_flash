@@ -12,7 +12,7 @@
  */
 
 #include "nand.h"
-#include "../../inc/nand_oper.h" 
+#include "../../inc/nand_driver.h" 
 #include "../../inc/nand_top_layer.h"//for the nand_flash_device_t
 
 
@@ -42,7 +42,7 @@ static uint8_t load_buffer[4200];
 /** @brief waiting for finished transaction
  * check repeatedly for the status register
  *
- * defined in the nand.c between nand_oper and dhara
+ * defined in the nand.c between nand_driver and dhara
  * used in the top layer and nand.c
  *
  * @param[out] status_out status register content of current transaction
@@ -162,7 +162,6 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
         return 1; // Assume bad block on error
     }
 
-    //LOG_DBG("Block=%u, Page=%u, Indicator=%04x", b, first_block_page, bad_block_indicator);
     if(bad_block_indicator == 0x0000){my_nand_handle->log("Bad_Block on Block=",false ,true ,b);}
     return bad_block_indicator == 0x0000;
 }
@@ -177,7 +176,6 @@ void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
 
     dhara_page_t first_block_page = b * (1 << n->log2_ppb);
     uint16_t bad_block_indicator = 0;
-    //LOG_DBG("mark_bad, block=%u, page=%u, indicator = %04x", b, first_block_page, bad_block_indicator);
 
     ret = nand_write_enable();
     if (ret) {
@@ -234,28 +232,8 @@ int dhara_nand_erase(const struct dhara_nand *n, dhara_block_t b, dhara_error_t 
         return -1;
     }
 
-    my_nand_handle->log("Current block",false ,true ,b);
-    // uint64_t uptime = k_uptime_get(); // Get the system uptime in milliseconds
+    my_nand_handle->log("Erasing block",false ,true ,b);
 
-    // // Convert uptime to hours, minutes, seconds, and milliseconds
-    // uint32_t ms = uptime % 1000;
-    // uptime /= 1000;
-    // uint32_t sec = uptime % 60;
-    // uptime /= 60;
-    // uint32_t min = uptime % 60;
-    // uptime /= 60;
-    // uint32_t hour = uptime;
-
-    // // Create the timestamp string
-    // char timestamp[20];
-    // snprintf(timestamp, sizeof(timestamp), "%02u:%02u:%02u:%03u", hour, min, sec, ms);
-
-    // // Create the log message with the timestamp
-    // char log_message[256];
-    // snprintf(log_message, sizeof(log_message), "%s - Current block: ", timestamp);
-
-    // // Call the original log function
-    // my_nand_handle->log(log_message, false, true, b);
     /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
 
 #ifdef CONFIG_HEALTH_MONITORING
@@ -354,7 +332,6 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
     memcpy(load_buffer + dev->page_size + 2, &used_marker, sizeof(used_marker));
 
 
-    /////////////////////////           HEALTH MONITORING START (OPTIONAL)        ///////////////////////////////////
 #ifdef CONFIG_HEALTH_MONITORING
     //we store the erase count indicator into the spare area
     if(Erase_counter_FLAG && Erased_block == p){
@@ -366,13 +343,19 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
         Erase_counter_FLAG = 0;
 
         memcpy(load_buffer + dev->page_size + ERASE_COUNTER_SPARE_AREA_OFFSET, spare_area_buffer, 8);
-        ret = nand_program_load(load_buffer, 0, dev->page_size + sizeof(used_marker) + 2 + ERASE_COUNTER_SPARE_AREA_OFFSET + 8);//put a flag there
+        ret = nand_program_load(load_buffer, 0, dev->page_size  + ERASE_COUNTER_SPARE_AREA_OFFSET + 8);//put a flag there
         if (ret) {
             my_nand_handle->log("Failed to load erase counter, error",true ,true ,ret);
             return -1;
         }
+    }else{
+        ret = nand_program_load(load_buffer, 0, dev->page_size + sizeof(used_marker) + 2);
+        if (ret != 0) {
+            my_nand_handle->log("Failed to program load, error", true, true, ret);
+            return -1;
+        }
     }
-
+    
     ret = program_execute_and_wait(dev, p, &status);//Execute a program operation. Commits the data previously loaded into the device's cache to the NAND array
     if (ret) {
         my_nand_handle->log("Failed to execute program, error",true ,true ,ret);
@@ -388,7 +371,6 @@ int dhara_nand_prog(const struct dhara_nand *n, dhara_page_t p, const uint8_t *d
 
     return 0;
 #endif //CONFIG_HEALTH_MONITORING
-    /////////////////////////           HEALTH MONITORING END (OPTIONAL)        ///////////////////////////////////
 
     
     ret = nand_program_load(load_buffer, 0, dev->page_size + sizeof(used_marker) + 2);
@@ -434,7 +416,6 @@ int dhara_nand_is_free(const struct dhara_nand *n, dhara_page_t p)
         return 0; 
     }
 
-    //LOG_DBG("Is free, page=%u, used_marker=%04x", p, used_marker);
     return used_marker == 0xFFFF; // Check against expected marker value for a free page
 }
 
@@ -451,7 +432,6 @@ static int is_ecc_error(uint8_t status)
 int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, size_t length,
                     uint8_t *data, dhara_error_t *err)
 {
-    //LOG_DBG("Read, page=%u, offset=%zu, length=%zu", p, offset, length);
     __ASSERT(p < n->num_blocks * (1 << n->log2_ppb), "Page out of range");
     nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
@@ -468,7 +448,6 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
         my_nand_handle->log("ECC error on page",true ,true ,p);
         dhara_set_error(err, DHARA_E_ECC);
         Delta_ECC_counter++;
-        //increase_ECC_counter(dev, p);
         return -1;
     }
 
@@ -490,7 +469,6 @@ int dhara_nand_read(const struct dhara_nand *n, dhara_page_t p, size_t offset, s
  */
 int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t dst, dhara_error_t *err)
 {
-    //LOG_DBG("Copy, src=%u, dst=%u", src, dst);
     nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
     int ret;
     uint8_t status;
@@ -506,23 +484,24 @@ int dhara_nand_copy(const struct dhara_nand *n, dhara_page_t src, dhara_page_t d
     if (is_ecc_error(status)) {
         my_nand_handle->log("Copy, ECC error detected",true ,false ,0);
         dhara_set_error(err, DHARA_E_ECC);
-        //increase_ECC_counter(dev, src);
         Delta_ECC_counter++;
         return -1;
     }
 
- 
+
     ret = nand_write_enable();
     if (ret != 0) {
         my_nand_handle->log("Failed to enable write",true ,false ,0);
         return -1;
     }
 
+
     ret = program_execute_and_wait(dev, dst, &status);
     if (ret != 0) {
         my_nand_handle->log("Program execute failed",true ,false ,0);
         return -1;
     }
+
 
     // Check for programming failure
     if ((status & STAT_PROGRAM_FAILED) != 0) {

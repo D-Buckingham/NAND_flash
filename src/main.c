@@ -13,7 +13,7 @@
 #ifndef MAIN
 
 
-#include "nand_oper.h"
+#include "nand_driver.h"
 #include "spi_nand_oper_tests.h"
 #include "test_spi_nand_top_layer.h"
 #include "test_disk_access.h"
@@ -23,29 +23,27 @@
 #include "USB_mass_storage.h"
 #include "simulation_test.h"
 
+
+#include "diskio_nand.h"
+#include "health_monitoring.h"
+#include "vfs_NAND_flash.h"
+
+
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 
-
-// #define SPI_OP   SPI_OP_MODE_MASTER | SPI_TRANSFER_MSB | SPI_WORD_SET(8) | SPI_LINES_SINGLE
-// static const struct spi_dt_spec nand_init(void) {
-//     const struct spi_dt_spec spidev_dt = SPI_DT_SPEC_GET(DT_NODELABEL(spidev), SPI_OP, 0);
-
-//     if (!device_is_ready((&spidev_dt)->bus)) {
-//         LOG_ERR("SPI device is not ready");
-//     }else {
-//         LOG_INF("NAND flash as SPI device initialized!");
-//     }
-
-//     return spidev_dt;
-// }
 
 
 
 int  main(void)
 {
 	LOG_INF("My first breath as an IoT device");
-	//int ret;
+
+	disk_nand_init();
+
+	mount_nand_fs();
+
+	display_health();
 	//const struct spi_dt_spec spidev_dt = nand_init();
 	//static struct disk_info nand_disk;
 	

@@ -1,5 +1,5 @@
 /**
- * @file nand_oper.h
+ * @file nand_driver.h
  * @brief Configuring the AS5F14G04SND-10LIN NAND flash
  *
  * This file establishes the communication and stores the predefined commands to interfere 
@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "../inc/nand_oper.h"
+#include "../inc/nand_driver.h"
 #include "../inc/example_handle.h"
 
 /**
@@ -175,8 +175,8 @@ int nand_read(uint8_t *data, uint16_t column, uint16_t length) {
         .dummy_bytes = 1
     };
 
-     my_nand_handle->log("OPER: Reading start at column", false, true, column);
-     my_nand_handle->log("OPER: Reading length", false, true, length);
+    //  my_nand_handle->log("OPER: Reading start at column", false, true, column);
+    //  my_nand_handle->log("OPER: Reading length", false, true, length);
 
     if (my_nand_handle && my_nand_handle->transceive) {
         int result = my_nand_handle->transceive(&t);
@@ -237,7 +237,7 @@ int nand_read_page(uint32_t page)
                    ((page & 0x0000FF00))       |  // Keep A15-A8 in its place
                    ((page & 0x000000FF) << 16)   // Move A7-A0 to the top position
     };
-    my_nand_handle->log("OPER: Reading page", false, true, page);
+    //my_nand_handle->log("OPER: Reading page", false, true, page);
     if (my_nand_handle && my_nand_handle->transceive) {
         return my_nand_handle->transceive(&t);
     } else {

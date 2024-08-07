@@ -17,7 +17,7 @@
 #include    "nand_top_layer.h"
 #include    "vfs_NAND_flash.h"
 #include    "diskio_nand.h"
-#include    "nand_oper.h"
+#include    "nand_driver.h"
 #include    "nand_top_layer.h"
 
 #define MAX_PATH_LEN 255

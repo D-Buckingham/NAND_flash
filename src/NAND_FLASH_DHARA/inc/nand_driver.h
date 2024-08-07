@@ -1,5 +1,5 @@
 /**
- * @file nand_oper.h
+ * @file nand_driver.h
  * @brief Configuring the 913-S5F14G04SND10LIN NAND flash
  *
  * This file establishes the communication and stores the predefined commands to interfere 

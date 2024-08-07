@@ -6,7 +6,7 @@ project(NAND_flash)
 
 file(GLOB APP_SOURCES
             "src/main.c"
-            "src/NAND_FLASH_DHARA/src/nand_oper.c"
+            "src/NAND_FLASH_DHARA/src/nand_driver.c"
             "src/NAND_FLASH_DHARA/src/nand_top_layer.c"
             "src/NAND_FLASH_DHARA/dhara/dhara/*.c"
             "src/NAND_FLASH_DHARA/tests/spi_nand_oper_tests.c"

@@ -4,7 +4,7 @@
 #include <zephyr/drivers/spi.h>
 #include "nand.h"
 
-#include "nand_oper.h"
+#include "nand_driver.h"
 #include "spi_nand_oper_tests.h"
 #include <zephyr/devicetree.h>
 

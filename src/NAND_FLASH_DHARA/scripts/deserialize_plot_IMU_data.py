@@ -101,22 +101,22 @@ def plot_imu_data(samples):
     fig, axs = plt.subplots(2, 1, figsize=(12, 8))
     
     # Gyroscope data
-    axs[0].plot(timestamps, [gyro[0] for gyro in gyro_data], label='Gyro X')
-    axs[0].plot(timestamps, [gyro[1] for gyro in gyro_data], label='Gyro Y')
-    axs[0].plot(timestamps, [gyro[2] for gyro in gyro_data], label='Gyro Z')
+    axs[0].plot(timestamps, [gyro[0]/1000 for gyro in gyro_data], label='Gyro X')
+    axs[0].plot(timestamps, [gyro[1]/1000 for gyro in gyro_data], label='Gyro Y')
+    axs[0].plot(timestamps, [gyro[2]/1000 for gyro in gyro_data], label='Gyro Z')
     axs[0].set_title('Gyroscope Data')
     axs[0].set_xlabel('Timestamp')
-    axs[0].set_ylabel('Gyro Raw')
+    axs[0].set_ylabel('Gyro (rad/s)')
     axs[0].legend()
     axs[0].grid(True)
     
     # Accelerometer data
-    axs[1].plot(timestamps, [acc[0] for acc in acc_data], label='Acc X')
-    axs[1].plot(timestamps, [acc[1] for acc in acc_data], label='Acc Y')
-    axs[1].plot(timestamps, [acc[2] for acc in acc_data], label='Acc Z')
+    axs[1].plot(timestamps, [acc[0]/1000 for acc in acc_data], label='Acc X')
+    axs[1].plot(timestamps, [acc[1]/1000 for acc in acc_data], label='Acc Y')
+    axs[1].plot(timestamps, [acc[2]/1000 for acc in acc_data], label='Acc Z')
     axs[1].set_title('Accelerometer Data')
     axs[1].set_xlabel('Timestamp')
-    axs[1].set_ylabel('Acc Raw')
+    axs[1].set_ylabel('Acc (m/$s^2$)')
     axs[1].legend()
     axs[1].grid(True)
 

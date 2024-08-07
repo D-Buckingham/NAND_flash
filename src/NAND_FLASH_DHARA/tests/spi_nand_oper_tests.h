@@ -28,7 +28,7 @@
 #include <Zephyr/sys/util.h>
 #include <zephyr/devicetree.h>
 
-#include "nand_oper.h"
+#include "nand_driver.h"
 
 #ifdef __cplusplus
 extern "C" {

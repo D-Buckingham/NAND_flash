@@ -7,6 +7,7 @@ data_rates = np.array([184422.42, 319014.16, 494071.19, 723596.40])  # B/s
 
 # Hypothetical power consumption values for different SPI speeds (in milliwatts)
 power_consumption = np.array([19.35*1.8, 19.94*1.8, 20.81*1.8, 21.89*1.8])  # mW
+#power_consumption = np.array([20*1.8, 20.85*1.8, 22.3*1.8, 23.35*1.8])
 
 fill_times = np.array([ 49*60+43, 28*60+50, 19*60+22, 12*60+58])
 

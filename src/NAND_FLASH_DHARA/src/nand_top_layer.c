@@ -1,21 +1,17 @@
 #include <stdlib.h>
 #include <string.h>
-#include <zephyr/device.h>
-#include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
 
+#include <zephyr/kernel.h>//only dependency
 
-#include "../inc/nand_oper.h"
+#include "../inc/nand_driver.h"
 #include "../dhara/dhara/nand.h"
 #include "../inc/nand_top_layer.h"
 #include "../inc/nand_flash_devices.h"
 #include "../inc/example_handle.h"
 
-LOG_MODULE_REGISTER(nand_top_layer, CONFIG_LOG_DEFAULT_LEVEL);
 
 
 //shared externally
-
 static nand_flash_device_t nand_flash_device;
 nand_flash_device_t *device_handle = &nand_flash_device;
 
@@ -43,7 +39,7 @@ static int nand_winbond_init(nand_flash_device_t *dev)
     };
     int err = my_nand_handle->transceive(&t);
     if (err != 0) {
-        LOG_ERR("Failed to receive device ID, error: %d", err);
+        my_nand_handle->log("Failed to receive device ID, error: ", true, true, err);
         return -1;
     }
 
@@ -53,21 +49,21 @@ static int nand_winbond_init(nand_flash_device_t *dev)
 
     switch (device_id) {
     case WINBOND_DI_AA20:
-        LOG_INF("Automatic recognition of WINBOND_DI_AA20 flash");
+        my_nand_handle->log("Automatic recognition of WINBOND_DI_AA20 flash", false, false, 0);
     case WINBOND_DI_BA20:
-        LOG_INF("Automatic recognition of WINBOND_DI_BA20 flash");
+        my_nand_handle->log("Automatic recognition of WINBOND_DI_BA20 flash", false, false, 0);
         dev->dhara_nand.num_blocks = 512;
         break;
     case WINBOND_DI_AA21:
-        LOG_INF("Automatic recognition of WINBOND_DI_AA21 flash");
+        my_nand_handle->log("Automatic recognition of WINBOND_DI_AA21 flash", false, false, 0);
     case WINBOND_DI_BA21:
-        LOG_INF("Automatic recognition of WINBOND_DI_BA21 flash");
+        my_nand_handle->log("Automatic recognition of WINBOND_DI_BA21 flash", false, false, 0);
     case WINBOND_DI_BC21:
-        LOG_INF("Automatic recognition of WINBOND_DI_BC21 flash");
+        my_nand_handle->log("Automatic recognition of WINBOND_DI_BC21 flash", false, false, 0);
         dev->dhara_nand.num_blocks = 1024;
         break;
     default:
-        LOG_ERR("Invalid Winbond device ID: %u", device_id);
+        my_nand_handle->log("Invalid Winbond device ID: ", true, true, device_id);
         return -1;
     }
     return 0;
@@ -93,47 +89,50 @@ static int nand_alliance_init(nand_flash_device_t *dev)
     uint8_t device_id;
     nand_transaction_t t = {
         .command = CMD_READ_ID,
-        .address =  DEVICE_ADDR_READ,
+        .address = DEVICE_ADDR_READ,
         .address_bytes = 1,
         .miso_len = 1,
         .miso_data = &device_id
     };
     err = my_nand_handle->transceive(&t);
     if (err != 0) {
-        LOG_ERR("Failed to read Alliance device ID, error: %d", err);
+        my_nand_handle->log("Failed to read Alliance device ID", true, true, err);
         return -1;
     }
     //setting up the device
 
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
-    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
+    dev->dhara_nand.log2_page_size = 11; // Assume 2048 bytes per page
     switch (device_id) {
-    case ALLIANCE_DI_25: //AS5F31G04SND-08LIN
-        LOG_INF("Automatic recognition of AS5F31G04SND-08LIN flash");
+    case ALLIANCE_DI_25: // AS5F31G04SND-08LIN
+        my_nand_handle->log("Automatic recognition of AS5F31G04SND-08LIN flash", false, false, 0);
         dev->dhara_nand.num_blocks = 1024;
         break;
-    case ALLIANCE_DI_2E: //AS5F32G04SND-08LIN
-        LOG_INF("Automatic recognition of AS5F32G04SND-08LIN flash");
-    case ALLIANCE_DI_8E: //AS5F12G04SND-10LIN
-        LOG_INF("Automatic recognition of AS5F12G04SND-10LIN flash");
+    case ALLIANCE_DI_2E: // AS5F32G04SND-08LIN
+        my_nand_handle->log("Automatic recognition of AS5F32G04SND-08LIN flash", false, false, 0);
+        // Fall through to set num_blocks for the next case
+    case ALLIANCE_DI_8E: // AS5F12G04SND-10LIN
+        my_nand_handle->log("Automatic recognition of AS5F12G04SND-10LIN flash", false, false, 0);
         dev->dhara_nand.num_blocks = 2048;
         break;
-    case ALLIANCE_DI_2F: //AS5F34G04SND-08LIN
-        LOG_INF("Automatic recognition of AS5F34G04SND-08LIN flash");
-    case ALLIANCE_DI_8F: //AS5F14G04SND-10LIN ==> Current implementation
-        LOG_INF("NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash");
+    case ALLIANCE_DI_2F: // AS5F34G04SND-08LIN
+        my_nand_handle->log("Automatic recognition of AS5F34G04SND-08LIN flash", false, false, 0);
+        // Fall through to set num_blocks for the next case
+    case ALLIANCE_DI_8F: // AS5F14G04SND-10LIN ==> Current implementation
+        my_nand_handle->log("NAND MAPPING LAYER: Automatic recognition of AS5F14G04SND-10LIN flash", false, false, 0);
         dev->dhara_nand.num_blocks = 4096;
         break;
-    case ALLIANCE_DI_2D: //AS5F38G04SND-08LIN
-        LOG_INF("Automatic recognition of AS5F38G04SND-08LIN flash");
-    case ALLIANCE_DI_8D: //AS5F18G04SND-10LIN
-        LOG_INF("Automatic recognition of AS5F18G04SND-10LIN flash");
+    case ALLIANCE_DI_2D: // AS5F38G04SND-08LIN
+        my_nand_handle->log("Automatic recognition of AS5F38G04SND-08LIN flash", false, false, 0);
+        // Fall through to set num_blocks for the next case
+    case ALLIANCE_DI_8D: // AS5F18G04SND-10LIN
+        my_nand_handle->log("Automatic recognition of AS5F18G04SND-10LIN flash", false, false, 0);
         dev->dhara_nand.log2_page_size = 12; // 4k pages
         dev->dhara_nand.num_blocks = 4096;
         break;
     default:
-        LOG_ERR("Invalid Alliance device ID: 0x%X", device_id);
-            return -1;
+        my_nand_handle->log("Invalid Alliance device ID", true, true, device_id);
+        return -1;
     }
     return 0;
 }
@@ -159,48 +158,58 @@ static int nand_gigadevice_init(nand_flash_device_t *dev)
     };
     err = my_nand_handle->transceive(&t);
     if (err != 0) {
-        LOG_ERR("Failed to read gigadevice device ID, error: %d", err);
+        my_nand_handle->log("Failed to read Gigadevice device ID", true, true, err);
         return -1;
     }
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
-    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
+    dev->dhara_nand.log2_page_size = 11; // Assume 2048 bytes per page
     switch (device_id) {
     case GIGADEVICE_DI_51:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_51 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_51 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_41:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_41 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_41 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_31:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_31 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_31 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_21:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_21 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_21 flash", false, false, 0);
         dev->dhara_nand.num_blocks = 1024;
         break;
     case GIGADEVICE_DI_52:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_52 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_52 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_42:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_42 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_42 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_32:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_32 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_32 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_22:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_22 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_22 flash", false, false, 0);
         dev->dhara_nand.num_blocks = 2048;
         break;
     case GIGADEVICE_DI_55:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_55 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_55 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_45:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_45 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_45 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_35:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_35 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_35 flash", false, false, 0);
+        // Fall through to set num_blocks for the next cases
     case GIGADEVICE_DI_25:
-        LOG_INF("Automatic recognition of GIGADEVICE_DI_25 flash");
+        my_nand_handle->log("Automatic recognition of GIGADEVICE_DI_25 flash", false, false, 0);
         dev->dhara_nand.num_blocks = 4096;
         break;
     default:
-        LOG_ERR("Invalid Gigadevice device ID: %u", device_id);
+        my_nand_handle->log("Invalid Gigadevice device ID", true, true, device_id);
         return -1;
     }
     return 0;
 }
+
 
 
 /**
@@ -224,85 +233,85 @@ static int nand_micron_init(nand_flash_device_t *dev)
     };
     err = my_nand_handle->transceive(&t);
     if (err != 0) {
-        LOG_ERR("Failed to read Micron device ID, error: %d", err);
+        my_nand_handle->log("Failed to read Micron device ID", true, true, err);
         return -1;
     }
     dev->dhara_nand.log2_ppb = 6; // Assume 64 pages per block
-    dev->dhara_nand.log2_page_size = 11;// Assume 2048 bytes per page
+    dev->dhara_nand.log2_page_size = 11; // Assume 2048 bytes per page
 
     switch (device_id) {
     case MICRON_DI_38:
-        LOG_INF("Automatic recognition of MT29F8G08AB flash");
+        my_nand_handle->log("Automatic recognition of MT29F8G08AB flash", false, false, 0);
         break;
     case MICRON_DI_48:
-        LOG_INF("Automatic recognition of MT29F flash");
+        my_nand_handle->log("Automatic recognition of MT29F flash", false, false, 0);
         break;
     case MICRON_DI_68:
-        LOG_INF("Automatic recognition of 	MT29F flash");
+        my_nand_handle->log("Automatic recognition of MT29F flash", false, false, 0);
         break;
-    case MICRON_DI_A1:    
-        LOG_INF("Automatic recognition of MT29F1G08ABBDA flash");
+    case MICRON_DI_A1:
+        my_nand_handle->log("Automatic recognition of MT29F1G08ABBDA flash", false, false, 0);
         break;
     case MICRON_DI_A3:
-        LOG_INF("Automatic recognition of MT29F8G08ADBDA flash");
+        my_nand_handle->log("Automatic recognition of MT29F8G08ADBDA flash", false, false, 0);
         break;
     case MICRON_DI_A8:
-        LOG_INF("Automatic recognition of MT29F256G08 flash");
+        my_nand_handle->log("Automatic recognition of MT29F256G08 flash", false, false, 0);
         break;
     case MICRON_DI_AA:
-        LOG_INF("Automatic recognition of MT29F2G08 flash");
+        my_nand_handle->log("Automatic recognition of MT29F2G08 flash", false, false, 0);
         break;
     case MICRON_DI_AC:
-        LOG_INF("Automatic recognition of MT29F4G08ABBDA flash");
+        my_nand_handle->log("Automatic recognition of MT29F4G08ABBDA flash", false, false, 0);
         break;
     case MICRON_DI_B1:
-        LOG_INF("Automatic recognition of MT29F1G16ABBDA flash");
+        my_nand_handle->log("Automatic recognition of MT29F1G16ABBDA flash", false, false, 0);
         break;
     case MICRON_DI_B3:
-        LOG_INF("Automatic recognition of MT29F8G16ADBDA flash");
+        my_nand_handle->log("Automatic recognition of MT29F8G16ADBDA flash", false, false, 0);
         break;
     case MICRON_DI_BA:
-        LOG_INF("Automatic recognition of MT29F2G16AB flash");
+        my_nand_handle->log("Automatic recognition of MT29F2G16AB flash", false, false, 0);
         break;
     case MICRON_DI_CA:
-        LOG_INF("Automatic recognition of MT29F2G16A flash");
+        my_nand_handle->log("Automatic recognition of MT29F2G16A flash", false, false, 0);
         break;
     case MICRON_DI_C3:
-        LOG_INF("Automatic recognition of MT29F8G16ADADA flash");
+        my_nand_handle->log("Automatic recognition of MT29F8G16ADADA flash", false, false, 0);
         break;
     case MICRON_DI_CC:
-        LOG_INF("Automatic recognition of MT29F4G16 flash");
+        my_nand_handle->log("Automatic recognition of MT29F4G16 flash", false, false, 0);
         break;
     case MICRON_DI_D3:
-        LOG_INF("Automatic recognition of MT29F flash");
+        my_nand_handle->log("Automatic recognition of MT29F flash", false, false, 0);
         break;
     case MICRON_DI_D5:
-        LOG_INF("Automatic recognition of MT29F flash");
+        my_nand_handle->log("Automatic recognition of MT29F flash", false, false, 0);
         break;
     case MICRON_DI_D7:
-        LOG_INF("Automatic recognition of MT29F64G08TAA flash");
+        my_nand_handle->log("Automatic recognition of MT29F64G08TAA flash", false, false, 0);
         break;
     case MICRON_DI_DA:
-        LOG_INF("Automatic recognition of MT29F2G08 flash");
+        my_nand_handle->log("Automatic recognition of MT29F2G08 flash", false, false, 0);
         break;
     case MICRON_DI_DC:
-        LOG_INF("Automatic recognition of MT29F8G0 flash");
+        my_nand_handle->log("Automatic recognition of MT29F8G0 flash", false, false, 0);
         break;
     case MICRON_DI_F1:
-        LOG_INF("Automatic recognition of MT29F4G0 flash");
+        my_nand_handle->log("Automatic recognition of MT29F4G0 flash", false, false, 0);
         break;
     case MICRON_DI_35:
-        LOG_INF("Automatic recognition of MT29F4G0 flash");
+        my_nand_handle->log("Automatic recognition of MT29F4G0 flash", false, false, 0);
         dev->dhara_nand.num_blocks = 2048;
-        dev->dhara_nand.log2_page_size = 12;// Assume 4096 bytes per page
+        dev->dhara_nand.log2_page_size = 12; // Assume 4096 bytes per page
         break;
     case MICRON_DI_47:
-        LOG_INF("Automatic recognition of MT29F4G0 flash");
-        dev->dhara_nand.num_blocks = 2*2048;
-        dev->dhara_nand.log2_page_size = 12;// Assume 4096 bytes per page
+        my_nand_handle->log("Automatic recognition of MT29F4G0 flash", false, false, 0);
+        dev->dhara_nand.num_blocks = 2 * 2048;
+        dev->dhara_nand.log2_page_size = 12; // Assume 4096 bytes per page
         break;
     default:
-        LOG_ERR("Invalid Micron device ID: %u", device_id);
+        my_nand_handle->log("Invalid Micron device ID", true, true, device_id);
         return -1;
     }
     return 0;
@@ -347,7 +356,7 @@ static int detect_chip(nand_flash_device_t *dev)
     case NAND_FLASH_MICRON_MI: // GigaDevice
         return nand_micron_init(dev);
     default:
-        LOG_ERR("Invalid manufacturer ID: %u", manufacturer_id);
+        my_nand_handle->log("Invalid manufacturer ID", true, true, manufacturer_id);
         return -1;
     }
 }
@@ -369,7 +378,7 @@ static int unprotect_chip(nand_flash_device_t *dev)
     uint8_t status;
     int ret = nand_read_register(REG_PROTECT, &status);
     if (ret != 0) {
-        LOG_ERR("Failed to read register: %d", ret);
+        my_nand_handle->log("Failed to read register: ", true, true, ret);
         return ret;
     }
 
@@ -377,7 +386,7 @@ static int unprotect_chip(nand_flash_device_t *dev)
         ret = nand_write_register(REG_PROTECT, 0);
     }
     if (ret != 0) {
-        LOG_ERR("Failed to remove protection bit with error code: %d", ret);
+        my_nand_handle->log("Failed to remove protection bit with error code: ", true, true, ret);
         return -1;
     }
 
@@ -396,7 +405,7 @@ int wait_for_ready(uint8_t *status_out)
         uint8_t status;
         int err = nand_read_register(REG_STATUS, &status);
         if (err != 0) {
-            LOG_ERR("Error reading NAND status register");
+            my_nand_handle->log("Error reading NAND status register", true, false, 0);
             return -1; 
         }
 
@@ -416,7 +425,7 @@ int wait_for_ready(uint8_t *status_out)
 
 int nand_flash_init_device(nand_flash_device_t **handle)
 {
-    LOG_INF("NAND MAPPING LAYER: Initializing DHARA mapping");
+    my_nand_handle->log("NAND MAPPING LAYER: Initializing DHARA mapping", false, false, 0);
         
     *handle = device_handle;
 
@@ -427,20 +436,20 @@ int nand_flash_init_device(nand_flash_device_t **handle)
 
 
     if (*handle == NULL) {
-        LOG_ERR("Failed to allocate memory for NAND flash device");
+        my_nand_handle->log("Failed to allocate memory for NAND flash device", true, false, 0);
         return -1;
     }
 
     int ret = detect_chip(*handle);
     if (ret != 0) {
-        LOG_ERR("Failed to detect NAND chip");
+        my_nand_handle->log("Failed to detect NAND chip", true, false, 0);
         goto fail;
     }
 
     // Unprotect the NAND flash chip
     ret = unprotect_chip(*handle);
     if (ret != 0) {
-        LOG_ERR("Failed to unprotect NAND chip");
+        my_nand_handle->log("Failed to unprotect NAND chip", true, false, 0);
         goto fail;
     }
 
@@ -457,7 +466,7 @@ int nand_flash_init_device(nand_flash_device_t **handle)
 
 
     if ((*handle)->work_buffer == NULL) {
-        LOG_ERR("Failed to allocate work buffer");
+        my_nand_handle->log("Failed to allocate work buffer", true, false, 0);
         ret = -1;
         goto fail;
     }
@@ -475,7 +484,7 @@ int nand_flash_init_device(nand_flash_device_t **handle)
     dhara_error_t ignored;
     ret = dhara_map_resume(&(*handle)->dhara_map, &ignored);
     if (ret == -1) {
-        LOG_INF("No valid stored state, reinitializing map");
+        my_nand_handle->log("No valid stored state, reinitializing map", false, false, 0);
     }
 
     return 0;
@@ -484,7 +493,7 @@ fail:
     if ((*handle)->work_buffer != NULL) {
         free((*handle)->work_buffer);
     }
-    LOG_ERR("Failed to initalize mapping");
+    my_nand_handle->log("Failed to initalize mapping", true, false, 0);
     return ret;
 }
 
@@ -492,7 +501,7 @@ fail:
 
 int nand_erase_chip(nand_flash_device_t *handle)
 {
-    LOG_WRN("Entire chip is being erased");
+    my_nand_handle->log("Entire chip is being erased", false, false, 0);
     int ret;
 
     // Take the semaphore with K_FOREVER to wait indefinitely
@@ -501,20 +510,20 @@ int nand_erase_chip(nand_flash_device_t *handle)
     for (int i = 0; i < handle->num_blocks; i++) {
         ret = nand_write_enable();
         if (ret != 0) {
-            LOG_ERR("Failed to enable write for block erase");
+            my_nand_handle->log("Failed to enable write for block erase", true, false, 0);
             goto end;
         }
 
         ret = nand_erase_block(i * (1 << handle->dhara_nand.log2_ppb));
         if (ret != 0) {
-            LOG_ERR("Failed to erase block");
+            my_nand_handle->log("Failed to erase block", true, false, 0);
             goto end;
         }
 
 
         ret = wait_for_ready(NULL);
         if (ret != 0) {
-            LOG_ERR("Failed to wait for readiness after erase");
+            my_nand_handle->log("Failed to wait for readiness after erase", true, false, 0);
             goto end;
         }
     }
@@ -544,10 +553,10 @@ int nand_flash_read_sector(nand_flash_device_t *handle, uint8_t *buffer, uint16_
         ret = err;
     } else if (err == DHARA_E_ECC) {
         // This indicates a soft ECC error, we rewrite the sector to recover
-        LOG_INF("Soft ECC error, recovering");
+        my_nand_handle->log("Soft ECC error, recovering", false, false, 0);
         if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
             ret = err;
-            LOG_ERR("error while writing to map"); 
+            my_nand_handle->log("Error while writing to map", true, false, 0);
         }
     }
     k_sem_give(&handle->mutex);
@@ -563,7 +572,7 @@ int nand_flash_write_sector(nand_flash_device_t *handle, const uint8_t *buffer, 
     k_sem_take(&handle->mutex, K_FOREVER);
 
     if (dhara_map_write(&handle->dhara_map, sector_id, buffer, &err)) {
-        LOG_ERR("error while writing to map"); 
+        my_nand_handle->log("Error while writing to map", true, false, 0);
         ret = err; 
     }
 

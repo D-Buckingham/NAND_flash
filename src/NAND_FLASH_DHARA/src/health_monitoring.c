@@ -13,7 +13,7 @@
 #include <assert.h>
 
 #include "../inc/nand_top_layer.h"
-#include "../inc/nand_oper.h"
+#include "../inc/nand_driver.h"
 #include "../inc/health_monitoring.h"
 
 
@@ -223,6 +223,6 @@ uint32_t read_ecc_errors(void) {
 }
 
 
-SYS_INIT(display_health, APPLICATION, 60);
+//SYS_INIT(display_health, APPLICATION, 60);
 
 #endif //CONFIG_HEALTH_MONITORING
