@@ -64,6 +64,14 @@ static void store_in_buffer(uint8_t *data, uint32_t page_address, uint16_t colum
 
 
 
+uint32_t convert_address(uint32_t page){
+    if (my_nand_handle && my_nand_handle->number_of_flashes != 1) {
+        return page - (my_nand_handle->number_of_flashes * device_handle->block_size * device_handle->num_blocks);
+    }
+    return page;
+}
+
+
 #endif //CONFIG_DHARA_METADATA_BUFFER
 
 //address_bytes = 0
@@ -229,6 +237,8 @@ int nand_read_page(uint32_t page)
     // if(last_read_page_in_NAND_cache == page && page != 0){
     //     return 0;    
     // }
+    page = convert_address(page);
+
     last_read_page_in_NAND_cache = page;
     nand_transaction_t  t = {
         .command = CMD_PAGE_READ,
@@ -251,6 +261,7 @@ int nand_read_page(uint32_t page)
 
 int nand_program_execute(uint32_t page)
 {
+    page = convert_address(page);
     nand_transaction_t  t = {
         .command = CMD_PROGRAM_EXECUTE,
         .address_bytes = 3,
@@ -273,6 +284,7 @@ int nand_program_execute(uint32_t page)
 
 int nand_erase_block(uint32_t page)
 {
+    page = convert_address(page);
     nand_transaction_t  t = {
         .command = CMD_ERASE_BLOCK,
         .address_bytes = 3,

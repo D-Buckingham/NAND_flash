@@ -168,7 +168,6 @@ int dhara_nand_is_bad(const struct dhara_nand *n, dhara_block_t b)
 
 
 
-//TODO check in datasheet process, erase counter has not to be increased
 void dhara_nand_mark_bad(const struct dhara_nand *n, dhara_block_t b)
 {
     nand_flash_device_t *dev = CONTAINER_OF(n, nand_flash_device_t, dhara_nand);
