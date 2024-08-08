@@ -113,6 +113,10 @@ Key Concepts:
 - **Performance Issues**:
   - Profile the application to identify bottlenecks and optimize the NAND flash access patterns.
   - Adjust the configuration settings in the DHARA FTL to better suit your application's needs.
+ 
+- **Porting New Flash**:
+   - Change USB stack size to page size (log2) in config for retrieval of data via USB
+   - Other parameters should be recognized
 
 ## References
 
